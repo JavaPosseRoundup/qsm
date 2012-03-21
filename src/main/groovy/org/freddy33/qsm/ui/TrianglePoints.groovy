@@ -3,22 +3,25 @@
  */
 package org.freddy33.qsm.ui
 
-import java.awt.Graphics2D
-import java.awt.Rectangle
-import org.jzy3d.chart.Chart
-import org.jzy3d.colors.Color
-import org.jzy3d.maths.Coord3d
-import org.jzy3d.maths.TicToc
-import org.jzy3d.plot3d.primitives.Scatter
-import org.jzy3d.plot3d.rendering.view.Renderer2d
-import org.jzy3d.ui.ChartLauncher
-import org.freddy33.qsm.space.Calculator
+//import java.awt.Graphics2D
+//import java.awt.Rectangle
+//import org.jzy3d.chart.Chart
+//import org.jzy3d.colors.Color
+//import org.jzy3d.maths.Coord3d
+//import org.jzy3d.maths.TicToc
+//import org.jzy3d.plot3d.primitives.Scatter
+//import org.jzy3d.plot3d.rendering.view.Renderer2d
+//import org.jzy3d.ui.ChartLauncher
+//import org.freddy33.qsm.space.Calculator
+//import org.freddy33.math.MathUtils
+//import org.freddy33.qsm.space.SpaceTime
 
 // G.var provides Global container for script vars
 class G {
     static var = [:]
 }
 
+/*
 def buildChart(Scatter sc) {
     def chart = new Chart()
     sc.width = 5
@@ -141,3 +144,4 @@ Thread.start {
         G.var.fpsText = String.format('%4d: %.4f FPS', calculator.spaceTime.currentTime, 1.0 / tt.elapsedSecond())
     }
 }
+*/

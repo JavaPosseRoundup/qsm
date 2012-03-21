@@ -15,12 +15,12 @@ class MathUtils {
         Math.abs(a-b) < 1e-6f
     }
 
-    static boolean eq(Coord3d a, Coord3d b) {
+    static boolean eq(Coord4d a, Coord4d b) {
         eq(a.x, b.x) && eq(a.y, b.y) && eq(a.z, b.z)
     }
 
-    static Coord3d cross(Coord3d v1, Coord3d v2){
-        Coord3d v3 = new Coord3d();
+    static Coord4d cross(Coord4d v1, Coord4d v2){
+        Coord4d v3 = new Coord4d();
         // V1    V2  =  V3
         v3.x = v1.y * v2.z - v1.z * v2.y; // x1    x2     x3  <-
         v3.y = v1.z * v2.x - v1.x * v2.z; // y1 \/ y2     y3

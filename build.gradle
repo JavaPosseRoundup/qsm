@@ -16,10 +16,20 @@
  * /
  */
 
-version = "${qsm-version}"
-
+buildscript {
+    repositories {
+        maven {
+            url "http://javaposse.artifactoryonline.com/javaposse/plugins-releases"
+        }
+        dependencies {
+            classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '2.0.12')
+        }
+    }
+}
 
 group = 'org.freddy33.qsm'
+version = property('qsm-version')
+
 apply plugin: 'idea'
 apply plugin: 'artifactory'
 apply plugin: 'java'
@@ -37,8 +47,7 @@ configurations {
 }
 
 artifactory {
-    contextUrl = 'http://repo-demo:8080/artifactory'
-    //contextUrl = 'http://javaposse.artifactoryonline.com/javaposse'
+    contextUrl = 'http://javaposse.artifactoryonline.com/javaposse'
     publish {
         defaults {
             publishConfigs('extraPublish', 'archives')
@@ -48,7 +57,7 @@ artifactory {
     }
     resolve {
         repository {
-            repoKey = 'repo'
+            repoKey = 'libs-releases'
         }
     }
 }
@@ -71,12 +80,12 @@ uploadArchives {
 }
 
 dependencies {
-	compile group: 'com.google.guava', name: 'guava', version: 'r09'
+	compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
 	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
 	compile group: 'javax.annotation', name: 'jsr250-api', version: '1.0'
-	groovy 'org.codehaus.groovy:groovy-all:1.7.10@jar'
-	testCompile group: 'junit', name: 'junit', version: '4.8.1'
-	testCompile group: 'org.spockframework', name: 'spock-core', version: '0.5-groovy-1.7'
+	groovy 'org.codehaus.groovy:groovy-all:1.8.6@jar'
+	testCompile group: 'junit', name: 'junit', version: '4.9'
+	testCompile group: 'org.spockframework', name: 'spock-core', version: '0.6-groovy-1.8'
 }
 
 

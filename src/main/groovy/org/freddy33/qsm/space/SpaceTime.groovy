@@ -1,8 +1,9 @@
 package org.freddy33.qsm.space
 
 import org.freddy33.math.MathUtils
-import org.freddy33.math.Coord3d
-import org.freddy33.math.Vector3d
+
+import org.freddy33.math.Coord4d
+import org.freddy33.math.Vector4d
 
 /**
  * Date: 12/6/11
@@ -30,24 +31,24 @@ class SpaceTime {
         Space first = new Space(currentTime)
         spaces.put(0, first)
         addPhoton(first,
-                new Coord3d(0f, 0f, 0f),
-                new Coord3d(1f, 0f, 0f),
-                new Coord3d(0f, 0f, 1f),
+                new Coord4d(0f, 0f, 0f),
+                new Coord4d(1f, 0f, 0f),
+                new Coord4d(0f, 0f, 1f),
                 (float) initialRatio)
     }
 
-    def static addPhoton(Space space, Coord3d c, Coord3d v, Coord3d p, float size) {
+    def static addPhoton(Space space, Coord4d c, Coord4d v, Coord4d p, float size) {
         p.normalizeTo(1f)
         v.normalizeTo(1f)
         // v and p needs to be perpendicular so cross should be normalized sin(teta)= 1
-        Coord3d py = MathUtils.cross(v, p)
+        Coord4d py = MathUtils.cross(v, p)
         if (!MathUtils.eq(py.magSquared(), 1f)) {
             throw new IllegalArgumentException("Polarization $v and vector $v are not perpendicular!");
         }
         space.addEvent(c, v)
         space.addEvent(c.add(p.mul(size)), v)
-        Coord3d cos120 = p.mul((float) size * MathUtils.cos120)
-        Coord3d sin120 = py.mul((float) size * MathUtils.sin120)
+        Coord4d cos120 = p.mul((float) size * MathUtils.cos120)
+        Coord4d sin120 = py.mul((float) size * MathUtils.sin120)
         space.addEvent(c.add(cos120).add(sin120), v)
         space.addEvent(c.add(cos120).sub(sin120), v)
     }
@@ -61,25 +62,25 @@ class SpaceTime {
         return newSpace
     }
 
-    List<Coord3d> currentPoints() {
+    List<Coord4d> currentPoints() {
         return allEvents.findAll { !it.used }.collect { it.point }
     }
 }
 
 class Event {
-    final Coord3d point
-    final Coord3d direction
+    final Coord4d point
+    final Coord4d direction
     int time
     boolean used = false
 
-    Event(float x, float y, float z, int time, Coord3d dir) {
-//        this.point = new Coord3d((float)round(x),(float)round(y),(float)round(z))
-        this.point = new Coord3d(x, y, z)
+    Event(float x, float y, float z, int time, Coord4d dir) {
+//        this.point = new Coord4d((float)round(x),(float)round(y),(float)round(z))
+        this.point = new Coord4d(x, y, z)
         this.time = time
         this.direction = dir.getNormalizedTo(1f)
     }
 
-    Event(Coord3d point, int time, Coord3d dir) {
+    Event(Coord4d point, int time, Coord4d dir) {
         this(point.x, point.y, point.z, time, dir)
     }
 }
@@ -93,12 +94,12 @@ class Space {
     }
 
     def addEvent(float x, float y, float z, float xd, float yd, float zd) {
-        def res = new Event(x, y, z, time, new Coord3d(xd, yd, zd))
+        def res = new Event(x, y, z, time, new Coord4d(xd, yd, zd))
         events.add(res)
         return res
     }
 
-    def addEvent(Coord3d point, Coord3d direction) {
+    def addEvent(Coord4d point, Coord4d direction) {
         def res = new Event(point, time, direction)
         events.add(res)
         return res
@@ -106,37 +107,37 @@ class Space {
 }
 
 class Triangle {
-    List<Coord3d> p
-    Coord3d p12
-    Coord3d p13
-    Coord3d p23
-    Coord3d p12p23cross
+    List<Coord4d> p
+    Coord4d p12
+    Coord4d p13
+    Coord4d p23
+    Coord4d p12p23cross
     Float p12p13cross22
 
     Triangle(List<Event> p) {
         this(p[0].point, p[1].point, p[2].point)
     }
 
-    Triangle(Coord3d p1, Coord3d p2, Coord3d p3) {
+    Triangle(Coord4d p1, Coord4d p2, Coord4d p3) {
         this.p = []
         this.p << p1
         this.p << p2
         this.p << p3
     }
 
-    Coord3d v12() {
-        p12 != null ? p12 : (p12 = new Vector3d(p[0], p[1]).vector())
+    Coord4d v12() {
+        p12 != null ? p12 : (p12 = new Vector4d(p[0], p[1]).vector())
     }
 
-    Coord3d v13() {
-        p13 != null ? p13 : (p13 = new Vector3d(p[0], p[2]).vector())
+    Coord4d v13() {
+        p13 != null ? p13 : (p13 = new Vector4d(p[0], p[2]).vector())
     }
 
-    Coord3d v23() {
-        p23 != null ? p23 : (p23 = new Vector3d(p[1], p[2]).vector())
+    Coord4d v23() {
+        p23 != null ? p23 : (p23 = new Vector4d(p[1], p[2]).vector())
     }
 
-    Coord3d v12v23cross() {
+    Coord4d v12v23cross() {
         p12p23cross != null ? p12p23cross : (p12p23cross = MathUtils.cross(v12(), v23()))
     }
 
@@ -144,21 +145,21 @@ class Triangle {
         p12p13cross22 != null ? p12p13cross22 : (p12p13cross22 = v12v23cross().magSquared() * 2f)
     }
 
-    Coord3d finalDir(Coord3d origDirection) {
+    Coord4d finalDir(Coord4d origDirection) {
         if (isFlat()) {
             // Flat triangle
             throw new IllegalArgumentException("""Triangle $this is flat since $v12v23s2 is too small!
                                                   Cannot find final direction of a flat triangle!""")
         }
         // Final direction (perpendicular to triangle plane) is cross vector
-        Coord3d finalDir = v12v23cross().getNormalizedTo(1f)
+        Coord4d finalDir = v12v23cross().getNormalizedTo(1f)
         if (finalDir.dot(origDirection) < 0) {
             return finalDir.mul(-1f)
         }
         return finalDir
     }
 
-    Coord3d findEvent(int dt, Coord3d origDirection) {
+    Coord4d findEvent(int dt, Coord4d origDirection) {
         if (isFlat()) {
             return null
         }
@@ -172,7 +173,7 @@ class Triangle {
             return null
         }
         // OK, it's a non flat triangle and dt is big enough => find center
-        Coord3d center = findCenter()
+        Coord4d center = findCenter()
         // Then find how much above plane on center need to add
         float radius2 = radius2()
         if (dt2 - radius2 < 1f) {
@@ -191,7 +192,7 @@ class Triangle {
         return MathUtils.eq(v12v23s2(), 0f)
     }
 
-    Coord3d findCenter() {
+    Coord4d findCenter() {
         if (isFlat()) {
             // Flat triangle
             throw new IllegalArgumentException("""Triangle $this is flat since $v12v23s2 is too small!
@@ -201,7 +202,7 @@ class Triangle {
         float alpha = v23().magSquared() * v12().dot(v13()) / v12v23s2()
         float beta = v13().magSquared() * v12().mul(-1f).dot(v23()) / v12v23s2()
         float gama = v12().magSquared() * v13().mul(-1f).dot(v23().mul(-1f)) / v12v23s2()
-        Coord3d center = new Coord3d(
+        Coord4d center = new Coord4d(
                 alpha * p[0].x + beta * p[1].x + gama * p[2].x,
                 alpha * p[0].y + beta * p[1].y + gama * p[2].y,
                 alpha * p[0].z + beta * p[1].z + gama * p[2].z
@@ -224,7 +225,7 @@ class Triangle {
 class Calculator {
     static int N = 4
 
-    List<Coord3d> fixedPoints
+    List<Coord4d> fixedPoints
     SpaceTime spaceTime
 
     Calculator(int ratio) {
@@ -239,15 +240,15 @@ class Calculator {
 
     def initFixPoints() {
         fixedPoints = [
-                new Coord3d(-50f, -50f, -50f).mul((float)spaceTime.initialRatio),
-                new Coord3d(50f, 50f, 50f).mul((float)spaceTime.initialRatio)
+                new Coord4d(-50f, -50f, -50f).mul((float)spaceTime.initialRatio),
+                new Coord4d(50f, 50f, 50f).mul((float)spaceTime.initialRatio)
         ]
     }
 
-    Coord3d[] currentPoints() {
-        List<Coord3d> points = spaceTime.currentPoints()
+    Coord4d[] currentPoints() {
+        List<Coord4d> points = spaceTime.currentPoints()
         points.addAll(fixedPoints)
-        points.toArray(new Coord3d[points.size()])
+        points.toArray(new Coord4d[points.size()])
     }
 
     def manyCalc(int n) {
@@ -269,7 +270,7 @@ class Calculator {
                 // If any 2 points of the blocks could not have dt time to join => toFar
                 boolean toFar = allPairs.any { it[0].point.distance(it[1].point) > dt }
                 // Global dir of the block is the sum of directions vectors
-                Coord3d blockDirection = new Coord3d(0f, 0f, 0f)
+                Coord4d blockDirection = new Coord4d(0f, 0f, 0f)
                 block.each { blockDirection.addSelf(it.direction) }
                 if (!toFar && !MathUtils.eq(blockDirection.magSquared(), 0f)) {
                     blockDirection = blockDirection.normalizeTo(1f);
@@ -278,7 +279,7 @@ class Calculator {
                     allTriangles.each {
                         // For each triangle find the equidistant ( = dt ) points
                         def tr = new Triangle(it)
-                        Coord3d newPoint = tr.findEvent(dt, blockDirection)
+                        Coord4d newPoint = tr.findEvent(dt, blockDirection)
                         if (newPoint != null) newEvents.add(new Event(newPoint, spaceTime.currentTime, tr.finalDir(blockDirection)))
                     }
                     if (newEvents.size() == block.size()) {
