@@ -1,0 +1,82 @@
+/*
+ *
+ *  Copyright (C) 2010 JFrog Ltd.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
+ */
+
+version = "${qsm-version}"
+
+
+group = 'org.freddy33.qsm'
+apply plugin: 'idea'
+apply plugin: 'artifactory'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'groovy'
+
+idea {
+	project {
+	    javaVersion = '1.6'
+	}
+}
+
+configurations {
+	extraPublish
+}
+
+artifactory {
+    contextUrl = 'http://repo-demo:8080/artifactory'
+    //contextUrl = 'http://javaposse.artifactoryonline.com/javaposse'
+    publish {
+        defaults {
+            publishConfigs('extraPublish', 'archives')
+            publishIvy = false
+            publishPom = true
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'repo'
+        }
+    }
+}
+
+task sourceJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.java
+}
+
+artifacts {
+	extraPublish sourceJar
+}
+
+artifactoryPublish {
+	dependsOn: build
+}
+
+uploadArchives {
+	uploadDescriptor = true
+}
+
+dependencies {
+	compile group: 'com.google.guava', name: 'guava', version: 'r09'
+	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+	compile group: 'javax.annotation', name: 'jsr250-api', version: '1.0'
+	groovy 'org.codehaus.groovy:groovy-all:1.7.10@jar'
+	testCompile group: 'junit', name: 'junit', version: '4.8.1'
+	testCompile group: 'org.spockframework', name: 'spock-core', version: '0.5-groovy-1.7'
+}
+
+
