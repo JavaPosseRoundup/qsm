@@ -245,12 +245,6 @@ class Calculator {
         ]
     }
 
-    Coord4d[] currentPoints() {
-        List<Coord4d> points = spaceTime.currentPoints()
-        points.addAll(fixedPoints)
-        points.toArray(new Coord4d[points.size()])
-    }
-
     def manyCalc(int n) {
         for (int i=0;i<n;i++) calc()
     }
