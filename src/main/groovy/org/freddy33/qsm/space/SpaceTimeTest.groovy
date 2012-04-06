@@ -3,69 +3,71 @@ package org.freddy33.qsm.space
 import org.freddy33.math.MathUtils
 
 import org.freddy33.math.Coord4d
+import org.freddy33.math.Vector4d
+import org.freddy33.math.Triangle
 
-def evt1 = new Event(0f, 0f, 0f, 3, new Coord4d(3f, 0f, 0f))
-assert evt1.direction.x == 1f
-assert evt1.direction.y == 0f
-assert evt1.direction.z == 0f
+def evt1 = new Event(0d, 0d, 0d, 3, new Vector4d(3d, 0d, 0d))
+assert evt1.direction.x == 1d
+assert evt1.direction.y == 0d
+assert evt1.direction.z == 0d
 
-def evt2 = new Event(0f, 0f, 1f, 3, new Coord4d(3f, 3f, 0f))
-def s22 = (float)(Math.sqrt(2d)/2d)
+def evt2 = new Event(0d, 0d, 1d, 3, new Vector4d(3d, 3d, 0d))
+def s22 = Math.sqrt(2d)/2d
 assert MathUtils.eq(evt2.direction.x, s22)
 assert MathUtils.eq(evt2.direction.y, s22)
-assert evt2.direction.z == 0f
+assert evt2.direction.z == 0d
 
-def sin120 = (float) Math.sin(2*Math.PI/3)
-def cos120 = -0.5f
-def evt3 = new Event(0f, sin120, cos120, 3, evt1.direction)
-def evt4 = new Event(0f, -sin120, cos120, 3, evt1.direction)
+def sin120 = Math.sin(2d*Math.PI/3d)
+def cos120 = -0.5d
+def evt3 = new Event(0d, sin120, cos120, 3, evt1.direction)
+def evt4 = new Event(0d, -sin120, cos120, 3, evt1.direction)
 
 // So 1,2,3,4 perfect triangle happening a t=3 moving in +x direction
-def bigTr = new Triangle([evt2, evt3, evt4])
+def bigTr = new Triangle(evt2.point, evt3.point, evt4.point)
 assert !bigTr.isFlat()
-assert MathUtils.eq(bigTr.findCenter(), new Coord4d(0f, 0f, 0f))
-assert MathUtils.eq(bigTr.finalDir(evt1.direction), new Coord4d(1f, 0f, 0f))
-assert MathUtils.eq(bigTr.finalDir(evt2.direction), new Coord4d(1f, 0f, 0f))
-assert MathUtils.eq(bigTr.finalDir(evt1.direction.mul(-1f)), new Coord4d(-1f, 0f, 0f))
-assert MathUtils.eq(bigTr.finalDir(evt2.direction.mul(-1f)), new Coord4d(-1f, 0f, 0f))
+assert MathUtils.eq(bigTr.findCenter(), new Coord4d(0d, 0d, 0d))
+assert MathUtils.eq(bigTr.finalDir(evt1.direction), new Vector4d(1d, 0d, 0d))
+assert MathUtils.eq(bigTr.finalDir(evt2.direction), new Vector4d(1d, 0d, 0d))
+assert MathUtils.eq(bigTr.finalDir(-evt1.direction), new Vector4d(-1d, 0d, 0d))
+assert MathUtils.eq(bigTr.finalDir(-evt2.direction), new Vector4d(-1d, 0d, 0d))
 assert bigTr.findEvent(1, evt1.direction) == null
-assert MathUtils.eq(bigTr.findEvent(2, evt1.direction), new Coord4d((float)Math.sqrt(3), 0f, 0f))
+assert MathUtils.eq(bigTr.findEvent(2, evt1.direction), new Coord4d(Math.sqrt(3d), 0d, 0d))
 
-def smallTr = new Triangle([evt1, evt3, evt4])
+def smallTr = new Triangle(evt1.point, evt3.point, evt4.point)
 assert !smallTr.isFlat()
-assert MathUtils.eq(smallTr.finalDir(evt1.direction), new Coord4d(1f, 0f, 0f))
-assert MathUtils.eq(smallTr.finalDir(evt2.direction), new Coord4d(1f, 0f, 0f))
-assert MathUtils.eq(smallTr.finalDir(evt1.direction.mul(-1f)), new Coord4d(-1f, 0f, 0f))
-assert MathUtils.eq(smallTr.finalDir(evt2.direction.mul(-1f)), new Coord4d(-1f, 0f, 0f))
+assert MathUtils.eq(smallTr.finalDir(evt1.direction), new Vector4d(1d, 0d, 0d))
+assert MathUtils.eq(smallTr.finalDir(evt2.direction), new Vector4d(1d, 0d, 0d))
+assert MathUtils.eq(smallTr.finalDir(-evt1.direction), new Vector4d(-1d, 0d, 0d))
+assert MathUtils.eq(smallTr.finalDir(-evt2.direction), new Vector4d(-1d, 0d, 0d))
 assert smallTr.findEvent(1, evt1.direction) == null
-assert MathUtils.eq(smallTr.radius2(), 1f)
-assert MathUtils.eq(smallTr.findCenter(), new Coord4d(0f, 0f, -1f))
-assert MathUtils.eq(smallTr.findEvent(2, evt1.direction), new Coord4d((float)Math.sqrt(3), 0f, -1f))
+assert MathUtils.eq(smallTr.radius2(), 1d)
+assert MathUtils.eq(smallTr.findCenter(), new Coord4d(0d, 0d, -1d))
+assert MathUtils.eq(smallTr.findEvent(2, evt1.direction), new Coord4d(Math.sqrt(3d), 0d, -1d))
 
-float ratio = 100f
-def incTr = new Triangle(evt2.point.mul(ratio), evt3.point.mul(ratio), evt4.point.mul(ratio))
+double ratio = 100d
+def incTr = new Triangle(evt2.point*ratio, evt3.point*ratio, evt4.point*ratio)
 assert !incTr.isFlat()
-assert MathUtils.eq(incTr.findCenter(), new Coord4d(0f, 0f, 0f))
-assert MathUtils.eq(incTr.finalDir(evt1.direction), new Coord4d(1f, 0f, 0f))
-assert MathUtils.eq(incTr.finalDir(evt2.direction), new Coord4d(1f, 0f, 0f))
-assert MathUtils.eq(incTr.finalDir(evt1.direction.mul(-1f)), new Coord4d(-1f, 0f, 0f))
-assert MathUtils.eq(incTr.finalDir(evt2.direction.mul(-1f)), new Coord4d(-1f, 0f, 0f))
-float bigDist = (float) ratio * MathUtils.sin120 * 2f
+assert MathUtils.eq(incTr.findCenter(), new Coord4d(0d, 0d, 0d))
+assert MathUtils.eq(incTr.finalDir(evt1.direction), new Vector4d(1d, 0d, 0d))
+assert MathUtils.eq(incTr.finalDir(evt2.direction), new Vector4d(1d, 0d, 0d))
+assert MathUtils.eq(incTr.finalDir(-evt1.direction), new Vector4d(-1d, 0d, 0d))
+assert MathUtils.eq(incTr.finalDir(-evt2.direction), new Vector4d(-1d, 0d, 0d))
+double bigDist = ratio * MathUtils.sin120 * 2d
 int nextInt = (int)bigDist
-float nextX = (float) Math.sqrt((nextInt+1)*(nextInt+1) - (ratio*ratio))
+double nextX = Math.sqrt((nextInt+1)*(nextInt+1) - (ratio*ratio))
 assert incTr.findEvent(nextInt, evt1.direction) == null
-assert MathUtils.eq(incTr.findEvent(nextInt+1, evt1.direction), new Coord4d(nextX, 0f, 0f))
+assert MathUtils.eq(incTr.findEvent(nextInt+1, evt1.direction), new Coord4d(nextX, 0d, 0d))
 
-def incSmTr = new Triangle(evt1.point.mul(ratio), evt3.point.mul(ratio), evt4.point.mul(ratio))
+def incSmTr = new Triangle(evt1.point*ratio, evt3.point*ratio, evt4.point*ratio)
 assert !incSmTr.isFlat()
-assert MathUtils.eq(incSmTr.finalDir(evt1.direction), new Coord4d(1f, 0f, 0f))
-assert MathUtils.eq(incSmTr.finalDir(evt2.direction), new Coord4d(1f, 0f, 0f))
-assert MathUtils.eq(incSmTr.finalDir(evt1.direction.mul(-1f)), new Coord4d(-1f, 0f, 0f))
-assert MathUtils.eq(incSmTr.finalDir(evt2.direction.mul(-1f)), new Coord4d(-1f, 0f, 0f))
+assert MathUtils.eq(incSmTr.finalDir(evt1.direction), new Vector4d(1d, 0d, 0d))
+assert MathUtils.eq(incSmTr.finalDir(evt2.direction), new Vector4d(1d, 0d, 0d))
+assert MathUtils.eq(incSmTr.finalDir(-evt1.direction), new Vector4d(-1d, 0d, 0d))
+assert MathUtils.eq(incSmTr.finalDir(-evt2.direction), new Vector4d(-1d, 0d, 0d))
 assert incSmTr.findEvent(nextInt, evt1.direction) == null
-assert MathUtils.eq(incSmTr.radius2(), (float)ratio*ratio)
-assert MathUtils.eq(incSmTr.findCenter(), new Coord4d(0f, 0f, -ratio))
-assert MathUtils.eq(incSmTr.findEvent(nextInt+1, evt1.direction), new Coord4d(nextX, 0f, -ratio))
+assert MathUtils.eq(incSmTr.radius2(), ratio*ratio)
+assert MathUtils.eq(incSmTr.findCenter(), new Coord4d(0d, 0d, -ratio))
+assert MathUtils.eq(incSmTr.findEvent(nextInt+1, evt1.direction), new Coord4d(nextX, 0d, -ratio))
 
 def st = new SpaceTime((int)ratio)
 assert st.spaces[0].events.size() == 4
@@ -94,7 +96,7 @@ assert st.spaces[0] == null
 assert st.allEvents.size() == 8
 def points = st.currentPoints()
 assert points.size() == 4
-assert points.any { MathUtils.eq(it, new Coord4d(nextX, 0f, -ratio)) }
+assert points.any { MathUtils.eq(it, new Coord4d(nextX, 0d, -ratio)) }
 
 for (int i=3;i<=nextInt+1;i++) {
     calculator.calc()
@@ -116,5 +118,5 @@ assert st.spaces[nextInt+1] == null
 assert st.allEvents.size() == 12
 points = st.currentPoints()
 assert points.size() == 4
-assert points.any { MathUtils.eq(it, new Coord4d(nextX+nextX, 0f, ratio)) }
+assert points.any { MathUtils.eq(it, new Coord4d(nextX+nextX, 0d, ratio)) }
 

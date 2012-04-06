@@ -3,75 +3,89 @@ package org.freddy33.math;
 class Vector4d {
     double x, y, z, t
 
-	public Vector4d(Coord4d p1, Coord4d p2){
+	public Vector4d(double px, py, pz) { this(px,py,pz,0d) }
+
+    public Vector4d(double px, py, pz, pt){
+        x = px
+        y = py
+        z = pz
+        t = pt
+    }
+
+    public Vector4d(Coord4d p1, Coord4d p2){
 		x = p2.x - p1.x;
 		y = p2.y - p1.y;
 		z = p2.z - p1.z;
 		t = p2.t - p1.t;
 	}
 
-	/**
-	 * Compute the dot product between and current and given vector.
-	 *
-	 * @param v input vector
-	 * @return the dot product
-	 */
-	public float dot(Vector4d v){
-		return x*v.x + y*v.y + z*v.z + t*v.t;
-	}
-
-	/** Computes the vectorial product of the current and the given vector.
-	 * The result is a vector defined as a Coord4d, that is perpendicular to
-	 * the plan induced by current vector and vector V.*/
-	public Vector4d cross(Vector4d v){
-		Coord4d v1 = this.vector();
-		Coord4d v2 = v.vector();
-		Coord4d v3 = new Coord4d();
-								  // V1    V2  =  V3
-		v3.x = y * v.z - z * v.y; // x1    x2     x3  <-
-		v3.y = z * v.x - x * v.z; // y1 \/ y2     y3
-		v3.z = x * v.y - y * v.x; // z1 /\ z2     z3
-
-		return v3; //TODO: should return a vector! Vector4d(V3, Coord4d.ORIGIN)
-	}
-
-	/**
-	 * Compute the norm of this vector.
-	 * @return the norm
-	 */
-	public float norm(){
-		return (float)Math.sqrt( Math.pow(x2-x1,2) + Math.pow(y2-y1,2) + Math.pow(z2-z1,2) );
-	}
-
-    /**
-     * Reverse the direction of this vector
-     * @return a new vector with opposite direction
-     */
-    public Vector4d neg() {
-        return new Vector4d(this.x2,this.y2,this.z2,this.x1,this.y1,this.z1);
+	public double mod(Vector4d v){
+        dot(v)
     }
 
-	/***********************************************************/
-
-	/** Compute the distance between two coordinates.*/
-	public double distance(Coord4d c){
-		return getCenter().distance(c);
+	public double dot(Vector4d v){
+		x*v.x + y*v.y + z*v.z + t*v.t
 	}
 
-	/**Return the central point of this segment.*/
-	public Coord4d getCenter(){
-		float cx  = (x1+x2)/2;
-		float cy  = (y1+y2)/2;
-		float cz  = (z1+z2)/2;
-		return new Coord4d(cx, cy, cz);
+	public Vector4d xor(Vector4d v){
+        cross(v)
+    }
+
+	public Vector4d cross(Vector4d v){
+		new Vector4d(
+                y * v.z - z * v.y,
+                z * v.x - x * v.z,
+                x * v.y - y * v.x
+        )
 	}
-		
-	/***********************************************************/
-	
-	private double x1;
-	private double x2;
-	private double y1;
-	private double y2;
-	private double z1;
-	private double z2;
+
+	/**
+	 * Compute the d of this vector.
+	 * @return the d
+	 */
+	public double d() {
+		Math.sqrt(magSquared())
+	}
+
+    public double magSquared() {
+        (x*x) + (y*y) + (z*z)
+    }
+
+    public Vector4d negative() {
+        return new Vector4d(-x,-y,-z,-t);
+    }
+
+    Vector4d multiply(double d) {
+        new Vector4d(x*d,y*d,z*d,t*d)
+    }
+
+    Vector4d normalized() {
+        double d = d()
+        new Vector4d(x/d,y/d,z/d,0d)
+    }
+
+    Vector4d plus(Vector4d v) {
+        new Vector4d(x+v.x,y+v.y,z+v.z,t+v.t)
+    }
+
+    Vector4d minus(Vector4d v) {
+        new Vector4d(x-v.x,y-v.y,z-v.z,t-v.t)
+    }
+
+    Vector4d addSelf(Vector4d v) {
+        x += v.x
+        y += v.y
+        z += v.z
+        t += v.t
+        return this
+    }
+
+    @Override
+    boolean equals(Object obj) {
+        MathUtils.eq(this,(Vector4d)obj)
+    }
+
+    String toString() {
+        "v($x, $y, $z, $t)"
+    }
 }

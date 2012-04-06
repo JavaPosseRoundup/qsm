@@ -11,7 +11,7 @@ class MathUtils {
     static float sin120 = (float) Math.sin(2*Math.PI/3)
     static float cos120 = -0.5f
 
-    static boolean eq(float a, float b) {
+    static boolean eq(double a, double b) {
         Math.abs(a-b) < 1e-6f
     }
 
@@ -19,13 +19,7 @@ class MathUtils {
         eq(a.x, b.x) && eq(a.y, b.y) && eq(a.z, b.z)
     }
 
-    static Coord4d cross(Coord4d v1, Coord4d v2){
-        Coord4d v3 = new Coord4d();
-        // V1    V2  =  V3
-        v3.x = v1.y * v2.z - v1.z * v2.y; // x1    x2     x3  <-
-        v3.y = v1.z * v2.x - v1.x * v2.z; // y1 \/ y2     y3
-        v3.z = v1.x * v2.y - v1.y * v2.x; // z1 /\ z2     z3
-
-        return v3;
+    static boolean eq(Vector4d a, Vector4d b) {
+        eq(a.x, b.x) && eq(a.y, b.y) && eq(a.z, b.z)
     }
 }

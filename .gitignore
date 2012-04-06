@@ -3,3 +3,5 @@
 *.iws
 build
 .gradle
+out/
+atlassian-ide-plugin.xml

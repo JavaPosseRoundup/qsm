@@ -16,6 +16,7 @@ import org.freddy33.qsm.space.Calculator
 import org.freddy33.math.MathUtils
 import org.freddy33.qsm.space.SpaceTime
 import org.freddy33.math.Coord4d
+import org.freddy33.math.Vector4d
 
 // G.var provides Global container for script vars
 class G {
@@ -54,8 +55,8 @@ for (int i = 1; i <= 3; i++) {
         for (int k = -1; k <= 1; k++) {
             SpaceTime.addPhoton(calculator.spaceTime.spaces[0],
                     new Coord4d((float)(i * nextX), ratio*j, ratio*k),
-                    new Coord4d(-1f, 0f, 0f),
-                    new Coord4d(0f, 0f, 1f),
+                    new Vector4d(-1d, 0d, 0d),
+                    new Vector4d(0d, 0d, 1d),
                     ratio
             )
         }
