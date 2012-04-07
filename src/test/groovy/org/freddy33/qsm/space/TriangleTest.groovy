@@ -7,16 +7,17 @@ import org.freddy33.math.Triangle
 import org.freddy33.math.Vector4d
 import spock.lang.Specification
 
-public class SpaceTest extends Specification {
+import static org.freddy33.math.MathUtils.getCos120
+import static org.freddy33.math.MathUtils.getSin120
+
+public class TriangleTest extends Specification {
     static def s22 = Math.sqrt(2d) / 2d
-    static def sin120 = Math.sin(2d * Math.PI / 3d)
-    static def cos120 = -0.5d
     static def evt1 = new Event(0d, 0d, 0d, 3, new Vector4d(3d, 0d, 0d))
     static def evt2 = new Event(0d, 0d, 1d, 3, new Vector4d(3d, 3d, 0d))
     static def evt3 = new Event(0d, sin120, cos120, 3, evt1.direction)
     static def evt4 = new Event(0d, -sin120, cos120, 3, evt1.direction)
     static def ratio = 1000d
-    static double bigDist = ratio * MathUtils.sin120 * 2d
+    static double bigDist = ratio * sin120 * 2d
     static int nextInt = (int) bigDist
     static double nextX = Math.sqrt((nextInt + 1) * (nextInt + 1) - (ratio * ratio))
 
