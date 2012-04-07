@@ -8,11 +8,19 @@ package org.freddy33.math
  * To change this template use File | Settings | File Templates.
  */
 class MathUtils {
-    static float sin120 = (float) Math.sin(2*Math.PI/3)
+    static float sin120 = (float) Math.sin(2 * Math.PI / 3)
     static float cos120 = -0.5f
+    public static final double EPSILON = 1e-6d
 
     static boolean eq(double a, double b) {
-        Math.abs(a-b) < 1e-6f
+        if (b == a) return true
+        if (b == 0d) {
+            Math.abs(a) < EPSILON
+        } else if (a == 0d) {
+            Math.abs(b) < EPSILON
+        } else {
+            Math.abs(1.0d - (a / b)) < EPSILON
+        }
     }
 
     static boolean eq(Coord4d a, Coord4d b) {

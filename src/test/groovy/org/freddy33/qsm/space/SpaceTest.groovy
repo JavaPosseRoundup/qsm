@@ -15,6 +15,10 @@ public class SpaceTest extends Specification {
     static def evt2 = new Event(0d, 0d, 1d, 3, new Vector4d(3d, 3d, 0d))
     static def evt3 = new Event(0d, sin120, cos120, 3, evt1.direction)
     static def evt4 = new Event(0d, -sin120, cos120, 3, evt1.direction)
+    static def ratio = 1000d
+    static double bigDist = ratio * MathUtils.sin120 * 2d
+    static int nextInt = (int) bigDist
+    static double nextX = Math.sqrt((nextInt + 1) * (nextInt + 1) - (ratio * ratio))
 
     def "test Event"() {
         expect:
@@ -63,6 +67,39 @@ public class SpaceTest extends Specification {
         eventAt2 << [
                 new Coord4d(Math.sqrt(3d), 0d, 0d),
                 new Coord4d(Math.sqrt(3d), 0d, -1d)
+        ]
+    }
+
+    def "test big triangle"() {
+
+        expect:
+        !triangle.isFlat()
+        triangle.findCenter() == center
+        triangle.finalDir(evt1.direction) == dir
+        MathUtils.eq(triangle.radius2(), radius2)
+        triangle.findEvent(nextInt, evt1.direction) == null
+        triangle.findEvent(nextInt + 1, evt1.direction) == eventAt2
+
+        where:
+        triangle << [
+                new Triangle(evt2.point * ratio, evt3.point * ratio, evt4.point * ratio),
+                new Triangle(evt1.point * ratio, evt3.point * ratio, evt4.point * ratio)
+        ]
+        dir << [
+                new Vector4d(1d, 0d, 0d),
+                new Vector4d(1d, 0d, 0d)
+        ]
+        radius2 << [
+                ratio * ratio,
+                ratio * ratio
+        ]
+        center << [
+                new Coord4d(0d, 0d, 0d),
+                new Coord4d(0d, 0d, -ratio)
+        ]
+        eventAt2 << [
+                new Coord4d(nextX, 0d, 0d),
+                new Coord4d(nextX, 0d, -ratio)
         ]
     }
 }
