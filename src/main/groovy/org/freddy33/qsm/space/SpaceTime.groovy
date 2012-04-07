@@ -1,10 +1,9 @@
 package org.freddy33.qsm.space
 
-import org.freddy33.math.MathUtils
-
 import org.freddy33.math.Coord4d
-import org.freddy33.math.Vector4d
+import org.freddy33.math.MathUtils
 import org.freddy33.math.Triangle
+import org.freddy33.math.Vector4d
 
 /**
  * Date: 12/6/11
@@ -47,7 +46,7 @@ public class SpaceTime {
             throw new IllegalArgumentException("Polarization $v and vector $v are not perpendicular!");
         }
         space.addEvent(c, v)
-        space.addEvent(c + (p*size), v)
+        space.addEvent(c + (p * size), v)
         Vector4d cos120 = p * (size * MathUtils.cos120)
         Vector4d sin120 = py * (size * MathUtils.sin120)
         space.addEvent(c + cos120 + sin120, v)
@@ -104,7 +103,7 @@ class Space {
 class Calculator {
     static int N = 4
 
-    List<Vector4d> fixedPoints
+    List<Coord4d> fixedPoints
     SpaceTime spaceTime
 
     Calculator(int ratio) {
@@ -119,13 +118,13 @@ class Calculator {
 
     def initFixPoints() {
         fixedPoints = [
-                new Vector4d(-50d, -50d, -50d, 0d) * ((double)spaceTime.initialRatio),
-                new Vector4d(50d, 50d, 50d, 0d) * ((double)spaceTime.initialRatio)
+                new Coord4d(-50d, -50d, -50d, 0d) * ((double) spaceTime.initialRatio),
+                new Coord4d(50d, 50d, 50d, 0d) * ((double) spaceTime.initialRatio)
         ]
     }
 
     def manyCalc(int n) {
-        for (int i=0;i<n;i++) calc()
+        for (int i = 0; i < n; i++) calc()
     }
 
     def calc() {

@@ -3,8 +3,11 @@
  */
 package org.freddy33.qsm.ui
 
-import java.awt.Graphics2D
-import java.awt.Rectangle
+import org.freddy33.math.Coord4d
+import org.freddy33.math.MathUtils
+import org.freddy33.math.Vector4d
+import org.freddy33.qsm.space.Calculator
+import org.freddy33.qsm.space.SpaceTime
 import org.jzy3d.chart.Chart
 import org.jzy3d.colors.Color
 import org.jzy3d.maths.Coord3d
@@ -12,11 +15,9 @@ import org.jzy3d.maths.TicToc
 import org.jzy3d.plot3d.primitives.Scatter
 import org.jzy3d.plot3d.rendering.view.Renderer2d
 import org.jzy3d.ui.ChartLauncher
-import org.freddy33.qsm.space.Calculator
-import org.freddy33.math.MathUtils
-import org.freddy33.qsm.space.SpaceTime
-import org.freddy33.math.Coord4d
-import org.freddy33.math.Vector4d
+
+import java.awt.Graphics2D
+import java.awt.Rectangle
 
 // G.var provides Global container for script vars
 class G {
@@ -54,7 +55,7 @@ for (int i = 1; i <= 3; i++) {
     for (int j = -1; j <= 1; j++) {
         for (int k = -1; k <= 1; k++) {
             SpaceTime.addPhoton(calculator.spaceTime.spaces[0],
-                    new Coord4d((float)(i * nextX), ratio*j, ratio*k),
+                    new Coord4d((float) (i * nextX), ratio * j, ratio * k),
                     new Vector4d(-1d, 0d, 0d),
                     new Vector4d(0d, 0d, 1d),
                     ratio
@@ -65,6 +66,7 @@ for (int i = 1; i <= 3; i++) {
 
 Coord3d[] calcPoints(Calculator calc) {
     List<Coord4d> points = calc.spaceTime.currentPoints()
+    points.addAll(calc.fixedPoints)
     points.collect { new Coord3d(it.x, it.y, it.y) }.toArray(new Coord3d[0])
 }
 
