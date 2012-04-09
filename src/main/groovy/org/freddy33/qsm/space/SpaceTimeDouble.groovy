@@ -10,16 +10,16 @@ import org.freddy33.math.Vector4d
  * Time: 11:51 PM
  * @author Fred Simon
  */
-public class SpaceTime {
+public class SpaceTimeDouble {
     static int N = 4
 
     int initialRatio
     int currentTime = 0
     List<Coord4d> fixedPoints
-    List<Event> deadEvents = []
-    List<Event> activeEvents = []
+    List<EventDouble> deadEvents = []
+    List<EventDouble> activeEvents = []
 
-    SpaceTime(int ratio) {
+    SpaceTimeDouble(int ratio) {
         initialRatio = ratio
         init()
     }
@@ -56,7 +56,7 @@ public class SpaceTime {
     }
 
     def addEvent(Coord4d point, Vector4d direction) {
-        def res = new Event(point, direction)
+        def res = new EventDouble(point, direction)
         activeEvents.add(res)
         return res
     }
@@ -69,21 +69,21 @@ public class SpaceTime {
         if (currentTime % initialRatio == 0) println "Current time: ${currentTime}"
         print "."
         currentTime++
-        List<Event> newActiveEvents = []
+        List<EventDouble> newActiveEvents = []
         // For all active events find all the events closer than timePassed=(currentTime-evt.t)
         // And from the collection create events blocks of 4
-        activeEvents.each { Event event ->
+        activeEvents.each { EventDouble event ->
             double timePassed = currentTime - event.point.t
             if (!event.used && timePassed > MathUtils.EPSILON) {
                 double timePassedSquared = timePassed ** 2d
-                List<Event> events = activeEvents.findAll {
+                List<EventDouble> events = activeEvents.findAll {
                     !it.used && it.point.magSquared(event.point) <= timePassedSquared
                 }
                 // current event part of it
-                forAllN(events, 0, []) { List<Event> block ->
+                forAllN(events, 0, []) { List<EventDouble> block ->
                     // For all N blocks try to find new events
-                    Set<List<Event>> subsequences = block.subsequences()
-                    Set<List<Event>> allPairs = subsequences.findAll { it.size() == 2 }
+                    Set<List<EventDouble>> subsequences = block.subsequences()
+                    Set<List<EventDouble>> allPairs = subsequences.findAll { it.size() == 2 }
                     // If any 2 points of the blocks could not have dt time to join => toFar
                     boolean toFar = allPairs.any { it[0].point.magSquared(it[1].point) > timePassedSquared }
                     // Global dir of the block is the sum of directions vectors
@@ -91,13 +91,13 @@ public class SpaceTime {
                     block.each { blockDirection.addSelf(it.direction) }
                     if (!toFar && !MathUtils.eq(blockDirection.magSquared(), 0d)) {
                         blockDirection = blockDirection.normalized();
-                        Set<List<Event>> allTriangles = subsequences.findAll { it.size() == 3 }
-                        List<Event> newEvents = []
+                        Set<List<EventDouble>> allTriangles = subsequences.findAll { it.size() == 3 }
+                        List<EventDouble> newEvents = []
                         allTriangles.each {
                             // For each triangle find the equidistant ( = dt ) points
                             def tr = new Triangle(it[0].point, it[1].point, it[2].point)
                             Coord4d newPoint = tr.findEvent(blockDirection)
-                            if (newPoint != null) newEvents.add(new Event(newPoint, tr.finalDir(blockDirection)))
+                            if (newPoint != null) newEvents.add(new EventDouble(newPoint, tr.finalDir(blockDirection)))
                         }
                         if (newEvents.size() == block.size()) {
                             // Conservation of events good
@@ -110,15 +110,15 @@ public class SpaceTime {
         }
 
         // Clean all used events
-        List<Event> used = activeEvents.findAll { it.used }
+        List<EventDouble> used = activeEvents.findAll { it.used }
         activeEvents.removeAll(used)
         deadEvents.addAll(used)
         activeEvents.addAll(newActiveEvents)
         true
     }
 
-    static def forAllN(List<Event> evtList, int idx, List<Event> block, Closure doStuff) {
-        evtList.each { Event evt ->
+    static def forAllN(List<EventDouble> evtList, int idx, List<EventDouble> block, Closure doStuff) {
+        evtList.each { EventDouble evt ->
             if (!evt.used && !block.contains(evt)) {
                 block[idx] = evt
                 idx++

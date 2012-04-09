@@ -9,7 +9,7 @@ class Vector3i {
         z = pz
     }
 
-    public Vector3i(Coord4i p1, Coord4i p2) {
+    public Vector3i(Point4i p1, Point4i p2) {
         if (p1.t != p2.t) throw new IllegalArgumentException("Cannot vector in 4D")
         x = p2.x - p1.x;
         y = p2.y - p1.y;

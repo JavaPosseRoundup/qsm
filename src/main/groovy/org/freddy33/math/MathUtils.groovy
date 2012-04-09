@@ -30,4 +30,16 @@ class MathUtils {
     static boolean eq(Vector4d a, Vector4d b) {
         eq(a.x, b.x) && eq(a.y, b.y) && eq(a.z, b.z)
     }
+
+    static BigInteger max(BigInteger... vals) {
+        BigInteger result = 0G
+        vals.each {
+            def bi = it
+            if (bi < 0G) {
+                bi = -bi
+            }
+            if (bi > result) result = bi
+        }
+        result
+    }
 }

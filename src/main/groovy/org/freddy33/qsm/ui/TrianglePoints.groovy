@@ -6,7 +6,7 @@ package org.freddy33.qsm.ui
 import org.freddy33.math.Coord4d
 import org.freddy33.math.MathUtils
 import org.freddy33.math.Vector4d
-import org.freddy33.qsm.space.SpaceTime
+import org.freddy33.qsm.space.SpaceTimeDouble
 import org.jzy3d.chart.Chart
 import org.jzy3d.colors.Color
 import org.jzy3d.maths.Coord3d
@@ -45,7 +45,7 @@ def rectangle = new Rectangle(600, 600)
 def tt = new TicToc()
 Scatter scatter = new Scatter()
 float ratio = 100f
-SpaceTime spaceTime = new SpaceTime((int) ratio)
+SpaceTimeDouble spaceTime = new SpaceTimeDouble((int) ratio)
 float bigDist = (float) ratio * MathUtils.sin120 * 2f
 int nextInt = 1 + (int) bigDist
 float nextX = (float) Math.sqrt((nextInt * nextInt) - (ratio * ratio))
@@ -63,7 +63,7 @@ for (int i = 1; i <= 3; i++) {
     }
 }
 
-Coord3d[] calcPoints(SpaceTime st) {
+Coord3d[] calcPoints(SpaceTimeDouble st) {
     List<Coord4d> points = st.currentPoints()
     points.addAll(st.fixedPoints)
     points.collect { new Coord3d(it.x, it.y, it.y) }.toArray(new Coord3d[0])

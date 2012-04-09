@@ -20,7 +20,7 @@ class SpaceTimeTest extends Specification {
     static double nextX = Math.sqrt((nextInt + 1) * (nextInt + 1) - (ratio * ratio))
 
     def "test calculator"() {
-        def st = new SpaceTime((int) ratio)
+        def st = new SpaceTimeDouble((int) ratio)
 
         expect:
         st.activeEvents.size() == 4

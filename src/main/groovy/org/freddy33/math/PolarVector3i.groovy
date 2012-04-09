@@ -16,13 +16,26 @@ class PolarVector3i {
         validate()
     }
 
+    static PolarVector3i middleMan(PolarVector3i... pv) {
+        BigInteger resultTeta = 0G;
+        BigInteger resultPhi = 0G;
+        pv.each { resultTeta += it.teta; resultPhi += it.phi; }
+        while (resultTeta > D180) {
+            resultTeta -= D180
+            resultPhi += D180
+        }
+        while (resultPhi > D180) resultPhi -= DIV
+        while (resultPhi < -D180) resultPhi += DIV
+        new PolarVector3i(DIV, resultTeta, resultPhi)
+    }
+
     private validate() {
         if (r < 0G) throw new IllegalArgumentException("Spherical coord r cannot be neg")
         if (teta < 0G || teta > D180) throw new IllegalArgumentException("Spherical coord teta between 0 and PI")
         if (phi < -D180 || phi > D180) throw new IllegalArgumentException("Spherical coord phi between -PI and PI")
     }
 
-    public PolarVector3i(Coord4i p1, Coord4i p2) {
+    public PolarVector3i(Point4i p1, Point4i p2) {
         this(new Vector3i(p1, p2))
     }
 
@@ -74,6 +87,32 @@ class PolarVector3i {
     PolarVector3i normalized() {
         // Normalized on DIV
         new PolarVector3i(DIV, teta, phi)
+    }
+
+    PolarVector3i cross(PolarVector3i v) {
+        // Valid only on normalized v
+        def me = normalizedToVectorDouble()
+        def other = v.normalizedToVectorDouble()
+        Vector4d result = me.cross(other)
+        def rd = result.d()
+        BigInteger resultPhi = CONVERTER * Math.atan2(result.y, result.x)
+        BigInteger resultTeta = CONVERTER * Math.acos(result.z / rd)
+        new PolarVector3i((BigInteger) DIV * rd, resultTeta, resultPhi)
+    }
+
+    public Vector4d normalizedToVectorDouble() {
+        if (!isNormalized()) throw new IllegalArgumentException("$this is not a normalized vector")
+        def myTetaD = teta / CONVERTER
+        def myPhiD = phi / CONVERTER
+        def mySinTeta = Math.sin(myTetaD)
+        double myX = Math.cos(myPhiD) * mySinTeta
+        double myY = Math.sin(myPhiD) * mySinTeta
+        double myZ = Math.cos(myTetaD)
+        new Vector4d(myX, myY, myZ)
+    }
+
+    public boolean isNormalized() {
+        r == DIV
     }
 
     @Override
