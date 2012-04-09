@@ -8,28 +8,27 @@ package org.freddy33.math
  * To change this template use File | Settings | File Templates.
  */
 class Triangle {
-    List<Coord4d> p
+    Coord4d p1, p2, p3
     Vector4d v12, v13, v23
     Vector4d v12v23cross
-    Float p12p13cross22
+    Double p12p13cross22
 
     Triangle(Coord4d p1, Coord4d p2, Coord4d p3) {
-        this.p = []
-        this.p << p1
-        this.p << p2
-        this.p << p3
+        this.p1 = p1
+        this.p2 = p2
+        this.p3 = p3
     }
 
     Vector4d v12() {
-        v12 != null ? v12 : (v12 = new Vector4d(p[0], p[1]))
+        v12 != null ? v12 : (v12 = new Vector4d(p1, p2))
     }
 
     Vector4d v13() {
-        v13 != null ? v13 : (v13 = new Vector4d(p[0], p[2]))
+        v13 != null ? v13 : (v13 = new Vector4d(p1, p3))
     }
 
     Vector4d v23() {
-        v23 != null ? v23 : (v23 = new Vector4d(p[1], p[2]))
+        v23 != null ? v23 : (v23 = new Vector4d(p2, p3))
     }
 
     Vector4d v12v23cross() {
@@ -54,25 +53,20 @@ class Triangle {
         return finalDir
     }
 
-    Coord4d findEvent(int dt, Vector4d origDirection) {
+    Coord4d findEvent(Vector4d origDirection) {
         if (isFlat()) {
             return null
         }
-        double dt2 = dt * dt
-        if (
-                (v12().magSquared() > dt2) ||
-                        (v13().magSquared() > dt2) ||
-                        (v23().magSquared() > dt2)
-        ) {
-            // too big triangle for dt
-            return null
-        }
+        double dt2 = Math.max(Math.max(v12().magSquared(), v13().magSquared()), v23().magSquared())
+        double dt = Math.sqrt(dt2)
         // OK, it's a non flat triangle and dt is big enough => find center
         Coord4d center = findCenter()
+        center.t += dt
         // Then find how much above plane on center need to add
         double radius2 = radius2()
         if (dt2 - radius2 < 1d) {
-            throw new IllegalStateException("Don't know how to do math!")
+            // Still too flat
+            return null
         } else {
             double abovePlane = Math.sqrt(dt2 - radius2)
             return center + (finalDir(origDirection) * abovePlane)
@@ -98,14 +92,15 @@ class Triangle {
         double beta = v13().magSquared() * (-v12() % v23()) / v12v23s2()
         double gama = v12().magSquared() * (-v13() % -v23()) / v12v23s2()
         new Coord4d(
-                alpha * p[0].x + beta * p[1].x + gama * p[2].x,
-                alpha * p[0].y + beta * p[1].y + gama * p[2].y,
-                alpha * p[0].z + beta * p[1].z + gama * p[2].z
+                alpha * p1.x + beta * p2.x + gama * p3.x,
+                alpha * p1.y + beta * p2.y + gama * p3.y,
+                alpha * p1.z + beta * p2.z + gama * p3.z,
+                (p1.t + p2.t + p3.t) / 3d
         )
     }
 
     @Override
     public String toString() {
-        "Triangle{ p=$p, v12=$v12, v13=$v13, v23=$v23 }"
+        "Triangle{ $p1, $p2, $p3, v12=$v12, v13=$v13, v23=$v23 }"
     }
 }

@@ -6,7 +6,6 @@ package org.freddy33.qsm.ui
 import org.freddy33.math.Coord4d
 import org.freddy33.math.MathUtils
 import org.freddy33.math.Vector4d
-import org.freddy33.qsm.space.Calculator
 import org.freddy33.qsm.space.SpaceTime
 import org.jzy3d.chart.Chart
 import org.jzy3d.colors.Color
@@ -46,7 +45,7 @@ def rectangle = new Rectangle(600, 600)
 def tt = new TicToc()
 Scatter scatter = new Scatter()
 float ratio = 100f
-Calculator calculator = new Calculator((int) ratio)
+SpaceTime spaceTime = new SpaceTime((int) ratio)
 float bigDist = (float) ratio * MathUtils.sin120 * 2f
 int nextInt = 1 + (int) bigDist
 float nextX = (float) Math.sqrt((nextInt * nextInt) - (ratio * ratio))
@@ -54,7 +53,7 @@ float nextX = (float) Math.sqrt((nextInt * nextInt) - (ratio * ratio))
 for (int i = 1; i <= 3; i++) {
     for (int j = -1; j <= 1; j++) {
         for (int k = -1; k <= 1; k++) {
-            SpaceTime.addPhoton(calculator.spaceTime.spaces[0],
+            spaceTime.addPhoton(
                     new Coord4d((float) (i * nextX), ratio * j, ratio * k),
                     new Vector4d(-1d, 0d, 0d),
                     new Vector4d(0d, 0d, 1d),
@@ -64,13 +63,13 @@ for (int i = 1; i <= 3; i++) {
     }
 }
 
-Coord3d[] calcPoints(Calculator calc) {
-    List<Coord4d> points = calc.spaceTime.currentPoints()
-    points.addAll(calc.fixedPoints)
+Coord3d[] calcPoints(SpaceTime st) {
+    List<Coord4d> points = st.currentPoints()
+    points.addAll(st.fixedPoints)
     points.collect { new Coord3d(it.x, it.y, it.y) }.toArray(new Coord3d[0])
 }
 
-scatter.setData(calcPoints(calculator))
+scatter.setData(calcPoints(spaceTime))
 def chart = buildChart(scatter)
 ChartLauncher.openChart(chart, rectangle, "Triangles", false)
 
@@ -80,10 +79,10 @@ Thread.start {
         next++
         sleep 25
         tt.tic()
-        scatter.setData(calcPoints(calculator))
+        scatter.setData(calcPoints(spaceTime))
         chart.render()
-        calculator.manyCalc(10)
+        spaceTime.manyCalc(10)
         tt.toc()
-        G.var.fpsText = String.format('%4d: %.4f FPS', calculator.spaceTime.currentTime, 1.0 / tt.elapsedSecond())
+        G.var.fpsText = String.format('%4d: %.4f FPS', spaceTime.currentTime, 1.0 / tt.elapsedSecond())
     }
 }

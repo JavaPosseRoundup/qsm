@@ -10,7 +10,7 @@ package org.freddy33.math
 class MathUtils {
     static float sin120 = (float) Math.sin(2 * Math.PI / 3)
     static float cos120 = -0.5f
-    public static final double EPSILON = 9e-6d
+    public static final double EPSILON = 1e-6d
 
     static boolean eq(double a, double b) {
         if (b == a) return true

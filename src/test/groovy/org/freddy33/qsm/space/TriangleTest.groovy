@@ -45,8 +45,7 @@ public class TriangleTest extends Specification {
         triangle.findCenter() == center
         triangle.finalDir(evt1.direction) == dir
         MathUtils.eq(triangle.radius2(), radius2)
-        triangle.findEvent(1, evt1.direction) == null
-        triangle.findEvent(2, evt1.direction) == eventAt2
+        triangle.findEvent(evt1.direction) == eventAt2
 
         where:
         triangle << [
