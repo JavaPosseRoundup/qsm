@@ -1,6 +1,9 @@
 package org.freddy33.qsm.space
 
-import org.freddy33.math.*
+import org.freddy33.math.MathUtils
+import org.freddy33.math.Point4i
+import org.freddy33.math.PolarVector3i
+import org.freddy33.math.Vector3i
 
 /**
  * Date: 12/6/11
@@ -89,8 +92,8 @@ public class SpaceTimeInt {
                         allTriangles.each {
                             // For each triangle find the equidistant ( = dt ) points
                             def tr = new EventTriangleInt(it[0], it[1], it[2])
-                            Coord4d newPoint = tr.findEvent()
-                            if (newPoint != null) newEvents.add(new EventDouble(newPoint, tr.finalDir(blockDirection)))
+                            Point4i newPoint = tr.findEvent()
+                            if (newPoint != null) newEvents.add(new EventInt(newPoint, tr.finalDir()))
                         }
                         if (newEvents.size() == block.size()) {
                             // Conservation of events good
@@ -103,7 +106,7 @@ public class SpaceTimeInt {
         }
 
         // Clean all used events
-        List<EventDouble> used = activeEvents.findAll { it.used }
+        List<EventInt> used = activeEvents.findAll { it.used }
         activeEvents.removeAll(used)
         deadEvents.addAll(used)
         activeEvents.addAll(newActiveEvents)

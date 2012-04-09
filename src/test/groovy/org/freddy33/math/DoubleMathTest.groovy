@@ -2,7 +2,7 @@ package org.freddy33.math
 
 import spock.lang.Specification
 
-class MathTest extends Specification {
+class DoubleMathTest extends Specification {
     def "test Coord4d"() {
         expect:
         mult3 == coord * 3

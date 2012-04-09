@@ -19,7 +19,7 @@ class Point4i {
     }
 
     public Point4i plus(Vector3i v) {
-        return new Point4i(x + v.x, y + v.y, z + v.z, t + v.t)
+        return new Point4i(x + v.x, y + v.y, z + v.z, t)
     }
 
     public Point4i plus(PolarVector3i p) {

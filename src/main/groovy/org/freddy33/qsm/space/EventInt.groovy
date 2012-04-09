@@ -28,6 +28,7 @@ class EventTriangleInt {
     final EventInt e1, e2, e3
     final PolarVector3i blockDir
     Vector3i v12, v13, v23, v12v23cross
+    PolarVector3i finalDir
     BigInteger p12p13cross22
 
     EventTriangleInt(EventInt e1, EventInt e2, EventInt e3) {
@@ -86,15 +87,17 @@ class EventTriangleInt {
     }
 
     PolarVector3i finalDir() {
+        if (finalDir != null) { return finalDir; }
         if (isFlat()) {
             // Flat triangle
             throw new IllegalArgumentException("""Triangle $this is flat since $p12p13cross22 is too small!
                                                   Cannot find final direction of a flat triangle!""")
         }
         // Final direction (perpendicular to triangle plane) is cross vector
-        PolarVector3i finalDir = new PolarVector3i(v12v23cross()).normalized()
+        finalDir = new PolarVector3i(v12v23cross()).normalized()
+        // TODO: Easier to check more than 180 on spherical coord
         if ((finalDir % blockDir) < 0G) {
-            return -finalDir
+            finalDir = -finalDir
         }
         return finalDir
     }

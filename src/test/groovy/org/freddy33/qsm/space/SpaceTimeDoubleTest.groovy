@@ -13,11 +13,11 @@ import static org.freddy33.math.MathUtils.getSin120
  * Time: 2:15 PM
  * To change this template use File | Settings | File Templates.
  */
-class SpaceTimeTest extends Specification {
+class SpaceTimeDoubleTest extends Specification {
     static def ratio = 1000d
     static double bigDist = ratio * sin120 * 2d
     static int nextInt = (int) bigDist
-    static double nextX = Math.sqrt((nextInt + 1) * (nextInt + 1) - (ratio * ratio))
+    static double nextX = Math.sqrt((bigDist * bigDist) - (ratio * ratio))
 
     def "test calculator"() {
         def st = new SpaceTimeDouble((int) ratio)

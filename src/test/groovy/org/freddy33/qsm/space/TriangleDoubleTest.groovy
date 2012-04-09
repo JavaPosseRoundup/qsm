@@ -10,7 +10,7 @@ import spock.lang.Specification
 import static org.freddy33.math.MathUtils.getCos120
 import static org.freddy33.math.MathUtils.getSin120
 
-public class TriangleTest extends Specification {
+public class TriangleDoubleTest extends Specification {
     static def s22 = Math.sqrt(2d) / 2d
     static def evt1 = new EventDouble(0d, 0d, 0d, 3, new Vector4d(3d, 0d, 0d))
     static def evt2 = new EventDouble(0d, 0d, 1d, 3, new Vector4d(3d, 3d, 0d))
@@ -18,8 +18,7 @@ public class TriangleTest extends Specification {
     static def evt4 = new EventDouble(0d, -sin120, cos120, 3, evt1.direction)
     static def ratio = 1000d
     static double bigDist = ratio * sin120 * 2d
-    static int nextInt = (int) bigDist
-    static double nextX = Math.sqrt((nextInt + 1) * (nextInt + 1) - (ratio * ratio))
+    static double nextX = Math.sqrt((bigDist * bigDist) - (ratio * ratio))
 
     def "test Event"() {
         expect:
@@ -65,8 +64,8 @@ public class TriangleTest extends Specification {
                 new Coord4d(0d, 0d, -1d)
         ]
         eventAt2 << [
-                new Coord4d(Math.sqrt(3d), 0d, 0d),
-                new Coord4d(Math.sqrt(3d), 0d, -1d)
+                new Coord4d(Math.sqrt(2d), 0d, 0d),
+                new Coord4d(Math.sqrt(2d), 0d, -1d)
         ]
     }
 
@@ -77,8 +76,7 @@ public class TriangleTest extends Specification {
         triangle.findCenter() == center
         triangle.finalDir(evt1.direction) == dir
         MathUtils.eq(triangle.radius2(), radius2)
-        triangle.findEvent(nextInt, evt1.direction) == null
-        triangle.findEvent(nextInt + 1, evt1.direction) == eventAt2
+        triangle.findEvent(evt1.direction) == eventAt2
 
         where:
         triangle << [
