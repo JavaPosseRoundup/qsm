@@ -93,14 +93,14 @@ class PolarVector3i {
         // Valid only on normalized v
         def me = normalizedToVectorDouble()
         def other = v.normalizedToVectorDouble()
-        Vector4d result = me.cross(other)
+        Vector3d result = me.cross(other)
         def rd = result.d()
         BigInteger resultPhi = CONVERTER * Math.atan2(result.y, result.x)
         BigInteger resultTeta = CONVERTER * Math.acos(result.z / rd)
         new PolarVector3i((BigInteger) DIV * rd, resultTeta, resultPhi)
     }
 
-    public Vector4d normalizedToVectorDouble() {
+    public Vector3d normalizedToVectorDouble() {
         if (!isNormalized()) throw new IllegalArgumentException("$this is not a normalized vector")
         def myTetaD = teta / CONVERTER
         def myPhiD = phi / CONVERTER
@@ -108,7 +108,7 @@ class PolarVector3i {
         double myX = Math.cos(myPhiD) * mySinTeta
         double myY = Math.sin(myPhiD) * mySinTeta
         double myZ = Math.cos(myTetaD)
-        new Vector4d(myX, myY, myZ)
+        new Vector3d(myX, myY, myZ)
     }
 
     public boolean isNormalized() {

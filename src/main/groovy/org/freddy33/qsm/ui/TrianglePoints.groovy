@@ -5,7 +5,6 @@ package org.freddy33.qsm.ui
 
 import org.freddy33.math.Coord4d
 import org.freddy33.math.MathUtils
-import org.freddy33.math.Vector4d
 import org.freddy33.qsm.space.SpaceTimeDouble
 import org.jzy3d.chart.Chart
 import org.jzy3d.colors.Color
@@ -50,23 +49,25 @@ float bigDist = (float) ratio * MathUtils.sin120 * 2f
 int nextInt = 1 + (int) bigDist
 float nextX = (float) Math.sqrt((nextInt * nextInt) - (ratio * ratio))
 
+/*
 for (int i = 1; i <= 3; i++) {
     for (int j = -1; j <= 1; j++) {
         for (int k = -1; k <= 1; k++) {
             spaceTime.addPhoton(
                     new Coord4d((float) (i * nextX), ratio * j, ratio * k),
-                    new Vector4d(-1d, 0d, 0d),
-                    new Vector4d(0d, 0d, 1d),
+                    new Vector3d(-1d, 0d, 0d),
+                    new Vector3d(0d, 0d, 1d),
                     ratio
             )
         }
     }
 }
+*/
 
 Coord3d[] calcPoints(SpaceTimeDouble st) {
     List<Coord4d> points = st.currentPoints()
     points.addAll(st.fixedPoints)
-    points.collect { new Coord3d(it.x, it.y, it.y) }.toArray(new Coord3d[0])
+    points.collect { new Coord3d(it.x, it.y, it.z) }.toArray(new Coord3d[0])
 }
 
 scatter.setData(calcPoints(spaceTime))

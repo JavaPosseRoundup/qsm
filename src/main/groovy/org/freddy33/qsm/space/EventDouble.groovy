@@ -1,7 +1,7 @@
 package org.freddy33.qsm.space
 
 import org.freddy33.math.Coord4d
-import org.freddy33.math.Vector4d
+import org.freddy33.math.Vector3d
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,17 +12,17 @@ import org.freddy33.math.Vector4d
  */
 class EventDouble {
     final Coord4d point
-    final Vector4d direction
+    final Vector3d direction
     final Sign sign
     boolean used = false
 
-    EventDouble(double x, double y, double z, double t, Vector4d dir) {
+    EventDouble(double x, double y, double z, double t, Vector3d dir) {
 //        this.point = new Coord4d((double)round(x),(double)round(y),(double)round(z))
         this.point = new Coord4d(x, y, z, t)
         this.direction = dir.normalized()
     }
 
-    EventDouble(Coord4d point, Vector4d dir) {
+    EventDouble(Coord4d point, Vector3d dir) {
         this(point.x, point.y, point.z, point.t, dir)
     }
 }

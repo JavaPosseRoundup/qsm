@@ -4,7 +4,7 @@ package org.freddy33.qsm.space;
 import org.freddy33.math.Coord4d
 import org.freddy33.math.MathUtils
 import org.freddy33.math.Triangle
-import org.freddy33.math.Vector4d
+import org.freddy33.math.Vector3d
 import spock.lang.Specification
 
 import static org.freddy33.math.MathUtils.getCos120
@@ -12,10 +12,10 @@ import static org.freddy33.math.MathUtils.getSin120
 
 public class TriangleDoubleTest extends Specification {
     static def s22 = Math.sqrt(2d) / 2d
-    static def evt1 = new EventDouble(0d, 0d, 0d, 3, new Vector4d(3d, 0d, 0d))
-    static def evt2 = new EventDouble(0d, 0d, 1d, 3, new Vector4d(3d, 3d, 0d))
-    static def evt3 = new EventDouble(0d, sin120, cos120, 3, evt1.direction)
-    static def evt4 = new EventDouble(0d, -sin120, cos120, 3, evt1.direction)
+    static def evt1 = new EventDouble(0d, 0d, 0d, 3d, new Vector3d(3d, 0d, 0d))
+    static def evt2 = new EventDouble(0d, 0d, 1d, 3d, new Vector3d(3d, 3d, 0d))
+    static def evt3 = new EventDouble(0d, sin120, cos120, 3d, evt1.direction)
+    static def evt4 = new EventDouble(0d, -sin120, cos120, 3d, evt1.direction)
     static def ratio = 1000d
     static double bigDist = ratio * sin120 * 2d
     static double nextX = Math.sqrt((bigDist * bigDist) - (ratio * ratio))
@@ -26,15 +26,15 @@ public class TriangleDoubleTest extends Specification {
 
         where:
         event << [
-                new EventDouble(0d, 0d, 0d, 3, new Vector4d(3d, 0d, 0d)),
-                new EventDouble(0d, 0d, 1d, 3, new Vector4d(3d, 3d, 0d)),
-                new EventDouble(0d, sin120, cos120, 3, new Vector4d(3d, 0d, 0d)),
+                new EventDouble(0d, 0d, 0d, 3d, new Vector3d(3d, 0d, 0d)),
+                new EventDouble(0d, 0d, 1d, 3d, new Vector3d(3d, 3d, 0d)),
+                new EventDouble(0d, sin120, cos120, 3d, new Vector3d(3d, 0d, 0d)),
 
         ]
         dir << [
-                new Vector4d(1d, 0d, 0d),
-                new Vector4d(s22, s22, 0d),
-                new Vector4d(1d, 0d, 0d)
+                new Vector3d(1d, 0d, 0d),
+                new Vector3d(s22, s22, 0d),
+                new Vector3d(1d, 0d, 0d)
         ]
     }
 
@@ -52,20 +52,20 @@ public class TriangleDoubleTest extends Specification {
                 new Triangle(evt1.point, evt3.point, evt4.point)
         ]
         dir << [
-                new Vector4d(1d, 0d, 0d),
-                new Vector4d(1d, 0d, 0d)
+                new Vector3d(1d, 0d, 0d),
+                new Vector3d(1d, 0d, 0d)
         ]
         radius2 << [
                 1d,
                 1d
         ]
         center << [
-                new Coord4d(0d, 0d, 0d),
-                new Coord4d(0d, 0d, -1d)
+                new Coord4d(0d, 0d, 0d, 3d),
+                new Coord4d(0d, 0d, -1d, 3d)
         ]
         eventAt2 << [
-                new Coord4d(Math.sqrt(2d), 0d, 0d),
-                new Coord4d(Math.sqrt(2d), 0d, -1d)
+                new Coord4d(Math.sqrt(2d), 0d, 0d, 4d),
+                new Coord4d(Math.sqrt(2d), 0d, -1d, 4d)
         ]
     }
 
@@ -84,20 +84,20 @@ public class TriangleDoubleTest extends Specification {
                 new Triangle(evt1.point * ratio, evt3.point * ratio, evt4.point * ratio)
         ]
         dir << [
-                new Vector4d(1d, 0d, 0d),
-                new Vector4d(1d, 0d, 0d)
+                new Vector3d(1d, 0d, 0d),
+                new Vector3d(1d, 0d, 0d)
         ]
         radius2 << [
                 ratio * ratio,
                 ratio * ratio
         ]
         center << [
-                new Coord4d(0d, 0d, 0d),
-                new Coord4d(0d, 0d, -ratio)
+                new Coord4d(0d, 0d, 0d, 3d),
+                new Coord4d(0d, 0d, -ratio, 3d)
         ]
         eventAt2 << [
-                new Coord4d(nextX, 0d, 0d),
-                new Coord4d(nextX, 0d, -ratio)
+                new Coord4d(nextX, 0d, 0d, 3d + bigDist),
+                new Coord4d(nextX, 0d, -ratio, 3d + bigDist)
         ]
     }
 }
