@@ -45,7 +45,7 @@ public class SpaceTimeInt {
         }
         addEvent(c, v)
         addEvent(c + (p * size), v)
-        Vector3i cos120 = (p * (size << 1)).toCartesian()
+        Vector3i cos120 = (p * (BigInteger) (size * MathUtils.cos120)).toCartesian()
         Vector3i sin120 = (py * (BigInteger) (size * MathUtils.sin120)).toCartesian()
         addEvent(c + cos120 + sin120, v)
         addEvent(c + cos120 - sin120, v)

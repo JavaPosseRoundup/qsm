@@ -8,9 +8,9 @@ package org.freddy33.math
  * To change this template use File | Settings | File Templates.
  */
 class MathUtils {
-    static float sin120 = (float) Math.sin(2 * Math.PI / 3)
-    static float cos120 = -0.5f
-    public static final double EPSILON = 1e-5d
+    static double sin120 = Math.sin(2d * Math.PI / 3d)
+    static double cos120 = -0.5d
+    public static final double EPSILON = 1e-6d
 
     static boolean eq(double a, double b) {
         if (b == a) return true

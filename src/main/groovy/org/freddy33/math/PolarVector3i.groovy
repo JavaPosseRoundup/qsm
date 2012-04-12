@@ -81,7 +81,13 @@ class PolarVector3i {
     }
 
     PolarVector3i multiply(BigInteger d) {
-        new PolarVector3i(r * d, teta, phi)
+        if (d < 0G) {
+            negative().multiply(-d)
+        } else if (d == 0G) {
+            new PolarVector3i(0G, 0G, 0G)
+        } else {
+            new PolarVector3i(r * d, teta, phi)
+        }
     }
 
     PolarVector3i normalized() {
