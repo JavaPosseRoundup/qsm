@@ -12,8 +12,9 @@ import org.freddy33.math.Vector3i
  */
 public class SpaceTimeInt {
     static int N = 4
+    public static final BigInteger fixPointRatio = 12G
 
-    BigInteger initialRatio = PolarVector3i.DIV
+    BigInteger initialRatio = 1G
     BigInteger currentTime = 0G
     List<Point4i> fixedPoints
     List<EventInt> deadEvents = []
@@ -26,8 +27,8 @@ public class SpaceTimeInt {
 
     def init() {
         fixedPoints = [
-                new Point4i(-50G, -50G, -50G, 0G) * initialRatio,
-                new Point4i(50G, 50G, 50G, 0G) * initialRatio
+                new Point4i(-fixPointRatio, -fixPointRatio, -fixPointRatio, 0G) * PolarVector3i.DIV * initialRatio,
+                new Point4i(fixPointRatio, fixPointRatio, fixPointRatio, 0G) * PolarVector3i.DIV * initialRatio
         ]
         addPhoton(new Point4i(0G, 0G, 0G, 0G),
                 new PolarVector3i(PolarVector3i.DIV, PolarVector3i.D90, 0G),

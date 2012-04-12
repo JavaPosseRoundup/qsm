@@ -19,7 +19,7 @@ Plugs.frame(frame.createChart(), new Rectangle(0, 200, 400, 400), "Space Playgro
 class InteractiveSpaceFrame {
     Chart chart
     InteractiveScatter scatter
-    SpaceTimeInt st = new SpaceTimeInt(10000)
+    SpaceTimeInt st = new SpaceTimeInt(10)
     Renderer2d messageRenderer
     ChartThreadController threadCamera
     ChartMouseController mouseCamera
@@ -51,10 +51,17 @@ class InteractiveSpaceFrame {
 
     def InteractiveScatter createScatter() {
         def fp = st.fixedPoints.collect { new Coord3d(it.x.toDouble(), it.y.toDouble(), it.z.toDouble()) }
-        def size = st.fixedPoints.size()
+        fp.addAll(st.activeEvents.collect { new Coord3d(it.point.x.toDouble(), it.point.y.toDouble(), it.point.z.toDouble()) })
+        def size = fp.size()
         def colors = new Color[size]
-        for (int i = 0; i < size; i++)
-            colors[i] = Color.BLACK
+        for (int i = 0; i < size; i++) {
+            if (i < 2)
+                colors[i] = Color.BLACK
+            else
+                colors[i] = Color.GREEN
+        }
         scatter = new InteractiveScatter(fp.toArray(new Coord3d[size]), colors)
+        scatter.setWidth(3f)
+        scatter
     }
 }
