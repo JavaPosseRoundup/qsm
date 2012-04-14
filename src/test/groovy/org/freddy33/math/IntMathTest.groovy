@@ -2,79 +2,115 @@ package org.freddy33.math
 
 import spock.lang.Specification
 
+import static org.freddy33.math.PolarVector3i.DIV
+
 class IntMathTest extends Specification {
     def "test Point4i"() {
         expect:
         mult3 == coord * 3
-        plusX == coord + new Vector3i(2G * PolarVector3i.DIV, 0G, 0G)
-        plusY == coord + new Vector3i(0G, 2G * PolarVector3i.DIV, 0G)
-        plusZ == coord + new Vector3i(0G, 0G, 2G * PolarVector3i.DIV)
+        plusX == coord + new Vector3i(2G * DIV, 0G, 0G)
+        plusY == coord + new Vector3i(0G, 2G * DIV, 0G)
+        plusZ == coord + new Vector3i(0G, 0G, 2G * DIV)
 
         where:
         coord << [
                 new Point4i(0G, 0G, 0G),
-                new Point4i(0G, 0G, 0G, PolarVector3i.DIV),
-                new Point4i(PolarVector3i.DIV, PolarVector3i.DIV, PolarVector3i.DIV),
-                new Point4i(-PolarVector3i.DIV, -PolarVector3i.DIV, -PolarVector3i.DIV, PolarVector3i.DIV)
+                new Point4i(0G, 0G, 0G, DIV),
+                new Point4i(DIV, DIV, DIV),
+                new Point4i(-DIV, -DIV, -DIV, DIV)
         ]
         mult3 << [
                 new Point4i(0G, 0G, 0G),
-                new Point4i(0G, 0G, 0G, PolarVector3i.DIV),
-                new Point4i(3G * PolarVector3i.DIV, 3G * PolarVector3i.DIV, 3G * PolarVector3i.DIV),
-                new Point4i(-3G * PolarVector3i.DIV, -3G * PolarVector3i.DIV, -3G * PolarVector3i.DIV, PolarVector3i.DIV)
+                new Point4i(0G, 0G, 0G, DIV),
+                new Point4i(3G * DIV, 3G * DIV, 3G * DIV),
+                new Point4i(-3G * DIV, -3G * DIV, -3G * DIV, DIV)
         ]
         plusX << [
-                new Point4i(2G * PolarVector3i.DIV, 0G, 0G),
-                new Point4i(2G * PolarVector3i.DIV, 0G, 0G, PolarVector3i.DIV),
-                new Point4i(3G * PolarVector3i.DIV, PolarVector3i.DIV, PolarVector3i.DIV),
-                new Point4i(PolarVector3i.DIV, -PolarVector3i.DIV, -PolarVector3i.DIV, PolarVector3i.DIV)
+                new Point4i(2G * DIV, 0G, 0G),
+                new Point4i(2G * DIV, 0G, 0G, DIV),
+                new Point4i(3G * DIV, DIV, DIV),
+                new Point4i(DIV, -DIV, -DIV, DIV)
         ]
         plusY << [
-                new Point4i(0G, 2G * PolarVector3i.DIV, 0G),
-                new Point4i(0G, 2G * PolarVector3i.DIV, 0G, PolarVector3i.DIV),
-                new Point4i(PolarVector3i.DIV, 3G * PolarVector3i.DIV, PolarVector3i.DIV),
-                new Point4i(-PolarVector3i.DIV, PolarVector3i.DIV, -PolarVector3i.DIV, PolarVector3i.DIV)
+                new Point4i(0G, 2G * DIV, 0G),
+                new Point4i(0G, 2G * DIV, 0G, DIV),
+                new Point4i(DIV, 3G * DIV, DIV),
+                new Point4i(-DIV, DIV, -DIV, DIV)
         ]
         plusZ << [
-                new Point4i(0G, 0G, 2G * PolarVector3i.DIV),
-                new Point4i(0G, 0G, 2G * PolarVector3i.DIV, PolarVector3i.DIV),
-                new Point4i(PolarVector3i.DIV, PolarVector3i.DIV, 3G * PolarVector3i.DIV),
-                new Point4i(-PolarVector3i.DIV, -PolarVector3i.DIV, PolarVector3i.DIV, PolarVector3i.DIV)
+                new Point4i(0G, 0G, 2G * DIV),
+                new Point4i(0G, 0G, 2G * DIV, DIV),
+                new Point4i(DIV, DIV, 3G * DIV),
+                new Point4i(-DIV, -DIV, DIV, DIV)
         ]
     }
 
     def "test Vector3i"() {
         expect:
-        mult3 == vect * 3
-        plusX == vect + new Vector3i(2G * PolarVector3i.DIV, 0G, 0G)
-        plusY == vect + new Vector3i(0G, 2G * PolarVector3i.DIV, 0G)
-        plusZ == vect + new Vector3i(0G, 0G, 2G * PolarVector3i.DIV)
+        mult3 == vect * 3G
+        plusX == vect + new Vector3i(2G * DIV, 0G, 0G)
+        plusY == vect + new Vector3i(0G, 2G * DIV, 0G)
+        plusZ == vect + new Vector3i(0G, 0G, 2G * DIV)
 
         where:
         vect << [
                 new Vector3i(0G, 0G, 0G),
-                new Vector3i(PolarVector3i.DIV, PolarVector3i.DIV, PolarVector3i.DIV),
-                new Vector3i(-PolarVector3i.DIV, -PolarVector3i.DIV, -PolarVector3i.DIV)
+                new Vector3i(DIV, DIV, DIV),
+                new Vector3i(-DIV, -DIV, -DIV)
         ]
         mult3 << [
                 new Vector3i(0G, 0G, 0G),
-                new Vector3i(3G * PolarVector3i.DIV, 3G * PolarVector3i.DIV, 3G * PolarVector3i.DIV),
-                new Vector3i(-3G * PolarVector3i.DIV, -3G * PolarVector3i.DIV, -3G * PolarVector3i.DIV)
+                new Vector3i(3G * DIV, 3G * DIV, 3G * DIV),
+                new Vector3i(-3G * DIV, -3G * DIV, -3G * DIV)
         ]
         plusX << [
-                new Vector3i(2G * PolarVector3i.DIV, 0G, 0G),
-                new Vector3i(3G * PolarVector3i.DIV, PolarVector3i.DIV, PolarVector3i.DIV),
-                new Vector3i(PolarVector3i.DIV, -PolarVector3i.DIV, -PolarVector3i.DIV)
+                new Vector3i(2G * DIV, 0G, 0G),
+                new Vector3i(3G * DIV, DIV, DIV),
+                new Vector3i(DIV, -DIV, -DIV)
         ]
         plusY << [
-                new Vector3i(0G, 2G * PolarVector3i.DIV, 0G),
-                new Vector3i(PolarVector3i.DIV, 3G * PolarVector3i.DIV, PolarVector3i.DIV),
-                new Vector3i(-PolarVector3i.DIV, PolarVector3i.DIV, -PolarVector3i.DIV)
+                new Vector3i(0G, 2G * DIV, 0G),
+                new Vector3i(DIV, 3G * DIV, DIV),
+                new Vector3i(-DIV, DIV, -DIV)
         ]
         plusZ << [
-                new Vector3i(0G, 0G, 2G * PolarVector3i.DIV),
-                new Vector3i(PolarVector3i.DIV, PolarVector3i.DIV, 3G * PolarVector3i.DIV),
-                new Vector3i(-PolarVector3i.DIV, -PolarVector3i.DIV, PolarVector3i.DIV)
+                new Vector3i(0G, 0G, 2G * DIV),
+                new Vector3i(DIV, DIV, 3G * DIV),
+                new Vector3i(-DIV, -DIV, DIV)
+        ]
+    }
+
+    def "test PolarVector3i"() {
+        expect:
+        mult3 == (vect * (3G * DIV)).toCartesian()
+        multMinus3 == (vect * (-3G * DIV)).toCartesian()
+        mult3 * 5G == (vect * (15G * DIV)).toCartesian()
+        multMinus3 * 5G == (vect * (-15G * DIV)).toCartesian()
+
+        where:
+        vect << [
+                new PolarVector3i(0G, 0G, 0G),
+                new PolarVector3i(DIV, PolarVector3i.D90, 0G),
+                new PolarVector3i(DIV, PolarVector3i.D90, PolarVector3i.D90),
+                new PolarVector3i(DIV, 0G, 0G),
+                new PolarVector3i(DIV, PolarVector3i.D120, 0G),
+                new PolarVector3i(DIV, PolarVector3i.D90, PolarVector3i.D120)
+        ]
+        mult3 << [
+                new Vector3i(0G, 0G, 0G),
+                new Vector3i(3G * DIV, 0G, 0G),
+                new Vector3i(0G, 3G * DIV, 0G),
+                new Vector3i(0G, 0G, 3G * DIV),
+                new Vector3i(3G * PolarVector3i.sin(PolarVector3i.D120), 0G, 3G * PolarVector3i.cos(PolarVector3i.D120)),
+                new Vector3i(3G * PolarVector3i.cos(PolarVector3i.D120), 3G * PolarVector3i.sin(PolarVector3i.D120), 0G)
+        ]
+        multMinus3 << [
+                new Vector3i(0G, 0G, 0G),
+                new Vector3i(-3G * DIV, 0G, 0G),
+                new Vector3i(0G, -3G * DIV, 0G),
+                new Vector3i(0G, 0G, -3G * DIV),
+                new Vector3i(-3G * PolarVector3i.sin(PolarVector3i.D120), 0G, -3G * PolarVector3i.cos(PolarVector3i.D120)),
+                new Vector3i(-3G * PolarVector3i.cos(PolarVector3i.D120), -3G * PolarVector3i.sin(PolarVector3i.D120), 0G)
         ]
     }
 }

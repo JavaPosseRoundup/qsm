@@ -5,6 +5,8 @@ import org.freddy33.math.Point4i
 import org.freddy33.math.PolarVector3i
 import org.freddy33.math.Vector3i
 
+import static org.freddy33.math.PolarVector3i.DIV
+
 /**
  * Date: 12/6/11
  * Time: 11:51 PM
@@ -20,20 +22,20 @@ public class SpaceTimeInt {
     List<EventInt> deadEvents = []
     List<EventInt> activeEvents = []
 
-    SpaceTimeInt(int ratio) {
+    SpaceTimeInt(BigInteger ratio) {
         initialRatio = ratio
         init()
     }
 
     def init() {
         fixedPoints = [
-                new Point4i(-fixPointRatio, -fixPointRatio, -fixPointRatio, 0G) * PolarVector3i.DIV * initialRatio,
-                new Point4i(fixPointRatio, fixPointRatio, fixPointRatio, 0G) * PolarVector3i.DIV * initialRatio
+                new Point4i(-fixPointRatio, -fixPointRatio, -fixPointRatio, 0G) * DIV * initialRatio,
+                new Point4i(fixPointRatio, fixPointRatio, fixPointRatio, 0G) * DIV * initialRatio
         ]
         addPhoton(new Point4i(0G, 0G, 0G, 0G),
-                new PolarVector3i(PolarVector3i.DIV, PolarVector3i.D90, 0G),
-                new PolarVector3i(PolarVector3i.DIV, 0G, 0G),
-                initialRatio)
+                new PolarVector3i(DIV, PolarVector3i.D90, 0G),
+                new PolarVector3i(DIV, 0G, 0G),
+                initialRatio * DIV)
     }
 
     def addPhoton(Point4i c, PolarVector3i v, PolarVector3i p, BigInteger size) {
@@ -52,10 +54,6 @@ public class SpaceTimeInt {
         addEvent(c + cos120 - sin120, v)
     }
 
-    List<Point4i> currentPoints() {
-        return activeEvents.findAll { !it.used }.collect { it.point }
-    }
-
     def addEvent(Point4i point, PolarVector3i direction) {
         def res = new EventInt(point, direction)
         activeEvents.add(res)
@@ -67,9 +65,40 @@ public class SpaceTimeInt {
     }
 
     def calc() {
-        if (currentTime % initialRatio == 0) println "Current time: ${currentTime}"
-        print "."
-        currentTime++
+        if (currentTime % DIV == 0) {
+            print "."
+        }
+        if (currentTime % (initialRatio * DIV) == 0) {
+            println ""
+            println "Current time: ${currentTime} Active Events: ${activeEvents.size()} Dead Events: ${deadEvents.size()}"
+        }
+        currentTime += (BigInteger) DIV / 10G
+        if (activeEvents.size() < N) {
+            println "Your universe is dull :)"
+            return
+        }
+        BigInteger smallestActiveTime = activeEvents[0].point.t
+        BigInteger smallestDistance = activeEvents[0].point.magSquared(activeEvents[1].point)
+        activeEvents.eachWithIndex { EventInt one, i ->
+            if (one.point.t < smallestActiveTime) smallestActiveTime = one.point.t
+            if (i < activeEvents.size() - 1) {
+                for (j in (i + 1)..(activeEvents.size() - 1)) {
+                    BigInteger d = one.point.magSquared(activeEvents[j].point)
+                    if (d < smallestDistance) smallestDistance = d
+                }
+            }
+        }
+        if (currentTime < smallestActiveTime) {
+            println "Jumping to ${smallestActiveTime} since nothing going on until"
+            currentTime = smallestActiveTime
+        }
+        def maxDistance = currentTime - smallestActiveTime
+        def maxDistance2 = maxDistance * maxDistance - smallestDistance
+        if (maxDistance2 < 0G) {
+            def toAdd = (BigInteger) Math.sqrt((double) -maxDistance2)
+            println "Not enough time to communicate! Jumping to ${currentTime + toAdd} since nothing going on until"
+            currentTime += toAdd
+        }
         List<EventInt> newActiveEvents = []
         // For all active events find all the events closer than timePassed=(currentTime-evt.t)
         // And from the collection create events blocks of 4
@@ -81,26 +110,11 @@ public class SpaceTimeInt {
                     !it.used && it.point.t == event.point.t && it.point.magSquared(event.point) <= timePassedSquared
                 }
                 // current event part of it
-                forAllN(events, 0, []) { List<EventInt> block ->
+                forAllN(events, 0, []) { List<EventInt> evts ->
                     // For all N blocks try to find new events
-                    Set<List<EventInt>> subsequences = block.subsequences()
-                    Set<List<EventInt>> allPairs = subsequences.findAll { it.size() == 2 }
-                    // If any 2 points of the blocks could not have dt time to join => toFar
-                    boolean toFar = allPairs.any { it[0].point.magSquared(it[1].point) > timePassedSquared }
-                    if (!toFar) {
-                        Set<List<EventInt>> allTriangles = subsequences.findAll { it.size() == 3 }
-                        List<EventInt> newEvents = []
-                        allTriangles.each {
-                            // For each triangle find the equidistant ( = dt ) points
-                            def tr = new EventTriangleInt(it[0], it[1], it[2])
-                            Point4i newPoint = tr.findEvent()
-                            if (newPoint != null) newEvents.add(new EventInt(newPoint, tr.finalDir()))
-                        }
-                        if (newEvents.size() == block.size()) {
-                            // Conservation of events good
-                            newActiveEvents.addAll(newEvents)
-                            block.each { it.used = true }
-                        }
+                    def block = new EventBlockInt(evts)
+                    if (block.maxMagSquared() <= timePassedSquared) {
+                        newActiveEvents.addAll(block.findNewEvents())
                     }
                 }
             }

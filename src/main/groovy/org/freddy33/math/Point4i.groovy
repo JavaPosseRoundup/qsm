@@ -35,7 +35,7 @@ class Point4i {
     }
 
     public BigInteger magSquared(Point4i c) {
-        new Vector3i(this, c).magSquared()
+        (x - c.x) ** 2G + (y - c.y) ** 2G + (z - c.z) ** 2G + (t - c.t) ** 2G
     }
 
     String toString() {
