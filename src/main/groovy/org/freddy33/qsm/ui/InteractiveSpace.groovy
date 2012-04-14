@@ -53,6 +53,9 @@ class InteractiveSpaceFrame {
                         message = "Step: ${st.currentTime} Events: ${st.activeEvents.size()}";
                         chart.render();
                         break;
+                    case 'p':
+                        st.printDetails()
+                        break;
                     default: break;
                 }
             }

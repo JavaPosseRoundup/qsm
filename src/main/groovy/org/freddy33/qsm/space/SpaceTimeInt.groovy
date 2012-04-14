@@ -1,11 +1,10 @@
 package org.freddy33.qsm.space
 
-import org.freddy33.math.MathUtils
 import org.freddy33.math.Point4i
-import org.freddy33.math.PolarVector3i
+import org.freddy33.math.SphericalVector3i
 import org.freddy33.math.Vector3i
 
-import static org.freddy33.math.PolarVector3i.DIV
+import static SphericalVector3i.DIV
 
 /**
  * Date: 12/6/11
@@ -33,28 +32,28 @@ public class SpaceTimeInt {
                 new Point4i(fixPointRatio, fixPointRatio, fixPointRatio, 0G) * DIV * initialRatio
         ]
         addPhoton(new Point4i(0G, 0G, 0G, 0G),
-                new PolarVector3i(DIV, PolarVector3i.D90, 0G),
-                new PolarVector3i(DIV, 0G, 0G),
+                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
+                new SphericalVector3i(DIV, 0G, 0G),
                 initialRatio * DIV)
     }
 
-    def addPhoton(Point4i c, PolarVector3i v, PolarVector3i p, BigInteger size) {
+    def addPhoton(Point4i c, SphericalVector3i v, SphericalVector3i p, BigInteger size) {
         p = p.normalized()
         v = v.normalized()
         // v and p needs to be perpendicular so cross should be normalized sin(teta)= 1
-        PolarVector3i py = v.cross(p)
+        SphericalVector3i py = v.cross(p)
         if (!py.isNormalized()) {
             throw new IllegalArgumentException("Polarization $v and vector $v are not perpendicular!");
         }
         addEvent(c, v)
         addEvent(c + (p * size), v)
-        Vector3i cos120 = (p * (BigInteger) (size * MathUtils.cos120)).toCartesian()
-        Vector3i sin120 = (py * (BigInteger) (size * MathUtils.sin120)).toCartesian()
+        Vector3i cos120 = (p * ((BigInteger) size * SphericalVector3i.cos(SphericalVector3i.D120) / DIV)).toCartesian()
+        Vector3i sin120 = (py * ((BigInteger) size * SphericalVector3i.sin(SphericalVector3i.D120) / DIV)).toCartesian()
         addEvent(c + cos120 + sin120, v)
         addEvent(c + cos120 - sin120, v)
     }
 
-    def addEvent(Point4i point, PolarVector3i direction) {
+    def addEvent(Point4i point, SphericalVector3i direction) {
         def res = new EventInt(point, direction)
         activeEvents.add(res)
         return res
@@ -64,13 +63,20 @@ public class SpaceTimeInt {
         for (int i = 0; i < n; i++) calc()
     }
 
+    def printDetails() {
+        println ""
+        println "Current time: ${currentTime} Active Events: ${activeEvents.size()} Dead Events: ${deadEvents.size()}"
+        activeEvents.eachWithIndex {EventInt evt, i ->
+            println "$i: $evt"
+        }
+    }
+
     def calc() {
         if (currentTime % DIV == 0) {
             print "."
         }
         if (currentTime % (initialRatio * DIV) == 0) {
-            println ""
-            println "Current time: ${currentTime} Active Events: ${activeEvents.size()} Dead Events: ${deadEvents.size()}"
+            printDetails()
         }
         currentTime += (BigInteger) DIV / 10G
         if (activeEvents.size() < N) {

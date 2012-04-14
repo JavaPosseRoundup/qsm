@@ -2,13 +2,13 @@ package org.freddy33.math
 
 import spock.lang.Specification
 
-import static org.freddy33.math.PolarVector3i.DIV
+import static SphericalVector3i.DIV
 
 class IntMathTest extends Specification {
     def "basic Trig"() {
         expect:
-        PolarVector3i.trigMap[PolarVector3i.D30] == PolarVector3i.D180
-        PolarVector3i.cos(PolarVector3i.D120) == -PolarVector3i.D180
+        SphericalVector3i.trigMap[SphericalVector3i.D30] == SphericalVector3i.D180
+        SphericalVector3i.cos(SphericalVector3i.D120) == -SphericalVector3i.D180
     }
 
     def "test Point4i"() {
@@ -95,28 +95,28 @@ class IntMathTest extends Specification {
 
         where:
         vect << [
-                new PolarVector3i(0G, 0G, 0G),
-                new PolarVector3i(DIV, PolarVector3i.D90, 0G),
-                new PolarVector3i(DIV, PolarVector3i.D90, PolarVector3i.D90),
-                new PolarVector3i(DIV, 0G, 0G),
-                new PolarVector3i(DIV, PolarVector3i.D120, 0G),
-                new PolarVector3i(DIV, PolarVector3i.D90, PolarVector3i.D120)
+                new SphericalVector3i(0G, 0G, 0G),
+                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
+                new SphericalVector3i(DIV, SphericalVector3i.D90, SphericalVector3i.D90),
+                new SphericalVector3i(DIV, 0G, 0G),
+                new SphericalVector3i(DIV, SphericalVector3i.D120, 0G),
+                new SphericalVector3i(DIV, SphericalVector3i.D90, SphericalVector3i.D120)
         ]
         mult3 << [
                 new Vector3i(0G, 0G, 0G),
                 new Vector3i(3G * DIV, 0G, 0G),
                 new Vector3i(0G, 3G * DIV, 0G),
                 new Vector3i(0G, 0G, 3G * DIV),
-                new Vector3i(3G * PolarVector3i.sin(PolarVector3i.D120), 0G, 3G * PolarVector3i.cos(PolarVector3i.D120)),
-                new Vector3i(3G * PolarVector3i.cos(PolarVector3i.D120), 3G * PolarVector3i.sin(PolarVector3i.D120), 0G)
+                new Vector3i(3G * SphericalVector3i.sin(SphericalVector3i.D120), 0G, 3G * SphericalVector3i.cos(SphericalVector3i.D120)),
+                new Vector3i(3G * SphericalVector3i.cos(SphericalVector3i.D120), 3G * SphericalVector3i.sin(SphericalVector3i.D120), 0G)
         ]
         multMinus3 << [
                 new Vector3i(0G, 0G, 0G),
                 new Vector3i(-3G * DIV, 0G, 0G),
                 new Vector3i(0G, -3G * DIV, 0G),
                 new Vector3i(0G, 0G, -3G * DIV),
-                new Vector3i(-3G * PolarVector3i.sin(PolarVector3i.D120), 0G, -3G * PolarVector3i.cos(PolarVector3i.D120)),
-                new Vector3i(-3G * PolarVector3i.cos(PolarVector3i.D120), -3G * PolarVector3i.sin(PolarVector3i.D120), 0G)
+                new Vector3i(-3G * SphericalVector3i.sin(SphericalVector3i.D120), 0G, -3G * SphericalVector3i.cos(SphericalVector3i.D120)),
+                new Vector3i(-3G * SphericalVector3i.cos(SphericalVector3i.D120), -3G * SphericalVector3i.sin(SphericalVector3i.D120), 0G)
         ]
     }
 }

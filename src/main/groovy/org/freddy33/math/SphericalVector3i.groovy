@@ -1,6 +1,6 @@
 package org.freddy33.math;
 
-public class PolarVector3i {
+public class SphericalVector3i {
     public static final Map<BigInteger, BigInteger> trigMap = [:]
     public static final BigInteger D30 = 3888G
     public static final BigInteger D90 = D30 * 3G
@@ -39,7 +39,7 @@ public class PolarVector3i {
 
     final BigInteger r, teta /* [0, pi] */, phi /* [-pi, pi] */
 
-    public PolarVector3i(BigInteger pr, pteta, pphi) {
+    public SphericalVector3i(BigInteger pr, pteta, pphi) {
         r = pr
         teta = pteta
         if (pteta == 0G || pteta == D180) {
@@ -51,7 +51,7 @@ public class PolarVector3i {
         validate()
     }
 
-    static PolarVector3i middleMan(List<PolarVector3i> pv) {
+    static SphericalVector3i middleMan(List<SphericalVector3i> pv) {
         BigInteger resultTeta = 0G;
         BigInteger resultPhi = 0G;
         pv.each { resultTeta += it.teta; resultPhi += it.phi; }
@@ -63,7 +63,7 @@ public class PolarVector3i {
         }
         while (resultPhi > D180) resultPhi -= DIV
         while (resultPhi <= -D180) resultPhi += DIV
-        new PolarVector3i(DIV, resultTeta, resultPhi)
+        new SphericalVector3i(DIV, resultTeta, resultPhi)
     }
 
     private validate() {
@@ -73,11 +73,11 @@ public class PolarVector3i {
         if (phi <= -D180 || phi > D180) throw new IllegalArgumentException("Spherical coord phi between -PI and PI")
     }
 
-    public PolarVector3i(Point4i p1, Point4i p2) {
+    public SphericalVector3i(Point4i p1, Point4i p2) {
         this(new Vector3i(p1, p2))
     }
 
-    public PolarVector3i(Vector3i v) {
+    public SphericalVector3i(Vector3i v) {
         def d2 = v.magSquared()
         if (d2 == 0G) {
             r = phi = teta = 0G
@@ -110,40 +110,40 @@ public class PolarVector3i {
         r * r
     }
 
-    public PolarVector3i negative() {
+    public SphericalVector3i negative() {
         if (teta == 0G || teta == D180) {
             // Just reverse phi is zero anyway
-            return new PolarVector3i(r, D180 - teta, 0G);
+            return new SphericalVector3i(r, D180 - teta, 0G);
         }
         def nphi = D180 + phi
         if (nphi > D180) nphi -= DIV
-        return new PolarVector3i(r, D180 - teta, nphi)
+        return new SphericalVector3i(r, D180 - teta, nphi)
     }
 
-    PolarVector3i multiply(BigInteger d) {
+    SphericalVector3i multiply(BigInteger d) {
         if (d < 0G) {
             negative().multiply(-d)
         } else if (d == 0G) {
-            new PolarVector3i(0G, 0G, 0G)
+            new SphericalVector3i(0G, 0G, 0G)
         } else {
             if (isNormalized()) {
-                new PolarVector3i(d, teta, phi)
+                new SphericalVector3i(d, teta, phi)
             } else {
-                new PolarVector3i((BigInteger) (r * d) / DIV, teta, phi)
+                new SphericalVector3i((BigInteger) (r * d) / DIV, teta, phi)
             }
         }
     }
 
-    PolarVector3i normalized() {
+    SphericalVector3i normalized() {
         // Normalized on DIV
-        new PolarVector3i(DIV, teta, phi)
+        new SphericalVector3i(DIV, teta, phi)
     }
 
-    BigInteger mod(PolarVector3i v) {
+    BigInteger mod(SphericalVector3i v) {
         dot(v)
     }
 
-    BigInteger dot(PolarVector3i v) {
+    BigInteger dot(SphericalVector3i v) {
         // 1/4 * ( (2+cos(phi1-phi2)) * cos(teta1-teta2) + (2-cos(phi1-phi2)) * cos(teta1+teta2) )
         BigInteger cosPhi1MinusPhi2 = cos(this.phi - v.phi)
         BigInteger cosTeta1MinusTeta2 = cos(this.teta - v.teta)
@@ -151,7 +151,7 @@ public class PolarVector3i {
         (BigInteger) (this.r * v.r * ((2G * DIV + cosPhi1MinusPhi2) * cosTeta1MinusTeta2 + (2G * DIV - cosPhi1MinusPhi2) * cosTeta1PlusTeta2) / (DIV * DIV))
     }
 
-    PolarVector3i cross(PolarVector3i v) {
+    SphericalVector3i cross(SphericalVector3i v) {
         // Valid only on normalized v
         def me = normalizedToVectorInt()
         def other = v.normalizedToVectorInt()
@@ -159,7 +159,7 @@ public class PolarVector3i {
         def rd = Math.sqrt((double) result.magSquared())
         BigInteger resultPhi = CONVERTER * Math.atan2((double) result.y, (double) result.x)
         BigInteger resultTeta = CONVERTER * Math.acos((double) result.z / rd)
-        new PolarVector3i(DIV, resultTeta, resultPhi)
+        new SphericalVector3i(DIV, resultTeta, resultPhi)
     }
 
     public Vector3i normalizedToVectorInt() {
@@ -176,7 +176,7 @@ public class PolarVector3i {
 
     @Override
     boolean equals(Object obj) {
-        PolarVector3i v = (PolarVector3i) obj
+        SphericalVector3i v = (SphericalVector3i) obj
         r == v.r && teta == v.teta && phi == v.phi
     }
 

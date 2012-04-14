@@ -22,7 +22,7 @@ class Point4i {
         return new Point4i(x + v.x, y + v.y, z + v.z, t)
     }
 
-    public Point4i plus(PolarVector3i p) {
+    public Point4i plus(SphericalVector3i p) {
         plus(p.toCartesian())
     }
 

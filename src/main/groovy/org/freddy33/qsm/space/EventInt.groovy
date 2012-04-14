@@ -2,7 +2,7 @@ package org.freddy33.qsm.space
 
 import org.freddy33.math.MathUtils
 import org.freddy33.math.Point4i
-import org.freddy33.math.PolarVector3i
+import org.freddy33.math.SphericalVector3i
 import org.freddy33.math.Vector3i
 import org.jzy3d.plot3d.pipelines.NotImplementedException
 
@@ -15,15 +15,15 @@ import org.jzy3d.plot3d.pipelines.NotImplementedException
 class EventInt {
     final EventBlockInt createdBy
     final Point4i point
-    final PolarVector3i dir
+    final SphericalVector3i dir
     final Sign sign
     boolean used = false
 
-    EventInt(Point4i p, PolarVector3i v) {
+    EventInt(Point4i p, SphericalVector3i v) {
         this(p, v, null)
     }
 
-    EventInt(Point4i p, PolarVector3i v, EventBlockInt from) {
+    EventInt(Point4i p, SphericalVector3i v, EventBlockInt from) {
         point = p
         dir = v
         createdBy = from
@@ -37,12 +37,12 @@ class EventInt {
 
 class EventTriangleInt {
     final EventInt e1, e2, e3
-    final PolarVector3i blockDir
+    final SphericalVector3i blockDir
     final Vector3i v12, v13, v23, v12v23cross
-    final PolarVector3i fDir
+    final SphericalVector3i fDir
     final BigInteger p12p13cross22
 
-    EventTriangleInt(EventInt e1, EventInt e2, EventInt e3, PolarVector3i b) {
+    EventTriangleInt(EventInt e1, EventInt e2, EventInt e3, SphericalVector3i b) {
         this.e1 = e1
         this.e2 = e2
         this.e3 = e3
@@ -61,7 +61,7 @@ class EventTriangleInt {
                                                   Cannot find final direction of a flat triangle!""")
         }
         // Final direction (perpendicular to triangle plane) is cross vector
-        def fd = new PolarVector3i(v12v23cross).normalized()
+        def fd = new SphericalVector3i(v12v23cross).normalized()
         if ((fd % blockDir) < 0G) {
             fDir = fd.negative()
         } else {
@@ -121,7 +121,7 @@ class EventTriangleInt {
 
 class EventBlockInt {
     final List<EventInt> es
-    final PolarVector3i blockDir
+    final SphericalVector3i blockDir
 
     EventBlockInt(List<EventInt> es) {
         if (es.size() < 4) {
@@ -129,7 +129,7 @@ class EventBlockInt {
         }
         this.es = es
         // Global dir of the block is the barycenter of directions vectors
-        this.blockDir = PolarVector3i.middleMan(es.collect { it.dir })
+        this.blockDir = SphericalVector3i.middleMan(es.collect { it.dir })
     }
 
     BigInteger maxMagSquared() {
