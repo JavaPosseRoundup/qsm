@@ -1,6 +1,5 @@
 package org.freddy33.qsm.space
 
-import org.freddy33.math.MathUtils
 import org.freddy33.math.Point4i
 import org.freddy33.math.SphericalVector3i
 import org.freddy33.math.Vector3i
@@ -36,20 +35,17 @@ class EventInt {
 }
 
 class EventTriangleInt {
+    final EventBlockInt from
     final EventInt e1, e2, e3
-    final SphericalVector3i blockDir
     final Vector3i v12, v13, v23, v12v23cross
     final SphericalVector3i fDir
     final BigInteger p12p13cross22
 
-    EventTriangleInt(EventInt e1, EventInt e2, EventInt e3, SphericalVector3i b) {
+    EventTriangleInt(EventInt e1, EventInt e2, EventInt e3, EventBlockInt from) {
         this.e1 = e1
         this.e2 = e2
         this.e3 = e3
-        if (e1.point.t != e2.point.t || e1.point.t != e3.point.t) {
-            throw new IllegalArgumentException("All 3 events of a triangle $this should be synchronous!")
-        }
-        blockDir = b.normalized()
+        this.from = from
         v12 = new Vector3i(e1.point, e2.point)
         v13 = new Vector3i(e1.point, e3.point)
         v23 = new Vector3i(e2.point, e3.point)
@@ -62,12 +58,11 @@ class EventTriangleInt {
         }
         // Final direction (perpendicular to triangle plane) is cross vector
         def fd = new SphericalVector3i(v12v23cross).normalized()
-        if ((fd % blockDir) < 0G) {
+        if ((fd % from.blockDir) < 0G) {
             fDir = fd.negative()
         } else {
             fDir = fd
         }
-        println "Created triangle $this"
     }
 
     boolean isFlat() {
@@ -75,18 +70,16 @@ class EventTriangleInt {
     }
 
     Point4i findEvent() {
-        BigInteger dt2 = MathUtils.max(v12.magSquared(), v13.magSquared(), v23.magSquared())
-        BigInteger dt = Math.sqrt((double) dt2)
         // OK, it's a non flat triangle and dt is big enough => find center
         Point4i center = findCenter()
-        center.t += dt
+        center.t += from.deltaTime
         // Then find how much above plane on center need to add
         BigInteger radius2 = radius2()
-        if (dt2 - radius2 < 1G) {
+        if (from.maxMagSquared - radius2 < 1G) {
             // Still too flat
             return null
         } else {
-            BigInteger abovePlane = Math.sqrt((double) (dt2 - radius2))
+            BigInteger abovePlane = Math.sqrt((double) (from.maxMagSquared - radius2))
             return center + (fDir * abovePlane)
         }
     }
@@ -115,13 +108,42 @@ class EventTriangleInt {
 
     @Override
     String toString() {
-        "tr($e1, $e2, $e3, ${fDir?.toCartesian()}, ${blockDir?.toCartesian()})"
+        "tr($e1, $e2, $e3, ${fDir?.toCartesian()})"
     }
 }
 
 class EventBlockInt {
     final List<EventInt> es
+    final Set<EventTriangleInt> triangles = []
     final SphericalVector3i blockDir
+    final BigInteger maxMagSquared
+    final BigInteger deltaTime
+
+    static EventBlockInt createValidBlock(List<EventInt> es, BigInteger timePassedSquared) {
+        if (es.size() != 4) {
+            println "Managing only block of 4!"
+            return null
+        }
+        // Same plane (in 4D), for now same time plane and then same 3D plane
+        def currentTime = es[0].point.t
+        if (es.any { it.point.t != currentTime }) {
+            // Not same time
+            return null
+        }
+        EventBlockInt result = new EventBlockInt(es)
+        if (result.maxMagSquared <= timePassedSquared) {
+            // TODO: Check same 3D plane
+            // Check the radius of all triangle is below the max squared
+            if (result.triangles.any { it.radius2() > timePassedSquared }) {
+                println "Block $this has a triangle to flat for current time"
+                return null
+            }
+            println "Found valid block $result"
+            return result
+        } else {
+            return null
+        }
+    }
 
     EventBlockInt(List<EventInt> es) {
         if (es.size() < 4) {
@@ -130,9 +152,12 @@ class EventBlockInt {
         this.es = es
         // Global dir of the block is the barycenter of directions vectors
         this.blockDir = SphericalVector3i.middleMan(es.collect { it.dir })
+        this.maxMagSquared = maxMagSquared()
+        this.deltaTime = (BigInteger) Math.sqrt((double) this.maxMagSquared)
+        fillTriangles()
     }
 
-    BigInteger maxMagSquared() {
+    private BigInteger maxMagSquared() {
         BigInteger result = 0G
         es.eachWithIndex { EventInt one, i ->
             if (i < es.size() - 1) {
@@ -145,20 +170,19 @@ class EventBlockInt {
         result
     }
 
-    Set<EventTriangleInt> allTriangles() {
+    private def fillTriangles() {
         // For 4 it's all possible triangles
         // TODO: For 5 there is 12 solutions that create 5 triangles covering it all
-        Set<EventTriangleInt> result = []
         if (es.size() == 4) {
             // Writing the loop was longer ?!?
-            result.add(new EventTriangleInt(es[0], es[1], es[2], blockDir))
-            result.add(new EventTriangleInt(es[0], es[1], es[3], blockDir))
-            result.add(new EventTriangleInt(es[0], es[2], es[3], blockDir))
-            result.add(new EventTriangleInt(es[1], es[2], es[3], blockDir))
+            triangles.add(new EventTriangleInt(es[0], es[1], es[2], this))
+            triangles.add(new EventTriangleInt(es[0], es[1], es[3], this))
+            triangles.add(new EventTriangleInt(es[0], es[2], es[3], this))
+            triangles.add(new EventTriangleInt(es[1], es[2], es[3], this))
         } else {
             throw new NotImplementedException()
         }
-        result
+        triangles
     }
 
     def markUsed() {
@@ -167,7 +191,7 @@ class EventBlockInt {
 
     List<EventInt> findNewEvents() {
         List<EventInt> newEvents = []
-        allTriangles().each { EventTriangleInt tr ->
+        triangles.each { EventTriangleInt tr ->
             Point4i newPoint = tr.findEvent()
             if (newPoint != null) newEvents.add(new EventInt(newPoint, tr.fDir, this))
         }
@@ -179,6 +203,11 @@ class EventBlockInt {
             newEvents.clear()
         }
         newEvents
+    }
+
+    @Override
+    public String toString() {
+        return "EventBlockInt dT=$deltaTime, dir=$blockDir\n${es.join("\n")}\n${triangles.join("\n")}"
     }
 }
 

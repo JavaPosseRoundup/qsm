@@ -118,10 +118,9 @@ public class SpaceTimeInt {
                 // current event part of it
                 forAllN(events, 0, []) { List<EventInt> evts ->
                     // For all N blocks try to find new events
-                    def block = new EventBlockInt(evts)
-                    if (block.maxMagSquared() <= timePassedSquared) {
+                    def block = EventBlockInt.createValidBlock(evts, timePassedSquared)
+                    if (block != null)
                         newActiveEvents.addAll(block.findNewEvents())
-                    }
                 }
             }
         }
