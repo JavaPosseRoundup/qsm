@@ -5,6 +5,12 @@ import spock.lang.Specification
 import static org.freddy33.math.PolarVector3i.DIV
 
 class IntMathTest extends Specification {
+    def "basic Trig"() {
+        expect:
+        PolarVector3i.trigMap[PolarVector3i.D30] == PolarVector3i.D180
+        PolarVector3i.cos(PolarVector3i.D120) == -PolarVector3i.D180
+    }
+
     def "test Point4i"() {
         expect:
         mult3 == coord * 3

@@ -2,12 +2,13 @@ package org.freddy33.math;
 
 public class PolarVector3i {
     public static final Map<BigInteger, BigInteger> trigMap = [:]
-    public static final BigInteger DIV = 46656G
-    static BigInteger D180 = DIV / 2G
-    static BigInteger D90 = DIV / 4G
-    static BigInteger D120 = DIV / 3G
-    static double CONVERTER = DIV / (2d * Math.PI)
+    public static final BigInteger D30 = 3888G
+    public static final BigInteger D90 = D30 * 3G
+    public static final BigInteger DIV = D90 * 4G
+    public static final BigInteger D180 = D90 * 2G
+    public static final BigInteger D120 = D30 * 4G
 
+    static double CONVERTER = DIV / (2d * Math.PI)
     static {
         for (i in 0G..D90) {
             trigMap.put(i, (BigInteger) (DIV * Math.sin(i / CONVERTER)))
@@ -144,32 +145,29 @@ public class PolarVector3i {
 
     BigInteger dot(PolarVector3i v) {
         // 1/4 * ( (2+cos(phi1-phi2)) * cos(teta1-teta2) + (2-cos(phi1-phi2)) * cos(teta1+teta2) )
-        double cosPhi1MinusPhi2 = Math.cos((double) (this.phi - v.phi) / CONVERTER)
-        double cosTeta1MinusTeta2 = Math.cos((double) (this.teta - v.teta) / CONVERTER)
-        double cosTeta1PlusTeta2 = Math.cos((double) (this.teta + v.teta) / CONVERTER)
-        this.r * v.r * (BigInteger) (2d + cosPhi1MinusPhi2) * cosTeta1MinusTeta2 + (2d - cosPhi1MinusPhi2) * cosTeta1PlusTeta2 / 4d
+        BigInteger cosPhi1MinusPhi2 = cos(this.phi - v.phi)
+        BigInteger cosTeta1MinusTeta2 = cos(this.teta - v.teta)
+        BigInteger cosTeta1PlusTeta2 = cos(this.teta + v.teta)
+        (BigInteger) (this.r * v.r * ((2G * DIV + cosPhi1MinusPhi2) * cosTeta1MinusTeta2 + (2G * DIV - cosPhi1MinusPhi2) * cosTeta1PlusTeta2) / (DIV * DIV))
     }
 
     PolarVector3i cross(PolarVector3i v) {
         // Valid only on normalized v
-        def me = normalizedToVectorDouble()
-        def other = v.normalizedToVectorDouble()
-        Vector3d result = me.cross(other)
-        def rd = result.d()
-        BigInteger resultPhi = CONVERTER * Math.atan2(result.y, result.x)
-        BigInteger resultTeta = CONVERTER * Math.acos(result.z / rd)
-        new PolarVector3i((BigInteger) DIV * rd, resultTeta, resultPhi)
+        def me = normalizedToVectorInt()
+        def other = v.normalizedToVectorInt()
+        Vector3i result = me.cross(other)
+        def rd = Math.sqrt((double) result.magSquared())
+        BigInteger resultPhi = CONVERTER * Math.atan2((double) result.y, (double) result.x)
+        BigInteger resultTeta = CONVERTER * Math.acos((double) result.z / rd)
+        new PolarVector3i(DIV, resultTeta, resultPhi)
     }
 
-    public Vector3d normalizedToVectorDouble() {
+    public Vector3i normalizedToVectorInt() {
         if (!isNormalized()) throw new IllegalArgumentException("$this is not a normalized vector")
-        def myTetaD = teta / CONVERTER
-        def myPhiD = phi / CONVERTER
-        def mySinTeta = Math.sin(myTetaD)
-        double myX = Math.cos(myPhiD) * mySinTeta
-        double myY = Math.sin(myPhiD) * mySinTeta
-        double myZ = Math.cos(myTetaD)
-        new Vector3d(myX, myY, myZ)
+        BigInteger myX = cos(phi) * sin(teta)
+        BigInteger myY = sin(phi) * sin(teta)
+        BigInteger myZ = cos(teta) * DIV
+        new Vector3i(myX, myY, myZ)
     }
 
     public boolean isNormalized() {
