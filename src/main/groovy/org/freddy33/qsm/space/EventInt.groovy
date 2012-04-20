@@ -12,20 +12,22 @@ import org.jzy3d.plot3d.pipelines.NotImplementedException
  * To change this template use File | Settings | File Templates.
  */
 class EventInt {
-    final EventBlockInt createdBy
+    final EventBlockInt createdByBlock
+    final EventTriangleInt createdByTriangle
     final Point4i point
     final SphericalVector3i dir
     final Sign sign
     boolean used = false
 
     EventInt(Point4i p, SphericalVector3i v) {
-        this(p, v, null)
+        this(p, v, null, null)
     }
 
-    EventInt(Point4i p, SphericalVector3i v, EventBlockInt from) {
+    EventInt(Point4i p, SphericalVector3i v, EventBlockInt from, EventTriangleInt tr) {
         point = p
         dir = v
-        createdBy = from
+        createdByBlock = from
+        createdByTriangle = tr
     }
 
     @Override
@@ -119,7 +121,7 @@ class EventBlockInt {
     final BigInteger maxMagSquared
     final BigInteger deltaTime
 
-    static EventBlockInt createValidBlock(List<EventInt> es, BigInteger timePassedSquared) {
+    static EventBlockInt createBlock(List<EventInt> es) {
         if (es.size() != 4) {
             println "Managing only block of 4!"
             return null
@@ -130,19 +132,7 @@ class EventBlockInt {
             // Not same time
             return null
         }
-        EventBlockInt result = new EventBlockInt(es)
-        if (result.maxMagSquared <= timePassedSquared) {
-            // TODO: Check same 3D plane
-            // Check the radius of all triangle is below the max squared
-            if (result.triangles.any { it.radius2() > timePassedSquared }) {
-                println "Block $this has a triangle to flat for current time"
-                return null
-            }
-            println "Found valid block $result"
-            return result
-        } else {
-            return null
-        }
+        new EventBlockInt(es)
     }
 
     EventBlockInt(List<EventInt> es) {
@@ -155,6 +145,21 @@ class EventBlockInt {
         this.maxMagSquared = maxMagSquared()
         this.deltaTime = (BigInteger) Math.sqrt((double) this.maxMagSquared)
         fillTriangles()
+    }
+
+    public boolean isValid(BigInteger timePassedSquared) {
+        if (maxMagSquared <= timePassedSquared) {
+            // TODO: Check same 3D plane
+            // Check the radius of all triangle is below the max squared
+            if (triangles.any { it.radius2() > timePassedSquared }) {
+                println "Block $this has a triangle to flat for current time"
+                return false
+            }
+            println "Found valid block $this"
+            return true
+        } else {
+            return false
+        }
     }
 
     private BigInteger maxMagSquared() {
@@ -193,7 +198,7 @@ class EventBlockInt {
         List<EventInt> newEvents = []
         triangles.each { EventTriangleInt tr ->
             Point4i newPoint = tr.findEvent()
-            if (newPoint != null) newEvents.add(new EventInt(newPoint, tr.fDir, this))
+            if (newPoint != null) newEvents.add(new EventInt(newPoint, tr.fDir, this, tr))
         }
         if (newEvents.size() == es.size()) {
             // Conservation of events good

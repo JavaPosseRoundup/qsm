@@ -20,6 +20,8 @@ public class SpaceTimeInt {
     List<Point4i> fixedPoints
     List<EventInt> deadEvents = []
     List<EventInt> activeEvents = []
+    BigInteger smallestActiveTime
+    BigInteger smallestMagSquared
 
     SpaceTimeInt(BigInteger ratio) {
         initialRatio = ratio
@@ -71,40 +73,43 @@ public class SpaceTimeInt {
         }
     }
 
-    def calc() {
+    boolean calc() {
         if (currentTime % DIV == 0) {
             print "."
         }
         if (currentTime % (initialRatio * DIV) == 0) {
             printDetails()
         }
-        currentTime += (BigInteger) DIV / 10G
+        currentTime += 1G
         if (activeEvents.size() < N) {
             println "Your universe is dull :)"
-            return
+            return true
         }
-        BigInteger smallestActiveTime = activeEvents[0].point.t
-        BigInteger smallestDistance = activeEvents[0].point.magSquared(activeEvents[1].point)
-        activeEvents.eachWithIndex { EventInt one, i ->
-            if (one.point.t < smallestActiveTime) smallestActiveTime = one.point.t
-            if (i < activeEvents.size() - 1) {
-                for (j in (i + 1)..(activeEvents.size() - 1)) {
-                    BigInteger d = one.point.magSquared(activeEvents[j].point)
-                    if (d < smallestDistance) smallestDistance = d
+        boolean somethingHappen = false
+        if (smallestActiveTime == null) {
+            smallestActiveTime = activeEvents[0].point.t
+            smallestMagSquared = activeEvents[0].point.magSquared(activeEvents[1].point)
+            activeEvents.eachWithIndex { EventInt one, i ->
+                if (one.point.t < smallestActiveTime) smallestActiveTime = one.point.t
+                if (i < activeEvents.size() - 1) {
+                    for (j in (i + 1)..(activeEvents.size() - 1)) {
+                        BigInteger d = one.point.magSquared(activeEvents[j].point)
+                        if (d < smallestMagSquared) smallestMagSquared = d
+                    }
                 }
             }
+
+            if (currentTime < smallestActiveTime) {
+                println "Jumping to ${smallestActiveTime} since nothing going on until"
+                currentTime = smallestActiveTime
+                somethingHappen = true
+            }
+            if (addTimeToReachSmallestDistance(smallestMagSquared)) {
+                somethingHappen = true
+            }
         }
-        if (currentTime < smallestActiveTime) {
-            println "Jumping to ${smallestActiveTime} since nothing going on until"
-            currentTime = smallestActiveTime
-        }
-        def maxDistance = currentTime - smallestActiveTime
-        def maxDistance2 = maxDistance * maxDistance - smallestDistance
-        if (maxDistance2 < 0G) {
-            def toAdd = (BigInteger) Math.sqrt((double) -maxDistance2)
-            println "Not enough time to communicate! Jumping to ${currentTime + toAdd} since nothing going on until"
-            currentTime += toAdd
-        }
+
+        BigInteger smallestBlockSize = null
         List<EventInt> newActiveEvents = []
         // For all active events find all the events closer than timePassed=(currentTime-evt.t)
         // And from the collection create events blocks of 4
@@ -113,24 +118,54 @@ public class SpaceTimeInt {
             if (!event.used && timePassed > 0G) {
                 BigInteger timePassedSquared = timePassed * timePassed
                 List<EventInt> events = activeEvents.findAll {
-                    !it.used && it.point.t == event.point.t && it.point.magSquared(event.point) <= timePassedSquared
+                    !it.used && it.point.t == event.point.t // && it.point.magSquared(event.point) <= timePassedSquared
                 }
                 // current event part of it
                 forAllN(events, 0, []) { List<EventInt> evts ->
                     // For all N blocks try to find new events
-                    def block = EventBlockInt.createValidBlock(evts, timePassedSquared)
-                    if (block != null)
-                        newActiveEvents.addAll(block.findNewEvents())
+                    def block = EventBlockInt.createBlock(evts)
+                    if (block != null) {
+                        if (block.isValid(timePassedSquared)) {
+                            newActiveEvents.addAll(block.findNewEvents())
+                            somethingHappen = true
+                        } else if (smallestBlockSize == null || block.maxMagSquared < smallestBlockSize) {
+                            smallestBlockSize = block.maxMagSquared
+                        }
+                    }
                 }
             }
         }
 
-        // Clean all used events
-        List<EventInt> used = activeEvents.findAll { it.used }
-        activeEvents.removeAll(used)
-        deadEvents.addAll(used)
-        activeEvents.addAll(newActiveEvents)
-        true
+        if (somethingHappen) {
+            // Clean all used events
+            List<EventInt> used = activeEvents.findAll { it.used }
+            activeEvents.removeAll(used)
+            deadEvents.addAll(used)
+            activeEvents.addAll(newActiveEvents)
+            printDetails()
+            smallestActiveTime = null
+            smallestMagSquared = null
+        } else {
+            if (smallestBlockSize != null) {
+                addTimeToReachSmallestDistance(smallestBlockSize)
+            } else {
+                println "We have a problem no active block found!"
+            }
+            somethingHappen = true
+        }
+        return somethingHappen
+    }
+
+    private boolean addTimeToReachSmallestDistance(BigInteger foundSmallestMagSquared) {
+        BigInteger currentSmallestDistance = currentTime - smallestActiveTime
+        BigInteger foundSmallestDistance = (BigInteger) Math.sqrt((double) foundSmallestMagSquared)
+        if (currentSmallestDistance < foundSmallestDistance - 1G) {
+            def toAdd = foundSmallestDistance - currentSmallestDistance - 1G
+            println "Not enough time to communicate! Jumping to ${currentTime + toAdd} since nothing going on until"
+            currentTime += toAdd
+            true
+        }
+        false
     }
 
     static def forAllN(List<EventInt> evtList, int idx, List<EventInt> block, Closure doStuff) {

@@ -13,7 +13,7 @@ import org.freddy33.math.Vector3d
 public class SpaceTimeDouble {
     static int N = 4
 
-    int fixPointRatio = 20d
+    int fixPointRatio = 20
     int initialRatio
     int currentTime = 0
     List<Coord4d> fixedPoints
