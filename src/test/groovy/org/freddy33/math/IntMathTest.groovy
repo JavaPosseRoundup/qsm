@@ -9,6 +9,11 @@ class IntMathTest extends Specification {
         expect:
         SphericalVector3i.trigMap[SphericalVector3i.D30] == SphericalVector3i.D180
         SphericalVector3i.cos(SphericalVector3i.D120) == -SphericalVector3i.D180
+        SphericalVector3i.sin(0G) == 0G
+        SphericalVector3i.sin(SphericalVector3i.D30) == SphericalVector3i.D180
+        SphericalVector3i.invTrigMap[SphericalVector3i.D180] == SphericalVector3i.D30
+        SphericalVector3i.asin(SphericalVector3i.D180) == SphericalVector3i.D30
+        SphericalVector3i.asin(-SphericalVector3i.D180) == -SphericalVector3i.D30
     }
 
     def "test Point4i"() {

@@ -2,6 +2,7 @@ package org.freddy33.math;
 
 public class SphericalVector3i {
     public static final Map<BigInteger, BigInteger> trigMap = [:]
+    public static final Map<BigInteger, BigInteger> invTrigMap = [:]
     public static final BigInteger D30 = 3888G
     public static final BigInteger D90 = D30 * 3G
     public static final BigInteger DIV = D90 * 4G
@@ -10,8 +11,60 @@ public class SphericalVector3i {
 
     static double CONVERTER = DIV / (2d * Math.PI)
     static {
+        BigInteger lastSinVal
         for (i in 0G..D90) {
-            trigMap.put(i, (BigInteger) (DIV * Math.sin(i / CONVERTER)))
+            BigInteger sinVal = (BigInteger) (DIV * Math.sin(i / CONVERTER))
+            trigMap.put(i, sinVal)
+            invTrigMap.put(sinVal, i)
+            if (lastSinVal != null && sinVal - 1G > lastSinVal) {
+                // Some holes to fill
+                BigInteger holeSize = sinVal - lastSinVal - 1G
+                for (h in 1G..holeSize) {
+                    invTrigMap.put(lastSinVal + h, i - 1G)
+                }
+            }
+            lastSinVal = sinVal
+        }
+        println "Trig map found ${trigMap.size()} and ${invTrigMap.size()}"
+    }
+
+    static BigInteger atan2(BigInteger y, BigInteger x) {
+        if (x == 0G) {
+            if (y > 0G) {
+                return D90
+            } else if (y < 0) {
+                return -D90
+            } else {
+                return 0G
+            }
+        } else {
+            BigInteger arctan = asin((BigInteger) (y / Math.sqrt((double) (x * x + y * y))))
+            if (x > 0G) {
+                return arctan
+            } else if (x < 0G) {
+                if (arctan == 0G) {
+                    return D180
+                } else if (y < 0G) {
+                    return arctan - D180
+                } else {
+                    return arctan + D180
+                }
+            }
+        }
+    }
+
+    static BigInteger acos(BigInteger cosVal) {
+        D90 - asin(cosVal)
+    }
+
+    static BigInteger asin(BigInteger sinVal) {
+        if (sinVal < -DIV || sinVal > DIV) {
+            throw new IllegalArgumentException("A sin value cannot be ${sinVal} above or below +- ${DIV}")
+        }
+        if (sinVal < 0G) {
+            return -invTrigMap.get(-sinVal)
+        } else {
+            return invTrigMap.get(sinVal)
         }
     }
 
@@ -67,10 +120,10 @@ public class SphericalVector3i {
     }
 
     private validate() {
-        if (r < 0G) throw new IllegalArgumentException("Spherical coord r cannot be neg")
-        if (teta < 0G || teta > D180) throw new IllegalArgumentException("Spherical coord teta between 0 and PI")
-        if ((teta == 0G || teta == D180) && phi != 0G) throw new IllegalArgumentException("Phi should be zero for teta 0 or PI")
-        if (phi <= -D180 || phi > D180) throw new IllegalArgumentException("Spherical coord phi between -PI and PI")
+        if (r < 0G) throw new IllegalArgumentException("Spherical coord r cannot be neg! For $this")
+        if (teta < 0G || teta > D180) throw new IllegalArgumentException("Spherical coord teta between 0 and PI! For $this")
+        if ((teta == 0G || teta == D180) && phi != 0G) throw new IllegalArgumentException("Phi should be zero for teta 0 or PI! For $this")
+        if (phi <= -D180 || phi > D180) throw new IllegalArgumentException("Spherical coord phi between -PI and PI! For $this")
     }
 
     public SphericalVector3i(Point4i p1, Point4i p2) {
@@ -82,14 +135,10 @@ public class SphericalVector3i {
         if (d2 == 0G) {
             r = phi = teta = 0G
         } else {
-            def x = (double) v.x;
-            def y = (double) v.y;
-            def z = (double) v.z;
             def rd = Math.sqrt((double) d2)
-
             r = rd
-            phi = CONVERTER * Math.atan2(y, x)
-            teta = CONVERTER * Math.acos(z / rd)
+            phi = atan2(v.y, v.x)
+            teta = acos((BigInteger) v.z / rd)
         }
         validate()
     }
