@@ -206,8 +206,8 @@ public class SphericalVector3i {
         def other = v.normalizedToVectorInt()
         Vector3i result = me.cross(other)
         def rd = Math.sqrt((double) result.magSquared())
-        BigInteger resultPhi = CONVERTER * Math.atan2((double) result.y, (double) result.x)
-        BigInteger resultTeta = CONVERTER * Math.acos((double) result.z / rd)
+        BigInteger resultPhi = atan2(result.y, result.x)
+        BigInteger resultTeta = acos((BigInteger) result.z / rd)
         new SphericalVector3i(DIV, resultTeta, resultPhi)
     }
 
