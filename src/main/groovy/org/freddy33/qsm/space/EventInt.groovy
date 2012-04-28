@@ -1,5 +1,6 @@
 package org.freddy33.qsm.space
 
+import org.freddy33.math.MathUtils
 import org.freddy33.math.Point4i
 import org.freddy33.math.SphericalVector3i
 import org.freddy33.math.Vector3i
@@ -275,55 +276,35 @@ class EventBlockInt {
             markUsed()
             // Activate conservation of time
             def newBlock = createBlock(newEvents)
-/*
-            if (newBlock.sumMagSquared != sumMagSquared) {
-                println "Need to activate cons of time for $newBlock"
-                newBlock.makeSizeEqualTo(maxMagSquared)
-            }
-*/
+//            if (!MathUtils.almostEquals(newBlock.sumMagSquared, sumMagSquared)) {
+            println "Need to activate cons of time for $newBlock"
+            newBlock = newBlock.makeSizeEqualTo(sumMagSquared)
+//            }
             return newBlock
         }
         null
     }
 
     EventBlockInt makeSizeEqualTo(BigInteger newSumMagSquared) {
-        List<Point4i> points = es.collect() { it.point }
-        List<Vector3i> vectors = [
-                new Vector3i(points[0], points[1]),
-                new Vector3i(points[0], points[2]),
-                new Vector3i(points[0], points[3]),
-                new Vector3i(points[1], points[2]),
-                new Vector3i(points[1], points[3]),
-                new Vector3i(points[2], points[3])
-        ]
-        List<Double> multipliers = [
-                0d,
-                0d,
-                0d,
-                0d,
-                0d,
-                0d
-        ]
-
-        List<Point4i> results = []
+        List<Point4i> points = e.collect() { it.point }
         Boolean previousDiffPositive = null
 
         while (true) {
-            results.clear()
-            results.add(points[0] - vectors[0] * multipliers[0] - vectors[1] * multipliers[1] - vectors[2] * multipliers[2])
-            results.add(points[1] + vectors[0] * multipliers[0] - vectors[3] * multipliers[3] - vectors[4] * multipliers[4])
-            results.add(points[2] + vectors[0] * multipliers[0] + vectors[3] * multipliers[3] - vectors[5] * multipliers[5])
-            results.add(points[3] + vectors[0] * multipliers[0] + vectors[4] * multipliers[4] + vectors[5] * multipliers[5])
-
-            def diffMagSquared = newSumMagSquared - calcSumMagSquared(results)
-            if (diffMagSquared > 0G) {
+            def diffMagSquared = newSumMagSquared - calcSumMagSquared(points)
+            if (MathUtils.isSmallInt(diffMagSquared)) {
+                println "Perfectly equal $this == $newSumMagSquared"
+                break
+            } else if (diffMagSquared > 0G) {
+                List<Double> multipliers = [0d, 0d, 0d, 0d, 0d, 0d]
                 // Need to increase smallest distance
-                def (int i, int j) = smallestSide(results)
+                def (int i, int j) = smallestSide(points)
+                println "Increasing small distance $diffMagSquared $newSumMagSquared using $i, $j"
                 if (i == 0) {
-                    multipliers[j - 1] += 2d / SphericalVector3i.D180
+                    multipliers[j - 1] = (double) MathUtils.EPSILON_INT / SphericalVector3i.D180
                 } else {
-                    multipliers[j + i] += 2d / SphericalVector3i.D180
+                    multipliers[j + i] = (double) MathUtils.EPSILON_INT / SphericalVector3i.D180
                 }
+                points = fillResultingPoints(points, multipliers)
                 if (previousDiffPositive == null) {
                     previousDiffPositive = true
                 } else {
@@ -333,13 +314,16 @@ class EventBlockInt {
                     }
                 }
             } else if (diffMagSquared < 0G) {
+                List<Double> multipliers = [0d, 0d, 0d, 0d, 0d, 0d]
                 // Need to decrease biggest distance
-                def (int i, int j) = biggestSide(results)
+                def (int i, int j) = biggestSide(points)
+                println "Decreasing big distance $diffMagSquared $newSumMagSquared using $i, $j"
                 if (i == 0) {
-                    multipliers[j - 1] -= 2d / SphericalVector3i.D180
+                    multipliers[j - 1] = (double) -MathUtils.EPSILON_INT / SphericalVector3i.D180
                 } else {
-                    multipliers[j + i] -= 2d / SphericalVector3i.D180
+                    multipliers[j + i] = (double) -MathUtils.EPSILON_INT / SphericalVector3i.D180
                 }
+                points = fillResultingPoints(points, multipliers)
                 if (previousDiffPositive == null) {
                     previousDiffPositive = false
                 } else {
@@ -348,17 +332,41 @@ class EventBlockInt {
                         break
                     }
                 }
-            } else {
-                println "Perfectly equal $this == $newSumMagSquared"
-                break
             }
         }
-        null
+        new EventBlockInt([
+                new EventInt(points[0], e[0].dir, e[0].createdByBlock, e[0].createdByTriangle),
+                new EventInt(points[1], e[1].dir, e[1].createdByBlock, e[1].createdByTriangle),
+                new EventInt(points[2], e[2].dir, e[2].createdByBlock, e[2].createdByTriangle),
+                new EventInt(points[3], e[3].dir, e[3].createdByBlock, e[3].createdByTriangle)
+        ])
+    }
+
+    public List<Point4i> fillResultingPoints(List<Point4i> points, ArrayList<Double> multipliers) {
+        List<Vector3i> vectors = getVectorsForPoints(points)
+        List<Point4i> results = []
+        results.add(points[0])
+        results.add(points[1] + (vectors[0] * multipliers[0]) - (vectors[3] * multipliers[3]) - (vectors[4] * multipliers[4]))
+        results.add(points[2] + (vectors[1] * multipliers[1]) + (vectors[3] * multipliers[3]) - (vectors[5] * multipliers[5]))
+        results.add(points[3] + (vectors[2] * multipliers[2]) + (vectors[4] * multipliers[4]) + (vectors[5] * multipliers[5]))
+        results
+    }
+
+    public List<Vector3i> getVectorsForPoints(List<Point4i> points) {
+        List<Vector3i> vectors = [
+                new Vector3i(points[0], points[1]),
+                new Vector3i(points[0], points[2]),
+                new Vector3i(points[0], points[3]),
+                new Vector3i(points[1], points[2]),
+                new Vector3i(points[1], points[3]),
+                new Vector3i(points[2], points[3])
+        ]
+        vectors
     }
 
     @Override
     public String toString() {
-        return "EventBlockInt dT=$deltaTime, dir=$blockDir\n${e.join("\n")}\n${tr.join("\n")}"
+        return "EventBlockInt dT=$deltaTime, D=$sumMagSquared, dir=$blockDir\n${e.join("\n")}\n${tr.join("\n")}"
     }
 }
 

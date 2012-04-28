@@ -25,13 +25,17 @@ class MathUtils {
     }
 
     static boolean almostEquals(BigInteger a, BigInteger b) {
+        almostEquals(a, b, EPSILON_INT)
+    }
+
+    static boolean almostEquals(BigInteger a, BigInteger b, BigInteger prec) {
         if (b == a) return true
         if (b == 0G) {
-            return isSmallInt(a)
+            return isSmallInt(a, prec)
         } else if (a == 0G) {
-            return isSmallInt(b)
+            return isSmallInt(b, prec)
         } else {
-            if (isSmallInt(a - b)) {
+            if (isSmallInt(a - b, prec)) {
                 return true
             }
             BigInteger ma = a
@@ -49,24 +53,20 @@ class MathUtils {
             if (d >= ma || d >= mb) {
                 return false
             }
-            return (d / max(ma, mb)) < EPSILON_INT.toBigDecimal()
+            return (d / max(ma, mb)) < prec.toBigDecimal()
+        }
+    }
+
+    public static boolean isSmallInt(BigInteger i, BigInteger prec) {
+        if (i < 0G) {
+            return -i < prec
+        } else {
+            return i < prec
         }
     }
 
     public static boolean isSmallInt(BigInteger i) {
-        if (i < 0G) {
-            return -i < EPSILON_INT
-        } else {
-            return i < EPSILON_INT
-        }
-    }
-
-    public static boolean isSmallDecimal(BigDecimal i) {
-        if (i < 0G) {
-            return -i < EPSILON_INT.toBigDecimal()
-        } else {
-            return i < EPSILON_INT.toBigDecimal()
-        }
+        isSmallInt(i, EPSILON_INT)
     }
 
     static boolean eq(Coord4d a, Coord4d b) {
@@ -82,7 +82,14 @@ class MathUtils {
     }
 
     static boolean almostEquals(Point4i a, Point4i b) {
-        almostEquals(a.x, b.x) && almostEquals(a.y, b.y) && almostEquals(a.z, b.z) && almostEquals(a.t, b.t)
+        almostEquals(a, b, EPSILON_INT)
+    }
+
+    static boolean almostEquals(Point4i a, Point4i b, BigInteger precision) {
+        almostEquals(a.x, b.x, precision) &&
+                almostEquals(a.y, b.y, precision) &&
+                almostEquals(a.z, b.z, precision) &&
+                almostEquals(a.t, b.t, precision)
     }
 
     static boolean almostEquals(SphericalVector3i a, SphericalVector3i b) {
