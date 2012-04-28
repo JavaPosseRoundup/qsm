@@ -184,10 +184,20 @@ class EventBlockInt {
 
     public boolean isValid(BigInteger timePassedSquared, boolean log) {
         if (maxMagSquared <= timePassedSquared) {
-            // TODO: Check same 3D plane using diff between fDir of triangles
             // Check the radius of all triangle is below the max squared
             if (tr.any { it.radius2() > timePassedSquared }) {
                 if (log) println "Block $this has a triangle to flat for current time"
+                return false
+            }
+            // Check same 3D plane using diff between fDir of triangles
+            if (!MathUtils.almostEquals(tr1().fDir, tr2().fDir) ||
+                    !MathUtils.almostEquals(tr1().fDir, tr3().fDir) ||
+                    !MathUtils.almostEquals(tr1().fDir, tr4().fDir) ||
+                    !MathUtils.almostEquals(tr2().fDir, tr3().fDir) ||
+                    !MathUtils.almostEquals(tr2().fDir, tr4().fDir) ||
+                    !MathUtils.almostEquals(tr3().fDir, tr4().fDir)
+            ) {
+                if (log) println "Block $this is not making a plane"
                 return false
             }
             if (log) println "Found valid block $this"

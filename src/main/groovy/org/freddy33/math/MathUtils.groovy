@@ -93,8 +93,18 @@ class MathUtils {
     }
 
     static boolean almostEquals(SphericalVector3i a, SphericalVector3i b) {
-        // TODO: check when phi +- D180
-        almostEquals(a.r, b.r) && isSmallInt(a.teta - b.teta) && isSmallInt(a.phi - b.phi)
+        if (!almostEquals(a.r, b.r) || !isSmallInt(a.teta - b.teta)) return false
+        if (isSmallInt(a.phi - b.phi)) return true
+        // Check when phi +- D180
+        if (isSmallInt(SphericalVector3i.D180 - a.phi) && isSmallInt(SphericalVector3i.D180 + b.phi)) {
+            // a.phi is almost +D180 and b.phi almost -D180
+            return isSmallInt(a.phi + b.phi)
+        }
+        if (isSmallInt(SphericalVector3i.D180 + a.phi) && isSmallInt(SphericalVector3i.D180 - b.phi)) {
+            // a.phi is almost -D180 and b.phi almost D180
+            return isSmallInt(a.phi + b.phi)
+        }
+        return false
     }
 
     static BigInteger max(BigInteger... vals) {
