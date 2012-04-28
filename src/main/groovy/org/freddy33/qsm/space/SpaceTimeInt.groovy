@@ -38,6 +38,13 @@ public class SpaceTimeInt {
                 size)
     }
 
+    def initElectron(BigInteger size) {
+        addElectron(new Point4i(0G, 0G, 0G, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(0G, 0G),
+                size)
+    }
+
     def addPhoton(Point4i c, SphericalVector3i v, SphericalVector3i p, BigInteger size) {
         if (!p.isNormalized()) {
             p = p.normalized()
@@ -57,6 +64,29 @@ public class SpaceTimeInt {
         Vector3i sin120 = (py * (size * SphericalVector3i.sin(SphericalVector3i.D120))).toCartesian()
         addEvent(c + cos120 + sin120, v)
         addEvent(c + cos120 - sin120, v)
+    }
+
+    def addElectron(Point4i c, SphericalVector3i v, SphericalVector3i p, BigInteger size) {
+        if (!p.isNormalized()) {
+            p = p.normalized()
+        }
+        if (!v.isNormalized()) {
+            v = v.normalized()
+        }
+        // v and p needs to be perpendicular so cross should be normalized sin(teta)= 1
+        SphericalVector3i py = v.cross(p)
+        if (!py.isNormalized()) {
+            throw new IllegalArgumentException("Polarization $v and vector $p are not perpendicular!");
+        }
+        // Multiply by D180 is like div by 2
+        Vector3i midLine = (p * (size * SphericalVector3i.D180)).toCartesian()
+        // Sin 120 is sqrt(3)/2
+        Vector3i sqrt3div2 = (py * (size * SphericalVector3i.sin(SphericalVector3i.D120))).toCartesian()
+
+        addEvent(c - midLine, v)
+        addEvent(c + midLine, v)
+        addEvent(c + sqrt3div2, v)
+        addEvent(c - sqrt3div2, v)
     }
 
     def addEvent(Point4i point, SphericalVector3i direction) {

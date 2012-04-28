@@ -131,6 +131,7 @@ class EventBlockInt {
     public final BigInteger maxMagSquared
     public final BigInteger sumMagSquared
     public final BigInteger deltaTime
+    List<Vector3i> vectors
 
     static EventBlockInt createBlock(List<EventInt> es) {
         if (es.size() != 4) {
@@ -297,13 +298,13 @@ class EventBlockInt {
         Boolean previousDiffPositive = null
 
         while (true) {
+            List<Double> multipliers = [0d, 0d, 0d, 0d, 0d, 0d]
             def diffMagSquared = newSumMagSquared - calcSumMagSquared(points)
             if (MathUtils.almostEquals(diffMagSquared, MathUtils.EPSILON_INT * MathUtils.EPSILON_INT) ||
                     MathUtils.almostEquals(-diffMagSquared, MathUtils.EPSILON_INT * MathUtils.EPSILON_INT)) {
                 if (log) println "Perfectly equal $this == $newSumMagSquared"
                 break
             } else if (diffMagSquared > 0G) {
-                List<Double> multipliers = [0d, 0d, 0d, 0d, 0d, 0d]
                 // Need to increase smallest distance
                 def (int i, int j) = smallestSide(points)
                 if (log) println "Increasing small distance $diffMagSquared $newSumMagSquared using $i, $j"
@@ -312,7 +313,6 @@ class EventBlockInt {
                 } else {
                     multipliers[j + i] = (double) MathUtils.EPSILON_INT / SphericalVector3i.D180
                 }
-                points = fillResultingPoints(points, multipliers)
                 if (previousDiffPositive == null) {
                     previousDiffPositive = true
                 } else {
@@ -322,7 +322,6 @@ class EventBlockInt {
                     }
                 }
             } else if (diffMagSquared < 0G) {
-                List<Double> multipliers = [0d, 0d, 0d, 0d, 0d, 0d]
                 // Need to decrease biggest distance
                 def (int i, int j) = biggestSide(points)
                 if (log) println "Decreasing big distance $diffMagSquared $newSumMagSquared using $i, $j"
@@ -331,7 +330,6 @@ class EventBlockInt {
                 } else {
                     multipliers[j + i] = (double) -MathUtils.EPSILON_INT / SphericalVector3i.D180
                 }
-                points = fillResultingPoints(points, multipliers)
                 if (previousDiffPositive == null) {
                     previousDiffPositive = false
                 } else {
@@ -341,6 +339,7 @@ class EventBlockInt {
                     }
                 }
             }
+            points = fillResultingPoints(points, multipliers)
         }
         new EventBlockInt([
                 new EventInt(points[0], e[0].dir, e[0].createdByBlock, e[0].createdByTriangle),
@@ -351,9 +350,11 @@ class EventBlockInt {
     }
 
     public List<Point4i> fillResultingPoints(List<Point4i> points, ArrayList<Double> multipliers) {
-        List<Vector3i> vectors = getVectorsForPoints(points)
+        if (vectors == null) {
+            vectors = getVectorsForPoints(points)
+        }
         List<Point4i> results = []
-        results.add(points[0])
+        results.add(points[0] - (vectors[0] * multipliers[0]) - (vectors[1] * multipliers[1]) - (vectors[2] * multipliers[2]))
         results.add(points[1] + (vectors[0] * multipliers[0]) - (vectors[3] * multipliers[3]) - (vectors[4] * multipliers[4]))
         results.add(points[2] + (vectors[1] * multipliers[1]) + (vectors[3] * multipliers[3]) - (vectors[5] * multipliers[5]))
         results.add(points[3] + (vectors[2] * multipliers[2]) + (vectors[4] * multipliers[4]) + (vectors[5] * multipliers[5]))
