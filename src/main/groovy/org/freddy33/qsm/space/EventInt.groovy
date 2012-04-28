@@ -182,15 +182,15 @@ class EventBlockInt {
 
     EventTriangleInt tr4() { tr[3] }
 
-    public boolean isValid(BigInteger timePassedSquared) {
+    public boolean isValid(BigInteger timePassedSquared, boolean log) {
         if (maxMagSquared <= timePassedSquared) {
             // TODO: Check same 3D plane using diff between fDir of triangles
             // Check the radius of all triangle is below the max squared
             if (tr.any { it.radius2() > timePassedSquared }) {
-                println "Block $this has a triangle to flat for current time"
+                if (log) println "Block $this has a triangle to flat for current time"
                 return false
             }
-            println "Found valid block $this"
+            if (log) println "Found valid block $this"
             return true
         } else {
             return false
@@ -262,7 +262,7 @@ class EventBlockInt {
         e.each { it.used = true }
     }
 
-    EventBlockInt findNewEvents() {
+    EventBlockInt findNewEvents(boolean log) {
         List<EventInt> newEvents = []
         tr.each { EventTriangleInt t ->
             Point4i newPoint = t.findEvent()
@@ -276,29 +276,27 @@ class EventBlockInt {
             markUsed()
             // Activate conservation of time
             def newBlock = createBlock(newEvents)
-//            if (!MathUtils.almostEquals(newBlock.sumMagSquared, sumMagSquared)) {
-            println "Need to activate cons of time for $newBlock"
-            newBlock = newBlock.makeSizeEqualTo(sumMagSquared)
-//            }
+            newBlock = newBlock.makeSizeEqualTo(sumMagSquared, log)
             return newBlock
         }
         null
     }
 
-    EventBlockInt makeSizeEqualTo(BigInteger newSumMagSquared) {
+    EventBlockInt makeSizeEqualTo(BigInteger newSumMagSquared, boolean log) {
         List<Point4i> points = e.collect() { it.point }
         Boolean previousDiffPositive = null
 
         while (true) {
             def diffMagSquared = newSumMagSquared - calcSumMagSquared(points)
-            if (MathUtils.isSmallInt(diffMagSquared)) {
-                println "Perfectly equal $this == $newSumMagSquared"
+            if (MathUtils.almostEquals(diffMagSquared, MathUtils.EPSILON_INT * MathUtils.EPSILON_INT) ||
+                    MathUtils.almostEquals(-diffMagSquared, MathUtils.EPSILON_INT * MathUtils.EPSILON_INT)) {
+                if (log) println "Perfectly equal $this == $newSumMagSquared"
                 break
             } else if (diffMagSquared > 0G) {
                 List<Double> multipliers = [0d, 0d, 0d, 0d, 0d, 0d]
                 // Need to increase smallest distance
                 def (int i, int j) = smallestSide(points)
-                println "Increasing small distance $diffMagSquared $newSumMagSquared using $i, $j"
+                if (log) println "Increasing small distance $diffMagSquared $newSumMagSquared using $i, $j"
                 if (i == 0) {
                     multipliers[j - 1] = (double) MathUtils.EPSILON_INT / SphericalVector3i.D180
                 } else {
@@ -309,7 +307,7 @@ class EventBlockInt {
                     previousDiffPositive = true
                 } else {
                     if (!previousDiffPositive) {
-                        // Switched from + to - => stop
+                        // Switched from - to + => stop
                         break
                     }
                 }
@@ -317,7 +315,7 @@ class EventBlockInt {
                 List<Double> multipliers = [0d, 0d, 0d, 0d, 0d, 0d]
                 // Need to decrease biggest distance
                 def (int i, int j) = biggestSide(points)
-                println "Decreasing big distance $diffMagSquared $newSumMagSquared using $i, $j"
+                if (log) println "Decreasing big distance $diffMagSquared $newSumMagSquared using $i, $j"
                 if (i == 0) {
                     multipliers[j - 1] = (double) -MathUtils.EPSILON_INT / SphericalVector3i.D180
                 } else {

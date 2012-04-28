@@ -65,10 +65,6 @@ public class SpaceTimeInt {
         return res
     }
 
-    def manyCalc(int n) {
-        for (int i = 0; i < n; i++) calc()
-    }
-
     def printDetails() {
         println ""
         println "Current time: ${currentTime} Active Events: ${activeEvents.size()} Dead Events: ${deadEvents.size()}"
@@ -77,8 +73,8 @@ public class SpaceTimeInt {
         }
     }
 
-    CalcResult calc() {
-        printDetails()
+    CalcResult calc(boolean log) {
+        if (log) printDetails()
         if (activeEvents.size() < N) {
             println "Your universe is dull :)"
             return CalcResult.dullUniverse
@@ -98,11 +94,11 @@ public class SpaceTimeInt {
             }
 
             if (currentTime < smallestActiveTime) {
-                println "Jumping to ${smallestActiveTime} since no event time until"
+                if (log) println "Jumping to ${smallestActiveTime} since no event time until"
                 currentTime = smallestActiveTime
                 calcResult = CalcResult.changedTime
             }
-            if (addTimeToReachSmallestDistance(smallestMagSquared)) {
+            if (addTimeToReachSmallestDistance(smallestMagSquared, log)) {
                 calcResult = CalcResult.changedTime
             }
         }
@@ -127,8 +123,8 @@ public class SpaceTimeInt {
                     // For all N blocks try to find new events
                     def block = EventBlockInt.createBlock(evts)
                     if (block != null) {
-                        if (block.isValid(timePassedSquared)) {
-                            def newBlock = block.findNewEvents()
+                        if (block.isValid(timePassedSquared, log)) {
+                            def newBlock = block.findNewEvents(log)
                             if (newBlock) {
                                 newActiveEvents.addAll(newBlock.e)
                                 calcResult = CalcResult.createdEvents
@@ -147,12 +143,12 @@ public class SpaceTimeInt {
             activeEvents.removeAll(used)
             deadEvents.addAll(used)
             activeEvents.addAll(newActiveEvents)
-            printDetails()
+            if (log) printDetails()
             smallestActiveTime = null
             smallestMagSquared = null
         } else {
             if (smallestBlockSize != null) {
-                if (addTimeToReachSmallestDistance(smallestBlockSize)) {
+                if (addTimeToReachSmallestDistance(smallestBlockSize, log)) {
                     calcResult = CalcResult.changedTime
                 }
             } else {
@@ -163,12 +159,12 @@ public class SpaceTimeInt {
         return calcResult
     }
 
-    private boolean addTimeToReachSmallestDistance(BigInteger foundSmallestMagSquared) {
+    private boolean addTimeToReachSmallestDistance(BigInteger foundSmallestMagSquared, boolean log) {
         BigInteger currentSmallestDistance = currentTime - smallestActiveTime
         BigInteger foundSmallestDistance = (BigInteger) Math.sqrt((double) foundSmallestMagSquared)
         if (currentSmallestDistance < foundSmallestDistance - 1G) {
             def toAdd = foundSmallestDistance - currentSmallestDistance - 1G
-            println "Not enough time to communicate! Jumping to ${currentTime + toAdd} since nothing going on until"
+            if (log) println "Not enough time to communicate! Jumping to ${currentTime + toAdd} since nothing going on until"
             currentTime += toAdd
             true
         }

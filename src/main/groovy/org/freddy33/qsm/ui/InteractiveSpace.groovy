@@ -43,7 +43,7 @@ class InteractiveSpaceFrame {
             public void keyTyped(KeyEvent e) {
                 switch (e.getKeyChar()) {
                     case 's':
-                        st.calc()
+                        st.calc(true)
                         message = "Step: ${st.currentTime} Events: ${st.activeEvents.size()}";
                         chart.render();
                         break;
