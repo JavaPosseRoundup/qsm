@@ -126,8 +126,11 @@ public class SpaceTimeInt {
                     def block = EventBlockInt.createBlock(evts)
                     if (block != null) {
                         if (block.isValid(timePassedSquared)) {
-                            newActiveEvents.addAll(block.findNewEvents())
-                            somethingHappen = true
+                            def newBlock = block.findNewEvents()
+                            if (newBlock) {
+                                newActiveEvents.addAll(newBlock.es)
+                                somethingHappen = true
+                            }
                         } else if (smallestBlockSize == null || block.maxMagSquared < smallestBlockSize) {
                             smallestBlockSize = block.maxMagSquared
                         }

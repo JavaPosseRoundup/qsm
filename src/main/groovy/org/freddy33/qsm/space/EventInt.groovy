@@ -119,6 +119,7 @@ class EventBlockInt {
     final Set<EventTriangleInt> triangles = []
     final SphericalVector3i blockDir
     final BigInteger maxMagSquared
+    final BigInteger sumMagSquared
     final BigInteger deltaTime
 
     static EventBlockInt createBlock(List<EventInt> es) {
@@ -142,7 +143,8 @@ class EventBlockInt {
         this.es = es
         // Global dir of the block is the barycenter of directions vectors
         this.blockDir = SphericalVector3i.middleMan(es.collect { it.dir })
-        this.maxMagSquared = maxMagSquared()
+        this.maxMagSquared = calcMaxMagSquared(es.collect() { it.point })
+        this.sumMagSquared = calcSumMagSquared(es.collect() { it.point })
         this.deltaTime = (BigInteger) Math.sqrt((double) this.maxMagSquared)
         fillTriangles()
     }
@@ -162,17 +164,65 @@ class EventBlockInt {
         }
     }
 
-    private BigInteger maxMagSquared() {
+    private static BigInteger calcMaxMagSquared(List<Point4i> points) {
         BigInteger result = 0G
-        es.eachWithIndex { EventInt one, i ->
-            if (i < es.size() - 1) {
-                for (j in (i + 1)..(es.size() - 1)) {
-                    def m = one.point.magSquared(es[j].point)
+        points.eachWithIndex { Point4i one, i ->
+            if (i < points.size() - 1) {
+                for (j in (i + 1)..(points.size() - 1)) {
+                    def m = one.magSquared(points[j])
                     if (m > result) result = m
                 }
             }
         }
         result
+    }
+
+    private static BigInteger calcSumMagSquared(List<Point4i> points) {
+        BigInteger result = 0G
+        points.eachWithIndex { Point4i one, i ->
+            if (i < points.size() - 1) {
+                for (j in (i + 1)..(points.size() - 1)) {
+                    result += one.magSquared(points[j])
+                }
+            }
+        }
+        result
+    }
+
+    private static def smallestSide(List<Point4i> points) {
+        BigInteger smallDist2 = null
+        int a = -1, b = -1
+        points.eachWithIndex { Point4i one, i ->
+            if (i < points.size() - 1) {
+                for (j in (i + 1)..(points.size() - 1)) {
+                    def vMagSquared = one.magSquared(points[j])
+                    if (smallDist2 == null || smallDist2 > vMagSquared) {
+                        smallDist2 = vMagSquared
+                        a = i
+                        b = j
+                    }
+                }
+            }
+        }
+        [a, b]
+    }
+
+    private static def biggestSide(List<Point4i> points) {
+        BigInteger bigDist2 = null
+        int a = -1, b = -1
+        points.eachWithIndex { Point4i one, i ->
+            if (i < points.size() - 1) {
+                for (j in (i + 1)..(points.size() - 1)) {
+                    def vMagSquared = one.magSquared(points[j])
+                    if (bigDist2 == null || bigDist2 < vMagSquared) {
+                        bigDist2 = vMagSquared
+                        a = i
+                        b = j
+                    }
+                }
+            }
+        }
+        [a, b]
     }
 
     private def fillTriangles() {
@@ -194,7 +244,7 @@ class EventBlockInt {
         es.each { it.used = true }
     }
 
-    List<EventInt> findNewEvents() {
+    EventBlockInt findNewEvents() {
         List<EventInt> newEvents = []
         triangles.each { EventTriangleInt tr ->
             Point4i newPoint = tr.findEvent()
@@ -203,11 +253,85 @@ class EventBlockInt {
         if (newEvents.size() == es.size()) {
             // Conservation of events good
             markUsed()
-        } else {
-            // Missed
-            newEvents.clear()
+            // Activate conservation of time
+            def newBlock = createBlock(newEvents)
+            if (newBlock.sumMagSquared != sumMagSquared) {
+                println "Need to activate cons of time for $newBlock"
+                newBlock.makeSizeEqualTo(maxMagSquared)
+            }
+            return newBlock
         }
-        newEvents
+        null
+    }
+
+    EventBlockInt makeSizeEqualTo(BigInteger newSumMagSquared) {
+        List<Point4i> points = es.collect() { it.point }
+        List<Vector3i> vectors = [
+                new Vector3i(points[0], points[1]),
+                new Vector3i(points[0], points[2]),
+                new Vector3i(points[0], points[3]),
+                new Vector3i(points[1], points[2]),
+                new Vector3i(points[1], points[3]),
+                new Vector3i(points[2], points[3])
+        ]
+        List<Double> multipliers = [
+                0d,
+                0d,
+                0d,
+                0d,
+                0d,
+                0d
+        ]
+
+        List<Point4i> results = []
+        Boolean previousDiffPositive = null
+
+        while (true) {
+            results.clear()
+            results.add(points[0] - vectors[0] * multipliers[0] - vectors[1] * multipliers[1] - vectors[2] * multipliers[2])
+            results.add(points[1] + vectors[0] * multipliers[0] - vectors[3] * multipliers[3] - vectors[4] * multipliers[4])
+            results.add(points[2] + vectors[0] * multipliers[0] + vectors[3] * multipliers[3] - vectors[5] * multipliers[5])
+            results.add(points[3] + vectors[0] * multipliers[0] + vectors[4] * multipliers[4] + vectors[5] * multipliers[5])
+
+            def diffMagSquared = newSumMagSquared - calcSumMagSquared(results)
+            if (diffMagSquared > 0G) {
+                // Need to increase smallest distance
+                def (int i, int j) = smallestSide(results)
+                if (i == 0) {
+                    multipliers[j - 1] += 2d / SphericalVector3i.D180
+                } else {
+                    multipliers[j + i] += 2d / SphericalVector3i.D180
+                }
+                if (previousDiffPositive == null) {
+                    previousDiffPositive = true
+                } else {
+                    if (!previousDiffPositive) {
+                        // Switched from + to - => stop
+                        break
+                    }
+                }
+            } else if (diffMagSquared < 0G) {
+                // Need to decrease biggest distance
+                def (int i, int j) = biggestSide(results)
+                if (i == 0) {
+                    multipliers[j - 1] -= 2d / SphericalVector3i.D180
+                } else {
+                    multipliers[j + i] -= 2d / SphericalVector3i.D180
+                }
+                if (previousDiffPositive == null) {
+                    previousDiffPositive = false
+                } else {
+                    if (previousDiffPositive) {
+                        // Switched from + to - => stop
+                        break
+                    }
+                }
+            } else {
+                println "Perfectly equal $this == $newSumMagSquared"
+                break
+            }
+        }
+        null
     }
 
     @Override

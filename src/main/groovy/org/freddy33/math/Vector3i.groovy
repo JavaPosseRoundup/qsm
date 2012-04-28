@@ -48,6 +48,10 @@ class Vector3i {
         new Vector3i(x * d, y * d, z * d)
     }
 
+    Vector3i multiply(double d) {
+        new Vector3i((BigInteger) x * d, (BigInteger) y * d, (BigInteger) z * d)
+    }
+
     Vector3i plus(Vector3i v) {
         new Vector3i(x + v.x, y + v.y, z + v.z)
     }
