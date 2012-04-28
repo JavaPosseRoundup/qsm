@@ -81,7 +81,7 @@ public class TriangleIntTest extends Specification {
     def "test Big Triangles"() {
         expect:
         !triangle.isFlat()
-        MathUtils.almostEquals(triangle.findCenter(), center)
+        MathUtils.almostEquals(triangle.findCenter(), center, MathUtils.EPSILON_INT * 10G)
         triangle.fDir == dir || triangle.fDir == -dir
         MathUtils.almostEquals(triangle.radius2(), DIV * DIV * ratio * ratio)
 
@@ -102,7 +102,7 @@ public class TriangleIntTest extends Specification {
                 new Point4i(0G, sin120, -cos120, 3G) * ratio,
                 new Point4i(0G, -sin120, -cos120, 3G) * ratio,
                 new Point4i(0G, 0G, -DIV, 3G) * ratio,
-                new Point4i(0G, 0G, MathUtils.EPSILON_INT, 3G) * ratio
+                new Point4i(0G, 0G, 0G, 3G) * ratio
         ]
     }
 }
