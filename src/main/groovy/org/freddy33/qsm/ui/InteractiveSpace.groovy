@@ -43,9 +43,7 @@ class InteractiveSpaceFrame {
             public void keyTyped(KeyEvent e) {
                 switch (e.getKeyChar()) {
                     case 's':
-                        while (!st.calc()) {
-                            // Do nothing
-                        }
+                        st.calc()
                         message = "Step: ${st.currentTime} Events: ${st.activeEvents.size()}";
                         chart.render();
                         break;
@@ -71,6 +69,7 @@ class InteractiveSpaceFrame {
     }
 
     def InteractiveEventScatter createScatter() {
+        st.initPhoton(10G)
         scatter = new InteractiveEventScatter(st)
         scatter
     }

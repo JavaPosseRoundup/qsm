@@ -57,9 +57,9 @@ public class InteractiveEventScatter extends Scatter implements ISingleColorable
         List<EventInt> activeEvents = st.getActiveEvents();
         Map<EventBlockInt, List<EventInt>> pyramids = new HashMap<EventBlockInt, List<EventInt>>();
         for (EventInt activeEvent : activeEvents) {
-            Point4i point = activeEvent.getPoint();
+            Point4i point = activeEvent.point;
             if (point.getT().equals(st.getCurrentTime().subtract(new BigInteger("1")))) {
-                EventBlockInt block = activeEvent.getCreatedByBlock();
+                EventBlockInt block = activeEvent.createdByBlock;
                 if (block != null) {
                     List<EventInt> events = pyramids.get(block);
                     if (events == null) {
@@ -77,10 +77,9 @@ public class InteractiveEventScatter extends Scatter implements ISingleColorable
 
         // Print all dead events that currently activated a new event
         setColor(gl, activating);
-        for (EventBlockInt eventBlockInt : pyramids.keySet()) {
-            List<EventInt> es = eventBlockInt.getEs();
-            for (EventInt e : es) {
-                setVertex3f(gl, e.getPoint());
+        for (EventBlockInt eb : pyramids.keySet()) {
+            for (int i = 0; i < eb.e.length; i++) {
+                setVertex3f(gl, eb.e[i].point);
             }
         }
         gl.glEnd();
@@ -89,36 +88,36 @@ public class InteractiveEventScatter extends Scatter implements ISingleColorable
         for (List<EventInt> events : pyramids.values()) {
             int i = 0;
             for (EventInt event : events) {
-                EventTriangleInt createdByTriangle = event.getCreatedByTriangle();
+                EventTriangleInt createdByTriangle = event.createdByTriangle;
 
                 // All lines pointing from creating triangle to new event
                 setColor(gl, activationLine);
                 gl.glBegin(GL2.GL_LINES);
-                setVertex3f(gl, event.getPoint());
-                setVertex3f(gl, createdByTriangle.getE1().getPoint());
+                setVertex3f(gl, event.point);
+                setVertex3f(gl, createdByTriangle.e1().point);
                 gl.glEnd();
                 gl.glBegin(GL2.GL_LINES);
-                setVertex3f(gl, event.getPoint());
-                setVertex3f(gl, createdByTriangle.getE2().getPoint());
+                setVertex3f(gl, event.point);
+                setVertex3f(gl, createdByTriangle.e2().point);
                 gl.glEnd();
                 gl.glBegin(GL2.GL_LINES);
-                setVertex3f(gl, event.getPoint());
-                setVertex3f(gl, createdByTriangle.getE3().getPoint());
+                setVertex3f(gl, event.point);
+                setVertex3f(gl, createdByTriangle.e3().point);
                 gl.glEnd();
 
                 // The old triangle (ending up doing the all block lines)
                 setColor(gl, this.blockLine);
                 gl.glBegin(GL2.GL_LINES);
-                setVertex3f(gl, createdByTriangle.getE1().getPoint());
-                setVertex3f(gl, createdByTriangle.getE2().getPoint());
+                setVertex3f(gl, createdByTriangle.e1().point);
+                setVertex3f(gl, createdByTriangle.e2().point);
                 gl.glEnd();
                 gl.glBegin(GL2.GL_LINES);
-                setVertex3f(gl, createdByTriangle.getE2().getPoint());
-                setVertex3f(gl, createdByTriangle.getE3().getPoint());
+                setVertex3f(gl, createdByTriangle.e2().point);
+                setVertex3f(gl, createdByTriangle.e3().point);
                 gl.glEnd();
                 gl.glBegin(GL2.GL_LINES);
-                setVertex3f(gl, createdByTriangle.getE3().getPoint());
-                setVertex3f(gl, createdByTriangle.getE1().getPoint());
+                setVertex3f(gl, createdByTriangle.e3().point);
+                setVertex3f(gl, createdByTriangle.e1().point);
                 gl.glEnd();
 
                 // The new block one at a time
@@ -126,8 +125,8 @@ public class InteractiveEventScatter extends Scatter implements ISingleColorable
                 if (i < events.size() - 1) {
                     for (int j = i + 1; j < events.size(); j++) {
                         gl.glBegin(GL2.GL_LINES);
-                        setVertex3f(gl, event.getPoint());
-                        setVertex3f(gl, events.get(j).getPoint());
+                        setVertex3f(gl, event.point);
+                        setVertex3f(gl, events.get(j).point);
                         gl.glEnd();
                     }
                 }

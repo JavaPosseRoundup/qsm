@@ -39,7 +39,7 @@ class Point4i {
     }
 
     public BigInteger magSquared(Point4i c) {
-        (x - c.x) ** 2G + (y - c.y) ** 2G + (z - c.z) ** 2G + (t - c.t) ** 2G
+        (x - c.x) * (x - c.x) + (y - c.y) * (y - c.y) + (z - c.z) * (z - c.z) + (t - c.t) * (t - c.t)
     }
 
     String toString() {

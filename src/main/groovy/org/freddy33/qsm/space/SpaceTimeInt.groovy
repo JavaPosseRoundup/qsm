@@ -25,32 +25,36 @@ public class SpaceTimeInt {
 
     SpaceTimeInt(BigInteger ratio) {
         initialRatio = ratio
-        init()
-    }
-
-    def init() {
         fixedPoints = [
                 new Point4i(-fixPointRatio, -fixPointRatio, -fixPointRatio, 0G) * DIV * initialRatio,
                 new Point4i(fixPointRatio, fixPointRatio, fixPointRatio, 0G) * DIV * initialRatio
         ]
+    }
+
+    def initPhoton(BigInteger size) {
         addPhoton(new Point4i(0G, 0G, 0G, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, 0G, 0G),
-                initialRatio * DIV)
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(0G, 0G),
+                size)
     }
 
     def addPhoton(Point4i c, SphericalVector3i v, SphericalVector3i p, BigInteger size) {
-        p = p.normalized()
-        v = v.normalized()
+        if (!p.isNormalized()) {
+            p = p.normalized()
+        }
+        if (!v.isNormalized()) {
+            v = v.normalized()
+        }
         // v and p needs to be perpendicular so cross should be normalized sin(teta)= 1
         SphericalVector3i py = v.cross(p)
         if (!py.isNormalized()) {
-            throw new IllegalArgumentException("Polarization $v and vector $v are not perpendicular!");
+            throw new IllegalArgumentException("Polarization $v and vector $p are not perpendicular!");
         }
         addEvent(c, v)
-        addEvent(c + (p * size), v)
-        Vector3i cos120 = (p * ((BigInteger) size * SphericalVector3i.cos(SphericalVector3i.D120) / DIV)).toCartesian()
-        Vector3i sin120 = (py * ((BigInteger) size * SphericalVector3i.sin(SphericalVector3i.D120) / DIV)).toCartesian()
+        //Real size is in div units
+        addEvent(c + (p * (size * DIV)), v)
+        Vector3i cos120 = (p * (size * SphericalVector3i.cos(SphericalVector3i.D120))).toCartesian()
+        Vector3i sin120 = (py * (size * SphericalVector3i.sin(SphericalVector3i.D120))).toCartesian()
         addEvent(c + cos120 + sin120, v)
         addEvent(c + cos120 - sin120, v)
     }
@@ -73,19 +77,13 @@ public class SpaceTimeInt {
         }
     }
 
-    boolean calc() {
-        if (currentTime % DIV == 0) {
-            print "."
-        }
-        if (currentTime % (initialRatio * DIV) == 0) {
-            printDetails()
-        }
-        currentTime += 1G
+    CalcResult calc() {
+        printDetails()
         if (activeEvents.size() < N) {
             println "Your universe is dull :)"
-            return true
+            return CalcResult.dullUniverse
         }
-        boolean somethingHappen = false
+        CalcResult calcResult = null
         if (smallestActiveTime == null) {
             smallestActiveTime = activeEvents[0].point.t
             smallestMagSquared = activeEvents[0].point.magSquared(activeEvents[1].point)
@@ -100,13 +98,17 @@ public class SpaceTimeInt {
             }
 
             if (currentTime < smallestActiveTime) {
-                println "Jumping to ${smallestActiveTime} since nothing going on until"
+                println "Jumping to ${smallestActiveTime} since no event time until"
                 currentTime = smallestActiveTime
-                somethingHappen = true
+                calcResult = CalcResult.changedTime
             }
             if (addTimeToReachSmallestDistance(smallestMagSquared)) {
-                somethingHappen = true
+                calcResult = CalcResult.changedTime
             }
+        }
+        if (calcResult == null) {
+            calcResult = CalcResult.increment
+            currentTime += 1G
         }
 
         BigInteger smallestBlockSize = null
@@ -128,8 +130,8 @@ public class SpaceTimeInt {
                         if (block.isValid(timePassedSquared)) {
                             def newBlock = block.findNewEvents()
                             if (newBlock) {
-                                newActiveEvents.addAll(newBlock.es)
-                                somethingHappen = true
+                                newActiveEvents.addAll(newBlock.e)
+                                calcResult = CalcResult.createdEvents
                             }
                         } else if (smallestBlockSize == null || block.maxMagSquared < smallestBlockSize) {
                             smallestBlockSize = block.maxMagSquared
@@ -139,7 +141,7 @@ public class SpaceTimeInt {
             }
         }
 
-        if (somethingHappen) {
+        if (calcResult == CalcResult.createdEvents) {
             // Clean all used events
             List<EventInt> used = activeEvents.findAll { it.used }
             activeEvents.removeAll(used)
@@ -150,13 +152,15 @@ public class SpaceTimeInt {
             smallestMagSquared = null
         } else {
             if (smallestBlockSize != null) {
-                addTimeToReachSmallestDistance(smallestBlockSize)
+                if (addTimeToReachSmallestDistance(smallestBlockSize)) {
+                    calcResult = CalcResult.changedTime
+                }
             } else {
                 println "We have a problem no active block found!"
+                calcResult = CalcResult.dullUniverse
             }
-            somethingHappen = true
         }
-        return somethingHappen
+        return calcResult
     }
 
     private boolean addTimeToReachSmallestDistance(BigInteger foundSmallestMagSquared) {
@@ -184,4 +188,8 @@ public class SpaceTimeInt {
             }
         }
     }
+}
+
+enum CalcResult {
+    dullUniverse, increment, changedTime, createdEvents
 }

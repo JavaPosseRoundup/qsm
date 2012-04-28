@@ -31,7 +31,25 @@ class MathUtils {
         } else if (a == 0G) {
             return isSmallInt(b)
         } else {
-            return isSmallInt((BigInteger) ((b - a) / b))
+            if (isSmallInt(a - b)) {
+                return true
+            }
+            BigInteger ma = a
+            BigInteger mb = b
+            BigInteger d = a - b
+            if (d < 0G) {
+                d = -d
+            }
+            if (ma < 0G) {
+                ma = -ma
+            }
+            if (mb < 0G) {
+                mb = -mb
+            }
+            if (d >= ma || d >= mb) {
+                return false
+            }
+            return (d / max(ma, mb)) < EPSILON_INT.toBigDecimal()
         }
     }
 
@@ -40,6 +58,14 @@ class MathUtils {
             return -i < EPSILON_INT
         } else {
             return i < EPSILON_INT
+        }
+    }
+
+    public static boolean isSmallDecimal(BigDecimal i) {
+        if (i < 0G) {
+            return -i < EPSILON_INT.toBigDecimal()
+        } else {
+            return i < EPSILON_INT.toBigDecimal()
         }
     }
 

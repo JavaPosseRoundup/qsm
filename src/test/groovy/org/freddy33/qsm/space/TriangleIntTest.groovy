@@ -37,10 +37,10 @@ public class TriangleIntTest extends Specification {
                 new EventInt(new Point4i(0G, 0G, 0G, 3G), new SphericalVector3i(5G * DIV, SphericalVector3i.D45, SphericalVector3i.D45))
         ]
         dir << [
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, SphericalVector3i.D45),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D45, SphericalVector3i.D45)
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, SphericalVector3i.D45),
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D45, SphericalVector3i.D45)
         ]
         dirVect << [
                 new Vector3i(DIV, 0G, 0G),
@@ -65,10 +65,10 @@ public class TriangleIntTest extends Specification {
                 new EventTriangleInt(evt2, evt3, evt4, null)
         ]
         dir << [
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G)
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, 0G)
         ]
         center << [
                 new Point4i(0G, sin120, -cos120, 3G),
@@ -93,16 +93,16 @@ public class TriangleIntTest extends Specification {
                 new EventTriangleInt(bigEvt2, bigEvt3, bigEvt4, null)
         ]
         dir << [
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G)
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, 0G)
         ]
         center << [
                 new Point4i(0G, sin120, -cos120, 3G) * ratio,
                 new Point4i(0G, -sin120, -cos120, 3G) * ratio,
                 new Point4i(0G, 0G, -DIV, 3G) * ratio,
-                new Point4i(0G, 0G, MathUtils.EPSILON_INT, 3G)
+                new Point4i(0G, 0G, MathUtils.EPSILON_INT, 3G) * ratio
         ]
     }
 }

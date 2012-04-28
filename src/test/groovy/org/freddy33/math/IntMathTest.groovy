@@ -5,15 +5,38 @@ import spock.lang.Specification
 import static SphericalVector3i.DIV
 
 class IntMathTest extends Specification {
+    def "basic Math"() {
+        expect:
+        MathUtils.almostEquals(MathUtils.EPSILON_INT - 1G, 0G)
+        MathUtils.almostEquals(1G - MathUtils.EPSILON_INT, 0G)
+        MathUtils.almostEquals(0G, MathUtils.EPSILON_INT - 1G)
+        MathUtils.almostEquals(0G, 1G - MathUtils.EPSILON_INT)
+
+        !MathUtils.almostEquals(MathUtils.EPSILON_INT, 0G)
+        !MathUtils.almostEquals(-MathUtils.EPSILON_INT, 0G)
+        !MathUtils.almostEquals(MathUtils.EPSILON_INT + 1G, 1G)
+        !MathUtils.almostEquals(MathUtils.EPSILON_INT - 1G, -1G)
+        !MathUtils.almostEquals(0G, MathUtils.EPSILON_INT)
+        !MathUtils.almostEquals(0G, -MathUtils.EPSILON_INT)
+        !MathUtils.almostEquals(1G, 1G + MathUtils.EPSILON_INT)
+        !MathUtils.almostEquals(-1G, MathUtils.EPSILON_INT - 1G)
+
+        MathUtils.almostEquals(MathUtils.EPSILON_INT, 1G)
+        MathUtils.almostEquals(-MathUtils.EPSILON_INT, -1G)
+        MathUtils.almostEquals(1G, MathUtils.EPSILON_INT)
+        MathUtils.almostEquals(-1G, -MathUtils.EPSILON_INT)
+        !MathUtils.almostEquals(-SphericalVector3i.D180, SphericalVector3i.D180)
+    }
+
     def "basic Trig"() {
         expect:
-        SphericalVector3i.trigMap[SphericalVector3i.D30] == SphericalVector3i.D180
-        SphericalVector3i.cos(SphericalVector3i.D120) == -SphericalVector3i.D180
+        MathUtils.almostEquals(SphericalVector3i.trigMap[SphericalVector3i.D30], SphericalVector3i.D180)
+        MathUtils.almostEquals(SphericalVector3i.cos(SphericalVector3i.D120), -SphericalVector3i.D180)
         SphericalVector3i.sin(0G) == 0G
-        SphericalVector3i.sin(SphericalVector3i.D30) == SphericalVector3i.D180
-        SphericalVector3i.invTrigMap[SphericalVector3i.D180] == SphericalVector3i.D30
-        SphericalVector3i.asin(SphericalVector3i.D180) == SphericalVector3i.D30
-        SphericalVector3i.asin(-SphericalVector3i.D180) == -SphericalVector3i.D30
+        MathUtils.almostEquals(SphericalVector3i.sin(SphericalVector3i.D30), SphericalVector3i.D180)
+        MathUtils.almostEquals(SphericalVector3i.invTrigMap[SphericalVector3i.D180], SphericalVector3i.D30)
+        MathUtils.almostEquals(SphericalVector3i.asin(SphericalVector3i.D180), SphericalVector3i.D30)
+        MathUtils.almostEquals(SphericalVector3i.asin(-SphericalVector3i.D180), -SphericalVector3i.D30)
     }
 
     def "test Point4i"() {
@@ -101,11 +124,11 @@ class IntMathTest extends Specification {
         where:
         vect << [
                 new SphericalVector3i(0G, 0G, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, SphericalVector3i.D90),
-                new SphericalVector3i(DIV, 0G, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D120, 0G),
-                new SphericalVector3i(DIV, SphericalVector3i.D90, SphericalVector3i.D120)
+                new SphericalVector3i(SphericalVector3i.D90, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, SphericalVector3i.D90),
+                new SphericalVector3i(0G, 0G),
+                new SphericalVector3i(SphericalVector3i.D120, 0G),
+                new SphericalVector3i(SphericalVector3i.D90, SphericalVector3i.D120)
         ]
         mult3 << [
                 new Vector3i(0G, 0G, 0G),

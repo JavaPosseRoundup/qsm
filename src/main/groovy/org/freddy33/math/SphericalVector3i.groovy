@@ -3,7 +3,7 @@ package org.freddy33.math;
 public class SphericalVector3i {
     public static final Map<BigInteger, BigInteger> trigMap = [:]
     public static final Map<BigInteger, BigInteger> invTrigMap = [:]
-    public static final BigInteger D5 = 3G * 3G * 3G * 2G * 2G
+    public static final BigInteger D5 = 2G * 3G * 5G * 7G
     public static final BigInteger D45 = D5 * 5G
     public static final BigInteger D30 = D5 * 6G
     public static final BigInteger D90 = D30 * 3G
@@ -94,6 +94,15 @@ public class SphericalVector3i {
 
     final BigInteger r, teta /* [0, pi] */, phi /* [-pi, pi] */
 
+    /**
+     * Create a normalized spherical vector for teta phi
+     * @param pteta
+     * @param pphi
+     */
+    public SphericalVector3i(BigInteger pteta, pphi) {
+        this(DIV, pteta, pphi)
+    }
+
     public SphericalVector3i(BigInteger pr, pteta, pphi) {
         r = pr
         teta = pteta
@@ -118,7 +127,7 @@ public class SphericalVector3i {
         }
         while (resultPhi > D180) resultPhi -= DIV
         while (resultPhi <= -D180) resultPhi += DIV
-        new SphericalVector3i(DIV, resultTeta, resultPhi)
+        new SphericalVector3i(resultTeta, resultPhi)
     }
 
     private validate() {
@@ -187,7 +196,7 @@ public class SphericalVector3i {
 
     SphericalVector3i normalized() {
         // Normalized on DIV
-        new SphericalVector3i(DIV, teta, phi)
+        new SphericalVector3i(teta, phi)
     }
 
     BigInteger mod(SphericalVector3i v) {
@@ -210,7 +219,7 @@ public class SphericalVector3i {
         def rd = Math.sqrt((double) result.magSquared())
         BigInteger resultPhi = atan2(result.y, result.x)
         BigInteger resultTeta = acos((BigInteger) result.z / rd)
-        new SphericalVector3i(DIV, resultTeta, resultPhi)
+        new SphericalVector3i(resultTeta, resultPhi)
     }
 
     public Vector3i normalizedToVectorInt() {
