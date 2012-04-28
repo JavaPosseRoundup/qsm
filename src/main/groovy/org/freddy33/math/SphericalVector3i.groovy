@@ -3,7 +3,9 @@ package org.freddy33.math;
 public class SphericalVector3i {
     public static final Map<BigInteger, BigInteger> trigMap = [:]
     public static final Map<BigInteger, BigInteger> invTrigMap = [:]
-    public static final BigInteger D30 = 3888G
+    public static final BigInteger D5 = 3G * 3G * 3G * 2G * 2G
+    public static final BigInteger D45 = D5 * 5G
+    public static final BigInteger D30 = D5 * 6G
     public static final BigInteger D90 = D30 * 3G
     public static final BigInteger DIV = D90 * 4G
     public static final BigInteger D180 = D90 * 2G

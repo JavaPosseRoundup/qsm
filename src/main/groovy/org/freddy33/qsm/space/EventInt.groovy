@@ -25,7 +25,11 @@ class EventInt {
 
     EventInt(Point4i p, SphericalVector3i v, EventBlockInt from, EventTriangleInt tr) {
         point = p
-        dir = v
+        if (v.isNormalized()) {
+            dir = v
+        } else {
+            dir = v.normalized()
+        }
         createdByBlock = from
         createdByTriangle = tr
     }
@@ -60,7 +64,7 @@ class EventTriangleInt {
         }
         // Final direction (perpendicular to triangle plane) is cross vector
         def fd = new SphericalVector3i(v12v23cross).normalized()
-        if ((fd % from.blockDir) < 0G) {
+        if (from != null && ((fd % from.blockDir) < 0G)) {
             fDir = fd.negative()
         } else {
             fDir = fd

@@ -26,6 +26,10 @@ class Point4i {
         plus(p.toCartesian())
     }
 
+    public Point4i negative() {
+        new Point4i(-x, -y, -z, t)
+    }
+
     public Point4i minus(Vector3i v) {
         new Point4i(x - v.x, y - v.y, z - v.z, t)
     }
