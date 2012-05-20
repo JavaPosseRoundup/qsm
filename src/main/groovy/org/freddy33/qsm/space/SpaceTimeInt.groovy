@@ -5,6 +5,7 @@ import org.freddy33.math.SphericalVector3i
 import org.freddy33.math.Vector3i
 
 import static SphericalVector3i.ONE
+import org.freddy33.math.MathUtils
 
 /**
  * Date: 12/6/11
@@ -159,8 +160,11 @@ public class SpaceTimeInt {
                                 newActiveEvents.addAll(newBlock.e)
                                 calcResult = CalcResult.createdEvents
                             }
-                        } else if (smallestBlockSize == null || block.maxMagSquared < smallestBlockSize) {
-                            smallestBlockSize = block.maxMagSquared
+                        } else {
+                            BigInteger maxTimeForBlock = MathUtils.max(block.maxMagSquared, block.maxRadius2)
+                            if (smallestBlockSize == null || maxTimeForBlock < smallestBlockSize) {
+                                smallestBlockSize = maxTimeForBlock
+                            }
                         }
                     }
                 }

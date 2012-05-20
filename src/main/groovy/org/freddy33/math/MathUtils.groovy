@@ -107,6 +107,18 @@ class MathUtils {
         return false
     }
 
+    static BigInteger max(List<BigInteger> vals) {
+        BigInteger result = 0G
+        vals.each {
+            def bi = it
+            if (bi < 0G) {
+                bi = -bi
+            }
+            if (bi > result) result = bi
+        }
+        result
+    }
+
     static BigInteger max(BigInteger... vals) {
         BigInteger result = 0G
         vals.each {

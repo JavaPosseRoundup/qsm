@@ -22,7 +22,7 @@ class SpaceTimeIntTest extends Specification {
     static BigInteger deltaX = (BigInteger) Math.sqrt((double) (bigDist * bigDist) - (ratio * ratio * ONE * ONE))
     public static final BigInteger PRECISION = 500G
 
-    private def findNextGoodCalc(SpaceTimeInt st, BigInteger around, boolean log) {
+    public static def findNextGoodCalc(SpaceTimeInt st, BigInteger around, boolean log) {
         CalcResult res = st.calc(log)
         if (res == CalcResult.dullUniverse) {
             return false
@@ -96,17 +96,17 @@ class SpaceTimeIntTest extends Specification {
             findNextGoodCalc(st, bigDist * i, false)
             st.activeEvents.size() == 4
             st.deadEvents.size() == 4 * i
-            println "Neg Z i=$i"
+            println "Neg Z i=$i time=${st.currentTime}"
             st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, 0G, 0G, bigDist * i), PRECISION) }
             st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, 0G, -ratio * ONE, bigDist * i), PRECISION) }
             st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, ratio * sin120, -ratio * cos120, bigDist * i), PRECISION) }
             st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, -ratio * sin120, -ratio * cos120, bigDist * i), PRECISION) }
 
             i++
-            println "Pos Z i=$i"
             findNextGoodCalc(st, bigDist * i, false)
             st.activeEvents.size() == 4
             st.deadEvents.size() == 4 * i
+            println "Pos Z i=$i time=${st.currentTime}"
             st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, 0G, 0G, bigDist * i), PRECISION) }
             st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, 0G, ratio * ONE, bigDist * i), PRECISION) }
             st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, ratio * sin120, ratio * cos120, bigDist * i), PRECISION) }

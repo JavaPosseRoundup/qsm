@@ -186,6 +186,16 @@ public class SphericalVector3i {
         return new SphericalVector3i(r, D180 - teta, nphi)
     }
 
+    SphericalVector3i setR(BigInteger d) {
+        if (d > 0G) {
+            new SphericalVector3i(d, teta, phi)
+        } else if (d == 0G) {
+            new SphericalVector3i(0G, 0G, 0G)
+        } else {
+            negative().setR(-d)
+        }
+    }
+
     SphericalVector3i multiply(BigInteger d) {
         if (d < 0G) {
             negative().multiply(-d)
