@@ -11,7 +11,7 @@ class MathUtils {
     static double sin120 = Math.sin(2d * Math.PI / 3d)
     static double cos120 = -0.5d
     public static final double EPSILON = 1e-6d
-    public static final BigInteger EPSILON_INT = 3G * 2G
+    public static final BigInteger EPSILON_INT = 2G
 
     static boolean eq(double a, double b) {
         if (b == a) return true

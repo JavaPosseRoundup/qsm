@@ -3,22 +3,26 @@ package org.freddy33.math;
 public class SphericalVector3i {
     public static final Map<BigInteger, BigInteger> trigMap = [:]
     public static final Map<BigInteger, BigInteger> invTrigMap = [:]
-    public static final BigInteger D5 = 2G * 3G * 5G * 7G
+    public static final BigInteger D5 = 2G * 2G * 3G * 5G * 7G
     public static final BigInteger D45 = D5 * 5G
     public static final BigInteger D30 = D5 * 6G
     public static final BigInteger D90 = D30 * 3G
-    public static final BigInteger DIV = D90 * 4G
     public static final BigInteger D180 = D90 * 2G
     public static final BigInteger D120 = D30 * 4G
+    public static final BigInteger DIV = D90 * 4G
 
-    static double CONVERTER = DIV / (2d * Math.PI)
+    public static final BigInteger ONE_HALF = (BigInteger) (DIV * Math.PI)
+    public static final BigInteger ONE = ONE_HALF * 2G
+
+    public static double CONVERTER = (DIV / (2d * Math.PI))
+
     static {
-        BigInteger lastSinVal
+        BigInteger lastSinVal = null
         for (i in 0G..D90) {
-            BigInteger sinVal = (BigInteger) (DIV * Math.sin(i / CONVERTER))
+            BigInteger sinVal = (BigInteger) (ONE * Math.sin(i / CONVERTER))
             trigMap.put(i, sinVal)
-            invTrigMap.put(sinVal, i)
-            if (lastSinVal != null && sinVal - 1G > lastSinVal) {
+            if (!invTrigMap.containsKey(sinVal)) invTrigMap.put(sinVal, i)
+            if (lastSinVal != null && (sinVal - 1G) > lastSinVal) {
                 // Some holes to fill
                 BigInteger holeSize = sinVal - lastSinVal - 1G
                 for (h in 1G..holeSize) {
@@ -27,7 +31,9 @@ public class SphericalVector3i {
             }
             lastSinVal = sinVal
         }
-        println "Trig map found ${trigMap.size()} and ${invTrigMap.size()}"
+        println "Trig map found for PI=$D180 ONE=$ONE trigSize=${trigMap.size()} and invTrigSize=${invTrigMap.size()}"
+//        println "Trig map=${trigMap}"
+//        println "Invers Trig map=${invTrigMap}"
     }
 
     static BigInteger atan2(BigInteger y, BigInteger x) {
@@ -60,8 +66,8 @@ public class SphericalVector3i {
     }
 
     static BigInteger asin(BigInteger sinVal) {
-        if (sinVal < -DIV || sinVal > DIV) {
-            throw new IllegalArgumentException("A sin value cannot be ${sinVal} above or below +- ${DIV}")
+        if (sinVal < -ONE || sinVal > ONE) {
+            throw new IllegalArgumentException("A sin value cannot be ${sinVal} above or below +- ${ONE}")
         }
         if (sinVal < 0G) {
             return -invTrigMap.get(-sinVal)
@@ -100,7 +106,7 @@ public class SphericalVector3i {
      * @param pphi
      */
     public SphericalVector3i(BigInteger pteta, pphi) {
-        this(DIV, pteta, pphi)
+        this(ONE, pteta, pphi)
     }
 
     public SphericalVector3i(BigInteger pr, pteta, pphi) {
@@ -132,9 +138,9 @@ public class SphericalVector3i {
 
     private validate() {
         if (r < 0G) throw new IllegalArgumentException("Spherical coord r cannot be neg! For $this")
-        if (teta < 0G || teta > D180) throw new IllegalArgumentException("Spherical coord teta between 0 and PI! For $this")
-        if ((teta == 0G || teta == D180) && phi != 0G) throw new IllegalArgumentException("Phi should be zero for teta 0 or PI! For $this")
-        if (phi <= -D180 || phi > D180) throw new IllegalArgumentException("Spherical coord phi between -PI and PI! For $this")
+        if (teta < 0G || teta > D180) throw new IllegalArgumentException("Spherical coord teta between 0 and PI=$D180! For $this")
+        if ((teta == 0G || teta == D180) && phi != 0G) throw new IllegalArgumentException("Phi should be zero for teta 0 or PI=$D180! For $this")
+        if (phi <= -D180 || phi > D180) throw new IllegalArgumentException("Spherical coord phi between -PI=${-D180} and PI=$D180! For $this")
     }
 
     public SphericalVector3i(Point4i p1, Point4i p2) {
@@ -158,8 +164,8 @@ public class SphericalVector3i {
         BigInteger sinTeta = sin(teta)
         BigInteger x = cos(phi) * sinTeta
         BigInteger y = sin(phi) * sinTeta
-        BigInteger z = DIV * cos(teta)
-        new Vector3i((BigInteger) x * r / (DIV * DIV), (BigInteger) y * r / (DIV * DIV), (BigInteger) z * r / (DIV * DIV))
+        BigInteger z = ONE * cos(teta)
+        new Vector3i((BigInteger) x * r / (ONE * ONE), (BigInteger) y * r / (ONE * ONE), (BigInteger) z * r / (ONE * ONE))
     }
 
     public BigInteger d() {
@@ -189,7 +195,7 @@ public class SphericalVector3i {
             if (isNormalized()) {
                 new SphericalVector3i(d, teta, phi)
             } else {
-                new SphericalVector3i((BigInteger) (r * d) / DIV, teta, phi)
+                new SphericalVector3i((BigInteger) (r * d) / ONE, teta, phi)
             }
         }
     }
@@ -208,7 +214,7 @@ public class SphericalVector3i {
         BigInteger cosPhi1MinusPhi2 = cos(this.phi - v.phi)
         BigInteger cosTeta1MinusTeta2 = cos(this.teta - v.teta)
         BigInteger cosTeta1PlusTeta2 = cos(this.teta + v.teta)
-        (BigInteger) (this.r * v.r * ((2G * DIV + cosPhi1MinusPhi2) * cosTeta1MinusTeta2 + (2G * DIV - cosPhi1MinusPhi2) * cosTeta1PlusTeta2) / (DIV * DIV))
+        (BigInteger) (this.r * v.r * ((2G * ONE + cosPhi1MinusPhi2) * cosTeta1MinusTeta2 + (2G * ONE - cosPhi1MinusPhi2) * cosTeta1PlusTeta2) / (ONE * ONE))
     }
 
     SphericalVector3i cross(SphericalVector3i v) {
@@ -226,12 +232,12 @@ public class SphericalVector3i {
         if (!isNormalized()) throw new IllegalArgumentException("$this is not a normalized vector")
         BigInteger myX = cos(phi) * sin(teta)
         BigInteger myY = sin(phi) * sin(teta)
-        BigInteger myZ = cos(teta) * DIV
+        BigInteger myZ = cos(teta) * ONE
         new Vector3i(myX, myY, myZ)
     }
 
     public boolean isNormalized() {
-        r == DIV
+        r == ONE
     }
 
     @Override

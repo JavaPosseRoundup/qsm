@@ -70,6 +70,7 @@ class InteractiveSpaceFrame {
 
     def InteractiveEventScatter createScatter() {
         st.initElectron(10G)
+        st.initPhoton(3G)
         scatter = new InteractiveEventScatter(st)
         scatter
     }

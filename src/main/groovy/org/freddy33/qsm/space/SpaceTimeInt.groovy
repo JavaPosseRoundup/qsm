@@ -4,7 +4,7 @@ import org.freddy33.math.Point4i
 import org.freddy33.math.SphericalVector3i
 import org.freddy33.math.Vector3i
 
-import static SphericalVector3i.DIV
+import static SphericalVector3i.ONE
 
 /**
  * Date: 12/6/11
@@ -13,7 +13,7 @@ import static SphericalVector3i.DIV
  */
 public class SpaceTimeInt {
     static int N = 4
-    public static final BigInteger fixPointRatio = 12G
+    public static final BigInteger fixPointRatio = 4G
 
     BigInteger initialRatio = 1G
     BigInteger currentTime = 0G
@@ -26,8 +26,8 @@ public class SpaceTimeInt {
     SpaceTimeInt(BigInteger ratio) {
         initialRatio = ratio
         fixedPoints = [
-                new Point4i(-fixPointRatio, -fixPointRatio, -fixPointRatio, 0G) * DIV * initialRatio,
-                new Point4i(fixPointRatio, fixPointRatio, fixPointRatio, 0G) * DIV * initialRatio
+                new Point4i(-fixPointRatio, -fixPointRatio, -fixPointRatio, 0G) * ONE * initialRatio,
+                new Point4i(fixPointRatio, fixPointRatio, fixPointRatio, 0G) * ONE * initialRatio
         ]
     }
 
@@ -59,7 +59,7 @@ public class SpaceTimeInt {
         }
         addEvent(c, v)
         //Real size is in div units
-        addEvent(c + (p * (size * DIV)), v)
+        addEvent(c + (p * (size * ONE)), v)
         Vector3i cos120 = (p * (size * SphericalVector3i.cos(SphericalVector3i.D120))).toCartesian()
         Vector3i sin120 = (py * (size * SphericalVector3i.sin(SphericalVector3i.D120))).toCartesian()
         addEvent(c + cos120 + sin120, v)
@@ -79,7 +79,7 @@ public class SpaceTimeInt {
             throw new IllegalArgumentException("Polarization $v and vector $p are not perpendicular!");
         }
         // Multiply by D180 is like div by 2
-        Vector3i midLine = (p * (size * SphericalVector3i.D180)).toCartesian()
+        Vector3i midLine = (p * (size * SphericalVector3i.ONE_HALF)).toCartesian()
         // Sin 120 is sqrt(3)/2
         Vector3i sqrt3div2 = (py * (size * SphericalVector3i.sin(SphericalVector3i.D120))).toCartesian()
 
