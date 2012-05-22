@@ -5,9 +5,6 @@ import org.freddy33.math.Point4i
 import org.freddy33.math.SphericalVector3i
 import org.freddy33.math.Vector3i
 
-import static org.freddy33.math.SphericalVector3i.ONE
-import static org.freddy33.math.SphericalVector3i.ONE_HALF
-
 /**
  * User: freds
  * Date: 4/7/12
@@ -40,6 +37,20 @@ class EventInt {
     @Override
     public String toString() {
         return "evt($point, $dir, used=$used)";
+    }
+}
+
+class TriangleInt {
+    public final Point4i[] p = new Point4i[3]
+    final BigInteger s8squared
+
+    TriangleInt(Point4i... p) {
+        this.p = p
+        // Surface calculated using Heron's formula 8*T^2= ( a^2 + b^2 + c^2 )^2 - 2( a^4 + b^4 + c^4 )
+        BigInteger a2 = new Vector3i(p[0], p[1]).magSquared()
+        BigInteger b2 = new Vector3i(p[1], p[2]).magSquared()
+        BigInteger c2 = new Vector3i(p[2], p[0]).magSquared()
+        s8squared = ( a2+b2+c2 ) * ( a2+b2+c2 ) - ( 2G * ( a2*a2 + b2*b2 +c2*c2 ) )
     }
 }
 
@@ -113,6 +124,7 @@ class EventTriangleInt {
                 (BigInteger) ((alpha * e1().point.x + beta * e2().point.x + gama * e3().point.x) / p12p13cross22),
                 (BigInteger) ((alpha * e1().point.y + beta * e2().point.y + gama * e3().point.y) / p12p13cross22),
                 (BigInteger) ((alpha * e1().point.z + beta * e2().point.z + gama * e3().point.z) / p12p13cross22),
+                // TODO: Need to decide on forced plane system => euclidian transformation to block coordinate where all points z=t=0
                 e1().point.t
                 //(BigInteger) (e1().point.t + e2().point.t + e3().point.t) / 3G
         )
@@ -134,9 +146,8 @@ class EventBlockInt {
     public final SphericalVector3i blockDir
     public final BigInteger maxMagSquared
     public final BigInteger maxRadius2
-    public final BigInteger sumMagSquared
+    public final BigInteger totalSurface8Squared
     public final BigInteger deltaTime
-    List<SphericalVector3i> vectors
 
     static EventBlockInt createBlock(List<EventInt> es) {
         if (es.size() != 4) {
@@ -161,7 +172,7 @@ class EventBlockInt {
         // Global dir of the block is the barycenter of directions vectors
         this.blockDir = SphericalVector3i.middleMan(es.collect { it.dir })
         this.maxMagSquared = calcMaxMagSquared(es.collect() { it.point })
-        this.sumMagSquared = calcSumMagSquared(es.collect() { it.point })
+        this.totalSurface8Squared = calcTotalSurface8Squared(es.collect() { it.point })
         this.deltaTime = (BigInteger) Math.sqrt((double) this.maxMagSquared)
 
         // For 4 it's all possible triangles
@@ -194,7 +205,7 @@ class EventBlockInt {
         if (maxMagSquared <= timePassedSquared) {
             // Check the radius of all triangle is below the max squared
             if (tr.any { it.radius2() > timePassedSquared }) {
-                /*if (log)*/ println "Block $this has a triangle to flat for current time"
+                /*if (log)*/ println "Block $this has a triangle too flat for current time"
                 return false
             }
             // Check same 3D plane using diff between fDir of triangles
@@ -228,15 +239,15 @@ class EventBlockInt {
         result
     }
 
-    private static BigInteger calcSumMagSquared(List<Point4i> points) {
+    private static BigInteger calcTotalSurface8Squared(List<Point4i> points) {
+        TriangleInt[] ts = [
+         new TriangleInt(points[0], points[1], points[2]),
+         new TriangleInt(points[0], points[1], points[3]),
+         new TriangleInt(points[0], points[2], points[3]),
+         new TriangleInt(points[1], points[2], points[3])
+        ]
         BigInteger result = 0G
-        points.eachWithIndex { Point4i one, i ->
-            if (i < points.size() - 1) {
-                for (j in (i + 1)..(points.size() - 1)) {
-                    result += one.magSquared(points[j])
-                }
-            }
-        }
+        ts.each { result += it.s8squared }
         result
     }
 
@@ -294,35 +305,30 @@ class EventBlockInt {
             markUsed()
             // Activate conservation of time
             def newBlock = createBlock(newEvents)
-            newBlock = newBlock.makeSizeEqualTo(sumMagSquared, log)
+            newBlock = newBlock.makeSurfaceEquals(totalSurface8Squared, log)
             return newBlock
         }
         null
     }
 
-    static BigInteger DELTA = (BigInteger) SphericalVector3i.D5
+    static BigInteger DELTA = 2G * 3G * 5G
 
-    EventBlockInt makeSizeEqualTo(BigInteger originalSumMagSquared, boolean log) {
+    EventBlockInt makeSurfaceEquals(BigInteger originalSurface8Squared, boolean log) {
         List<Point4i> points = e.collect() { it.point }
         Boolean previousDiffPositive = null
 
-        if (log) println("Trying to make ${this.sumMagSquared} equal to ${originalSumMagSquared} diff=${originalSumMagSquared-this.sumMagSquared}")
+        if (log) println("Trying to make ${this.totalSurface8Squared} equal to ${originalSurface8Squared} diff=${originalSurface8Squared-this.totalSurface8Squared}")
         while (true) {
-            List<BigInteger> movers = [0G, 0G, 0G, 0G, 0G, 0G]
-            def currentSum = calcSumMagSquared(points)
-            def diffMagSquared = originalSumMagSquared - currentSum
+            def currentSum = calcTotalSurface8Squared(points)
+            def diffMagSquared = originalSurface8Squared - currentSum
             if (diffMagSquared == 0G) {
-                if (log) println "Perfectly equal $currentSum == $originalSumMagSquared"
+                if (log) println "Perfectly equal $currentSum == $originalSurface8Squared"
                 break
             } else if (diffMagSquared > 0G) {
                 // Need to increase smallest distance
                 def (int i, int j) = smallestSide(points)
                 if (log) println "Increasing small distance diff=$diffMagSquared current=$currentSum using $i, $j"
-                if (i == 0) {
-                    movers[j - 1] = DELTA
-                } else {
-                    movers[j + i] = DELTA
-                }
+                points = fillResultingPoints(points, i, j, DELTA)
                 if (previousDiffPositive == null) {
                     previousDiffPositive = true
                 } else {
@@ -335,11 +341,7 @@ class EventBlockInt {
                 // Need to decrease biggest distance
                 def (int i, int j) = biggestSide(points)
                 if (log) println "Decreasing big distance diff=$diffMagSquared current=$currentSum using $i, $j"
-                if (i == 0) {
-                    movers[j - 1] = -DELTA
-                } else {
-                    movers[j + i] = -DELTA
-                }
+                points = fillResultingPoints(points, i, j, -DELTA)
                 if (previousDiffPositive == null) {
                     previousDiffPositive = false
                 } else {
@@ -349,7 +351,6 @@ class EventBlockInt {
                     }
                 }
             }
-            points = fillResultingPoints(points, movers)
         }
         new EventBlockInt([
                 new EventInt(points[0], e[0].dir, e[0].createdByBlock, e[0].createdByTriangle),
@@ -359,32 +360,21 @@ class EventBlockInt {
         ])
     }
 
-    public List<Point4i> fillResultingPoints(List<Point4i> points, List<BigInteger> movers) {
-        if (vectors == null) {
-            vectors = getVectorsForPoints(points)
-        }
+    public List<Point4i> fillResultingPoints(List<Point4i> points, int i, int j, BigInteger delta) {
         List<Point4i> results = []
-        results.add(points[0] - vectors[0].setR(movers[0]).toCartesian() - vectors[1].setR(movers[1]).toCartesian() - vectors[2].setR(movers[2]).toCartesian())
-        results.add(points[1] + vectors[0].setR(movers[0]).toCartesian() - vectors[3].setR(movers[3]).toCartesian() - vectors[4].setR(movers[4]).toCartesian())
-        results.add(points[2] + vectors[1].setR(movers[1]).toCartesian() + vectors[3].setR(movers[3]).toCartesian() - vectors[5].setR(movers[5]).toCartesian())
-        results.add(points[3] + vectors[2].setR(movers[2]).toCartesian() + vectors[4].setR(movers[4]).toCartesian() + vectors[5].setR(movers[5]).toCartesian())
+        Vector3i v = new Vector3i(points[i], points[j])
+        double d = (double) delta / Math.sqrt((double) v.magSquared())
+        points.eachWithIndex { Point4i p, k ->
+            if (k==i) p = p - v * d
+            if (k==j) p = p + v * d
+            results.add(p)
+        }
         results
-    }
-
-    public List<SphericalVector3i> getVectorsForPoints(List<Point4i> points) {
-        [
-                new SphericalVector3i(points[0], points[1]),
-                new SphericalVector3i(points[0], points[2]),
-                new SphericalVector3i(points[0], points[3]),
-                new SphericalVector3i(points[1], points[2]),
-                new SphericalVector3i(points[1], points[3]),
-                new SphericalVector3i(points[2], points[3])
-        ]
     }
 
     @Override
     public String toString() {
-        return "EventBlockInt dT=$deltaTime, D=$sumMagSquared, dir=$blockDir\n${e.collect({it.point}).join("\n")}"
+        return "EventBlockInt dT=$deltaTime, S=$totalSurface8Squared, dir=$blockDir\n${e.collect({it.point}).join("\n")}"
     }
 }
 

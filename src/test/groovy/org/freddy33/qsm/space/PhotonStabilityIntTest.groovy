@@ -1,12 +1,9 @@
 package org.freddy33.qsm.space
 
 import org.freddy33.math.MathUtils
-import org.freddy33.math.Point4i
+
 import spock.lang.Specification
 
-import static org.freddy33.math.SphericalVector3i.ONE
-import static org.freddy33.math.SphericalVector3i.ONE_HALF
-import static org.freddy33.qsm.space.TriangleIntTest.cos120
 import static org.freddy33.qsm.space.TriangleIntTest.sin120
 import static org.freddy33.qsm.space.SpaceTimeIntTest.findNextGoodCalc
 
@@ -29,8 +26,8 @@ class PhotonStabilityIntTest extends Specification {
         for (int i = 1; i < ITERATIONS; i++) {
             findNextGoodCalc(st, bigDist * i, false)
             def block = st.activeEvents[0].createdByBlock
-            println "$i, ${block.deltaTime}, ${block.sumMagSquared}"
-            if (i == 1 || i == ITERATIONS-1) sumMagSq.add(block.sumMagSquared)
+            println "$i, ${block.deltaTime}, ${block.totalSurface8Squared}"
+            if (i == 1 || i == ITERATIONS-1) sumMagSq.add(block.totalSurface8Squared)
         }
 
         expect:
