@@ -114,7 +114,6 @@ class SpaceTimeIntTest extends Specification {
         }
     }
 
-/*
     def "test single electron"() {
         def st = new SpaceTimeInt(ratio)
         st.initElectron(ratio)
@@ -154,6 +153,5 @@ class SpaceTimeIntTest extends Specification {
         st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(3G * deltaX, ratio * ONE_HALF, 0G, 3G * bigDist), PRECISION) }
         st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(3G * deltaX, -ratio * ONE_HALF, 0G, 3G * bigDist), PRECISION) }
     }
-*/
 
 }

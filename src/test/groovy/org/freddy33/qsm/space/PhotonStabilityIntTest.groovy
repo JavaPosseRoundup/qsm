@@ -26,8 +26,8 @@ class PhotonStabilityIntTest extends Specification {
         for (int i = 1; i < ITERATIONS; i++) {
             findNextGoodCalc(st, bigDist * i, false)
             def block = st.activeEvents[0].createdByBlock
-            println "$i, ${block.deltaTime}, ${block.totalSurface8Squared}"
-            if (i == 1 || i == ITERATIONS-1) sumMagSq.add(block.totalSurface8Squared)
+            println "$i, ${block.deltaTime}, ${block.totalSurface16Squared}"
+            if (i == 1 || i == ITERATIONS-1) sumMagSq.add(block.totalSurface16Squared)
         }
 
         expect:

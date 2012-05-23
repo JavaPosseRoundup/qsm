@@ -42,15 +42,15 @@ class EventInt {
 
 class TriangleInt {
     public final Point4i[] p = new Point4i[3]
-    final BigInteger s8squared
+    final BigInteger s16squared
 
     TriangleInt(Point4i... p) {
         this.p = p
-        // Surface calculated using Heron's formula 8*T^2= ( a^2 + b^2 + c^2 )^2 - 2( a^4 + b^4 + c^4 )
+        // Surface calculated using Heron's formula 16*T^2= ( a^2 + b^2 + c^2 )^2 - 2( a^4 + b^4 + c^4 )
         BigInteger a2 = new Vector3i(p[0], p[1]).magSquared()
         BigInteger b2 = new Vector3i(p[1], p[2]).magSquared()
         BigInteger c2 = new Vector3i(p[2], p[0]).magSquared()
-        s8squared = ( a2+b2+c2 ) * ( a2+b2+c2 ) - ( 2G * ( a2*a2 + b2*b2 +c2*c2 ) )
+        s16squared = ( a2+b2+c2 ) * ( a2+b2+c2 ) - ( 2G * ( a2*a2 + b2*b2 +c2*c2 ) )
     }
 }
 
@@ -146,7 +146,7 @@ class EventBlockInt {
     public final SphericalVector3i blockDir
     public final BigInteger maxMagSquared
     public final BigInteger maxRadius2
-    public final BigInteger totalSurface8Squared
+    public final BigInteger totalSurface16Squared
     public final BigInteger deltaTime
 
     static EventBlockInt createBlock(List<EventInt> es) {
@@ -172,7 +172,7 @@ class EventBlockInt {
         // Global dir of the block is the barycenter of directions vectors
         this.blockDir = SphericalVector3i.middleMan(es.collect { it.dir })
         this.maxMagSquared = calcMaxMagSquared(es.collect() { it.point })
-        this.totalSurface8Squared = calcTotalSurface8Squared(es.collect() { it.point })
+        this.totalSurface16Squared = calcTotalSurface16Squared(es.collect() { it.point })
         this.deltaTime = (BigInteger) Math.sqrt((double) this.maxMagSquared)
 
         // For 4 it's all possible triangles
@@ -239,7 +239,7 @@ class EventBlockInt {
         result
     }
 
-    private static BigInteger calcTotalSurface8Squared(List<Point4i> points) {
+    private static BigInteger calcTotalSurface16Squared(List<Point4i> points) {
         TriangleInt[] ts = [
          new TriangleInt(points[0], points[1], points[2]),
          new TriangleInt(points[0], points[1], points[3]),
@@ -247,7 +247,7 @@ class EventBlockInt {
          new TriangleInt(points[1], points[2], points[3])
         ]
         BigInteger result = 0G
-        ts.each { result += it.s8squared }
+        ts.each { result += it.s16squared }
         result
     }
 
@@ -305,52 +305,73 @@ class EventBlockInt {
             markUsed()
             // Activate conservation of time
             def newBlock = createBlock(newEvents)
-            newBlock = newBlock.makeSurfaceEquals(totalSurface8Squared, log)
+            newBlock = newBlock.makeSurfaceEquals(totalSurface16Squared, log)
             return newBlock
         }
         null
     }
 
-    static BigInteger DELTA = 2G * 3G * 5G
+    static int NUMBER_OF_SWITCH=100
 
-    EventBlockInt makeSurfaceEquals(BigInteger originalSurface8Squared, boolean log) {
+    EventBlockInt makeSurfaceEquals(BigInteger originalSurface16Squared, boolean log) {
         List<Point4i> points = e.collect() { it.point }
+        int numberOfSwitch = 0
         Boolean previousDiffPositive = null
-
-        if (log) println("Trying to make ${this.totalSurface8Squared} equal to ${originalSurface8Squared} diff=${originalSurface8Squared-this.totalSurface8Squared}")
+        BigDecimal previousSurface16Squared = null
+        double deltaMove = 1d
+        double currentAverageDist = 0d
+log=true
+        if (log) println("Trying to make ${this.totalSurface16Squared} equal to ${originalSurface16Squared} diff=${originalSurface16Squared-this.totalSurface16Squared}")
+        double originalAverageDist = Math.sqrt(Math.sqrt((double)originalSurface16Squared/(16d*4d)))
         while (true) {
-            def currentSum = calcTotalSurface8Squared(points)
-            def diffMagSquared = originalSurface8Squared - currentSum
-            if (diffMagSquared == 0G) {
-                if (log) println "Perfectly equal $currentSum == $originalSurface8Squared"
+            BigDecimal currentSurface16Squared = calcTotalSurface16Squared(points)
+            if (previousSurface16Squared == currentSurface16Squared) {
+                println "We are not moving for delta=$deltaMove currentS162=$currentSurface16Squared"
                 break
-            } else if (diffMagSquared > 0G) {
+            }
+            BigDecimal surface16SquaredDiff = originalSurface16Squared - currentSurface16Squared
+            if (previousDiffPositive == null) {
+                currentAverageDist = Math.sqrt(Math.sqrt((double)currentSurface16Squared/(16d*4d)))
+                deltaMove = originalAverageDist - currentAverageDist
+            }
+            // Below Sqrt(3) we can loop by not modifying anything
+            if (Math.abs(deltaMove) < 1.8d) {
+                if (log) println "Perfectly equal $currentAverageDist == $originalAverageDist"
+                break
+            } else if (surface16SquaredDiff > 0G) {
                 // Need to increase smallest distance
                 def (int i, int j) = smallestSide(points)
-                if (log) println "Increasing small distance diff=$diffMagSquared current=$currentSum using $i, $j"
-                points = fillResultingPoints(points, i, j, DELTA)
+                if (log) println "Increasing small distance diff=$surface16SquaredDiff delta=$deltaMove currentS162=$currentSurface16Squared using $i, $j"
+                points = fillResultingPoints(points, i, j, deltaMove)
                 if (previousDiffPositive == null) {
                     previousDiffPositive = true
                 } else {
                     if (!previousDiffPositive) {
-                        // Switched from - to + => stop
-                        break
+                        // Switched from - to + => increase number of switch
+                        numberOfSwitch++
+                        previousDiffPositive = null
+                        previousSurface16Squared = null
                     }
                 }
-            } else if (diffMagSquared < 0G) {
+            } else if (surface16SquaredDiff < 0d) {
                 // Need to decrease biggest distance
                 def (int i, int j) = biggestSide(points)
-                if (log) println "Decreasing big distance diff=$diffMagSquared current=$currentSum using $i, $j"
-                points = fillResultingPoints(points, i, j, -DELTA)
+                if (log) println "Decreasing big distance diff=$surface16SquaredDiff delta=$deltaMove currentS162=$currentSurface16Squared using $i, $j"
+                points = fillResultingPoints(points, i, j, deltaMove)
                 if (previousDiffPositive == null) {
                     previousDiffPositive = false
                 } else {
                     if (previousDiffPositive) {
-                        // Switched from + to - => stop
-                        break
+                        // Switched from + to - => increase number of switch
+                        numberOfSwitch++
+                        previousDiffPositive = null
+                        previousSurface16Squared = null
                     }
                 }
             }
+            // stop at NUMBER_OF_SWITCH switch
+            if (numberOfSwitch > NUMBER_OF_SWITCH) break
+            previousSurface16Squared = currentSurface16Squared
         }
         new EventBlockInt([
                 new EventInt(points[0], e[0].dir, e[0].createdByBlock, e[0].createdByTriangle),
@@ -360,10 +381,10 @@ class EventBlockInt {
         ])
     }
 
-    public List<Point4i> fillResultingPoints(List<Point4i> points, int i, int j, BigInteger delta) {
+    public List<Point4i> fillResultingPoints(List<Point4i> points, int i, int j, double delta) {
         List<Point4i> results = []
         Vector3i v = new Vector3i(points[i], points[j])
-        double d = (double) delta / Math.sqrt((double) v.magSquared())
+        double d = delta / Math.sqrt((double) v.magSquared())
         points.eachWithIndex { Point4i p, k ->
             if (k==i) p = p - v * d
             if (k==j) p = p + v * d
@@ -374,7 +395,7 @@ class EventBlockInt {
 
     @Override
     public String toString() {
-        return "EventBlockInt dT=$deltaTime, S=$totalSurface8Squared, dir=$blockDir\n${e.collect({it.point}).join("\n")}"
+        return "EventBlockInt dT=$deltaTime, S=$totalSurface16Squared, dir=$blockDir\n${e.collect({it.point}).join("\n")}"
     }
 }
 
