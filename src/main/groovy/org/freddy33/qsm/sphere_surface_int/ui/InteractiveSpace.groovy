@@ -1,6 +1,6 @@
-package org.freddy33.qsm.ui
+package org.freddy33.qsm.sphere_surface_int.ui
 
-import org.freddy33.qsm.space.SpaceTimeInt
+import org.freddy33.qsm.sphere_surface_int.calc.SpaceTimeInt
 import org.jzy3d.chart.Chart
 import org.jzy3d.chart.controllers.mouse.ChartMouseController
 import org.jzy3d.chart.controllers.thread.ChartThreadController

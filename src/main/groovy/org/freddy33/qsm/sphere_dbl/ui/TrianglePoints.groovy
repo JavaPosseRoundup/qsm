@@ -1,11 +1,11 @@
 /**
  * @author Fred Simon
  */
-package org.freddy33.qsm.ui
+package org.freddy33.qsm.sphere_dbl.ui
 
-import org.freddy33.math.Coord4d
+import org.freddy33.math.dbl.Coord4d
 import org.freddy33.math.MathUtils
-import org.freddy33.qsm.space.SpaceTimeDouble
+import org.freddy33.qsm.sphere_dbl.SpaceTimeDouble
 import org.jzy3d.chart.Chart
 import org.jzy3d.colors.Color
 import org.jzy3d.maths.Coord3d

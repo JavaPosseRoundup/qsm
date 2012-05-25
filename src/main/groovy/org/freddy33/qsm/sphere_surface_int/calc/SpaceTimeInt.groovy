@@ -1,8 +1,8 @@
-package org.freddy33.qsm.space
+package org.freddy33.qsm.sphere_surface_int.calc
 
-import org.freddy33.math.Point4i
-import org.freddy33.math.SphericalVector3i
-import org.freddy33.math.Vector3i
+import org.freddy33.math.bigInt.Point4i
+import org.freddy33.math.bigInt.SphericalVector3i
+import org.freddy33.math.bigInt.Vector3i
 
 import static SphericalVector3i.ONE
 import org.freddy33.math.MathUtils

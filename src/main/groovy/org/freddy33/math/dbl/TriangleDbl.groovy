@@ -1,4 +1,6 @@
-package org.freddy33.math
+package org.freddy33.math.dbl
+
+import org.freddy33.math.MathUtils
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,13 +9,13 @@ package org.freddy33.math
  * Time: 10:38 AM
  * To change this template use File | Settings | File Templates.
  */
-class Triangle {
+class TriangleDbl {
     Coord4d p1, p2, p3
     Vector3d v12, v13, v23
     Vector3d v12v23cross
     Double p12p13cross22
 
-    Triangle(Coord4d p1, Coord4d p2, Coord4d p3) {
+    TriangleDbl(Coord4d p1, Coord4d p2, Coord4d p3) {
         this.p1 = p1
         this.p2 = p2
         this.p3 = p3

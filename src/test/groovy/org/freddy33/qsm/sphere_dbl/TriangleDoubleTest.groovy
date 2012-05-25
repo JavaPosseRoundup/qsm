@@ -1,23 +1,25 @@
-package org.freddy33.qsm.space;
+package org.freddy33.qsm.sphere_dbl;
 
 
-import org.freddy33.math.Coord4d
+import org.freddy33.math.dbl.Coord4d
 import org.freddy33.math.MathUtils
-import org.freddy33.math.Triangle
-import org.freddy33.math.Vector3d
+
+import org.freddy33.math.dbl.Vector3d
 import spock.lang.Specification
 
 import static org.freddy33.math.MathUtils.getCos120
 import static org.freddy33.math.MathUtils.getSin120
+import org.freddy33.math.dbl.TriangleDbl
+import org.freddy33.qsm.sphere_surface_int.calc.EventDouble
 
 public class TriangleDoubleTest extends Specification {
     static def s22 = Math.sqrt(2d) / 2d
     static def evt1 = new EventDouble(0d, 0d, 0d, 3d, new Vector3d(3d, 0d, 0d))
     static def evt2 = new EventDouble(0d, 0d, 1d, 3d, new Vector3d(3d, 3d, 0d))
-    static def evt3 = new EventDouble(0d, sin120, cos120, 3d, evt1.direction)
-    static def evt4 = new EventDouble(0d, -sin120, cos120, 3d, evt1.direction)
+    static def evt3 = new EventDouble(0d, org.freddy33.math.MathUtils.sin120, org.freddy33.math.MathUtils.cos120, 3d, evt1.direction)
+    static def evt4 = new EventDouble(0d, -org.freddy33.math.MathUtils.sin120, org.freddy33.math.MathUtils.cos120, 3d, evt1.direction)
     static def ratio = 1000d
-    static double bigDist = ratio * sin120 * 2d
+    static double bigDist = ratio * org.freddy33.math.MathUtils.sin120 * 2d
     static double nextX = Math.sqrt((bigDist * bigDist) - (ratio * ratio))
 
     def "test Event"() {
@@ -28,7 +30,7 @@ public class TriangleDoubleTest extends Specification {
         event << [
                 new EventDouble(0d, 0d, 0d, 3d, new Vector3d(3d, 0d, 0d)),
                 new EventDouble(0d, 0d, 1d, 3d, new Vector3d(3d, 3d, 0d)),
-                new EventDouble(0d, sin120, cos120, 3d, new Vector3d(3d, 0d, 0d)),
+                new EventDouble(0d, org.freddy33.math.MathUtils.sin120, org.freddy33.math.MathUtils.cos120, 3d, new Vector3d(3d, 0d, 0d)),
 
         ]
         dir << [
@@ -48,8 +50,8 @@ public class TriangleDoubleTest extends Specification {
 
         where:
         triangle << [
-                new Triangle(evt2.point, evt3.point, evt4.point),
-                new Triangle(evt1.point, evt3.point, evt4.point)
+                new TriangleDbl(evt2.point, evt3.point, evt4.point),
+                new TriangleDbl(evt1.point, evt3.point, evt4.point)
         ]
         dir << [
                 new Vector3d(1d, 0d, 0d),
@@ -80,8 +82,8 @@ public class TriangleDoubleTest extends Specification {
 
         where:
         triangle << [
-                new Triangle(evt2.point * ratio, evt3.point * ratio, evt4.point * ratio),
-                new Triangle(evt1.point * ratio, evt3.point * ratio, evt4.point * ratio)
+                new TriangleDbl(evt2.point * ratio, evt3.point * ratio, evt4.point * ratio),
+                new TriangleDbl(evt1.point * ratio, evt3.point * ratio, evt4.point * ratio)
         ]
         dir << [
                 new Vector3d(1d, 0d, 0d),

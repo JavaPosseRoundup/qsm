@@ -1,13 +1,15 @@
-package org.freddy33.qsm.space;
+package org.freddy33.qsm.sphere_surface_int;
 
 
-import org.freddy33.math.Point4i
-import org.freddy33.math.SphericalVector3i
-import org.freddy33.math.Vector3i
+import org.freddy33.math.bigInt.Point4i
+import org.freddy33.math.bigInt.SphericalVector3i
+import org.freddy33.math.bigInt.Vector3i
 import spock.lang.Specification
 
 import static org.freddy33.math.MathUtils.almostEquals
-import static org.freddy33.math.SphericalVector3i.*
+import static org.freddy33.math.bigInt.SphericalVector3i.*
+import org.freddy33.qsm.sphere_surface_int.calc.EventInt
+import org.freddy33.qsm.sphere_surface_int.calc.EventTriangleInt
 
 public class TriangleIntTest extends Specification {
     public static final BigInteger sin120 = SphericalVector3i.sin(D120)

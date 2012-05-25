@@ -1,4 +1,6 @@
-package org.freddy33.math;
+package org.freddy33.math.dbl
+
+import org.freddy33.math.MathUtils;
 
 class Vector3d {
     double x, y, z

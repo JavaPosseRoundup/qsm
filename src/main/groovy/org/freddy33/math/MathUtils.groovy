@@ -1,5 +1,11 @@
 package org.freddy33.math
 
+import org.freddy33.math.dbl.Coord4d
+import org.freddy33.math.bigInt.Point4i
+import org.freddy33.math.bigInt.SphericalVector3i
+import org.freddy33.math.dbl.Vector3d
+import org.freddy33.math.bigInt.Vector3i
+
 /**
  * Created by IntelliJ IDEA.
  * User: freds

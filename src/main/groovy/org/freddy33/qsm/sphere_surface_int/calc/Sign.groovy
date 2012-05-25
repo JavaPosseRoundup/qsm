@@ -1,4 +1,4 @@
-package org.freddy33.qsm.space
+package org.freddy33.qsm.sphere_surface_int.calc
 
 /**
  * Created with IntelliJ IDEA.

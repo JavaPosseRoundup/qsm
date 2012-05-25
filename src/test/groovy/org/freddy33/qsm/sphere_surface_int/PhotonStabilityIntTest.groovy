@@ -1,11 +1,12 @@
-package org.freddy33.qsm.space
+package org.freddy33.qsm.sphere_surface_int
 
 import org.freddy33.math.MathUtils
 
 import spock.lang.Specification
 
-import static org.freddy33.qsm.space.TriangleIntTest.sin120
-import static org.freddy33.qsm.space.SpaceTimeIntTest.findNextGoodCalc
+import static org.freddy33.qsm.sphere_surface_int.TriangleIntTest.sin120
+import static org.freddy33.qsm.sphere_surface_int.SpaceTimeIntTest.findNextGoodCalc
+import org.freddy33.qsm.sphere_surface_int.calc.SpaceTimeInt
 
 /**
  * Created with IntelliJ IDEA.

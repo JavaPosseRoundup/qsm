@@ -1,10 +1,10 @@
-package org.freddy33.qsm.ui;
+package org.freddy33.qsm.sphere_surface_int.ui;
 
-import org.freddy33.math.Point4i;
-import org.freddy33.qsm.space.EventBlockInt;
-import org.freddy33.qsm.space.EventInt;
-import org.freddy33.qsm.space.EventTriangleInt;
-import org.freddy33.qsm.space.SpaceTimeInt;
+import org.freddy33.math.bigInt.Point4i;
+import org.freddy33.qsm.sphere_surface_int.calc.EventBlockInt;
+import org.freddy33.qsm.sphere_surface_int.calc.EventInt;
+import org.freddy33.qsm.sphere_surface_int.calc.EventTriangleInt;
+import org.freddy33.qsm.sphere_surface_int.calc.SpaceTimeInt;
 import org.jzy3d.colors.Color;
 import org.jzy3d.colors.ISingleColorable;
 import org.jzy3d.maths.Coord3d;

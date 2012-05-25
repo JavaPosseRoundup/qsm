@@ -1,9 +1,10 @@
-package org.freddy33.qsm.space
+package org.freddy33.qsm.sphere_dbl
 
-import org.freddy33.math.Coord4d
+import org.freddy33.math.dbl.Coord4d
 import org.freddy33.math.MathUtils
-import org.freddy33.math.Triangle
-import org.freddy33.math.Vector3d
+import org.freddy33.math.dbl.TriangleDbl
+import org.freddy33.math.dbl.Vector3d
+import org.freddy33.qsm.sphere_surface_int.calc.EventDouble
 
 /**
  * Date: 12/6/11
@@ -96,7 +97,7 @@ public class SpaceTimeDouble {
                         List<EventDouble> newEvents = []
                         allTriangles.each {
                             // For each triangle find the equidistant ( = dt ) points
-                            def tr = new Triangle(it[0].point, it[1].point, it[2].point)
+                            def tr = new TriangleDbl(it[0].point, it[1].point, it[2].point)
                             Coord4d newPoint = tr.findEvent(blockDirection)
                             if (newPoint != null) newEvents.add(new EventDouble(newPoint, tr.finalDir(blockDirection)))
                         }

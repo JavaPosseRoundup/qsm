@@ -1,4 +1,4 @@
-package org.freddy33.math;
+package org.freddy33.math.bigInt
 
 class Point4i {
     BigInteger x, y, z, t;

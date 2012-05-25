@@ -1,4 +1,4 @@
-package org.freddy33.math;
+package org.freddy33.math.bigInt
 
 public class SphericalVector3i {
     public static final Map<BigInteger, BigInteger> trigMap = [:]

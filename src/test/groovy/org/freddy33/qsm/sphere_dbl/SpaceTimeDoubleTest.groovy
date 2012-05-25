@@ -1,10 +1,11 @@
-package org.freddy33.qsm.space
+package org.freddy33.qsm.sphere_dbl
 
-import org.freddy33.math.Coord4d
+import org.freddy33.math.dbl.Coord4d
 import org.freddy33.math.MathUtils
 import spock.lang.Specification
 
 import static org.freddy33.math.MathUtils.getSin120
+import org.freddy33.qsm.sphere_dbl.SpaceTimeDouble
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +16,7 @@ import static org.freddy33.math.MathUtils.getSin120
  */
 class SpaceTimeDoubleTest extends Specification {
     static def ratio = 1000d
-    static double bigDist = ratio * sin120 * 2d
+    static double bigDist = ratio * org.freddy33.math.MathUtils.sin120 * 2d
     static int nextInt = (int) bigDist
     static double nextX = Math.sqrt((bigDist * bigDist) - (ratio * ratio))
 

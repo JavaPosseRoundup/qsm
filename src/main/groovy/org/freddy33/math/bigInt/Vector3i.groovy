@@ -1,4 +1,4 @@
-package org.freddy33.math;
+package org.freddy33.math.bigInt
 
 class Vector3i {
     final BigInteger x, y, z

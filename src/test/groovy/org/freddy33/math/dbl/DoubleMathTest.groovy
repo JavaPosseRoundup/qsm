@@ -1,6 +1,8 @@
-package org.freddy33.math
+package org.freddy33.math.dbl
 
 import spock.lang.Specification
+import org.freddy33.math.dbl.Coord4d
+import org.freddy33.math.dbl.Vector3d
 
 class DoubleMathTest extends Specification {
     def "test Coord4d"() {

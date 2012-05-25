@@ -1,7 +1,7 @@
-package org.freddy33.qsm.space
+package org.freddy33.qsm.sphere_surface_int.calc
 
-import org.freddy33.math.Coord4d
-import org.freddy33.math.Vector3d
+import org.freddy33.math.dbl.Coord4d
+import org.freddy33.math.dbl.Vector3d
 
 /**
  * Created with IntelliJ IDEA.
