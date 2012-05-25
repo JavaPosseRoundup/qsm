@@ -58,7 +58,7 @@ public class InteractiveEventScatter extends Scatter implements ISingleColorable
         Map<EventBlockInt, List<EventInt>> pyramids = new HashMap<EventBlockInt, List<EventInt>>();
         for (EventInt activeEvent : activeEvents) {
             Point4i point = activeEvent.point;
-            if (point.getT().equals(st.getCurrentTime().subtract(new BigInteger("1")))) {
+            if (Math.abs(point.getT().subtract(st.getCurrentTime()).doubleValue()) < 3d ) {
                 EventBlockInt block = activeEvent.createdByBlock;
                 if (block != null) {
                     List<EventInt> events = pyramids.get(block);
