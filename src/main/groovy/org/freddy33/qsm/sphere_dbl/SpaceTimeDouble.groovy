@@ -1,10 +1,11 @@
 package org.freddy33.qsm.sphere_dbl
 
-import org.freddy33.math.dbl.Coord4d
-import org.freddy33.math.MathUtils
+import org.freddy33.math.dbl.Point4d
+
 import org.freddy33.math.dbl.TriangleDbl
 import org.freddy33.math.dbl.Vector3d
 import org.freddy33.qsm.sphere_surface_int.calc.EventDouble
+import org.freddy33.math.dbl.MathUtilsDbl
 
 /**
  * Date: 12/6/11
@@ -17,7 +18,7 @@ public class SpaceTimeDouble {
     int fixPointRatio = 20
     int initialRatio
     int currentTime = 0
-    List<Coord4d> fixedPoints
+    List<Point4d> fixedPoints
     List<EventDouble> deadEvents = []
     List<EventDouble> activeEvents = []
 
@@ -28,36 +29,36 @@ public class SpaceTimeDouble {
 
     def init() {
         fixedPoints = [
-                new Coord4d(-fixPointRatio, -fixPointRatio, -fixPointRatio, 0d) * ((double) initialRatio),
-                new Coord4d(fixPointRatio, fixPointRatio, fixPointRatio, 0d) * ((double) initialRatio)
+                new Point4d(-fixPointRatio, -fixPointRatio, -fixPointRatio, 0d) * ((double) initialRatio),
+                new Point4d(fixPointRatio, fixPointRatio, fixPointRatio, 0d) * ((double) initialRatio)
         ]
-        addPhoton(new Coord4d(0d, 0d, 0d),
+        addPhoton(new Point4d(0d, 0d, 0d),
                 new Vector3d(1d, 0d, 0d),
                 new Vector3d(0d, 0d, 1d),
                 (double) initialRatio)
     }
 
-    def addPhoton(Coord4d c, Vector3d v, Vector3d p, double size) {
+    def addPhoton(Point4d c, Vector3d v, Vector3d p, double size) {
         p = p.normalized()
         v = v.normalized()
         // v and p needs to be perpendicular so cross should be normalized sin(teta)= 1
         Vector3d py = v.cross(p)
-        if (!MathUtils.eq(py.magSquared(), 1d)) {
+        if (!MathUtilsDbl.eq(py.magSquared(), 1d)) {
             throw new IllegalArgumentException("Polarization $v and vector $v are not perpendicular!");
         }
         addEvent(c, v)
         addEvent(c + (p * size), v)
-        Vector3d cos120 = p * (size * MathUtils.cos120)
-        Vector3d sin120 = py * (size * MathUtils.sin120)
+        Vector3d cos120 = p * (size * MathUtilsDbl.cos120)
+        Vector3d sin120 = py * (size * MathUtilsDbl.sin120)
         addEvent(c + cos120 + sin120, v)
         addEvent(c + cos120 - sin120, v)
     }
 
-    List<Coord4d> currentPoints() {
+    List<Point4d> currentPoints() {
         return deadEvents.findAll { it.point.t <= currentTime }.collect { it.point }
     }
 
-    def addEvent(Coord4d point, Vector3d direction) {
+    def addEvent(Point4d point, Vector3d direction) {
         def res = new EventDouble(point, direction)
         activeEvents.add(res)
         return res
@@ -76,7 +77,7 @@ public class SpaceTimeDouble {
         // And from the collection create events blocks of 4
         activeEvents.each { EventDouble event ->
             double timePassed = currentTime - event.point.t
-            if (!event.used && timePassed > MathUtils.EPSILON) {
+            if (!event.used && timePassed > MathUtilsDbl.EPSILON) {
                 double timePassedSquared = timePassed ** 2d
                 List<EventDouble> events = activeEvents.findAll {
                     !it.used && it.point.t < currentTime && it.point.magSquared(event.point) <= timePassedSquared
@@ -91,14 +92,14 @@ public class SpaceTimeDouble {
                     // Global dir of the block is the sum of directions vectors
                     Vector3d blockDirection = new Vector3d(0d, 0d, 0d)
                     block.each { blockDirection.addSelf(it.direction) }
-                    if (!toFar && !MathUtils.eq(blockDirection.magSquared(), 0d)) {
+                    if (!toFar && !MathUtilsDbl.eq(blockDirection.magSquared(), 0d)) {
                         blockDirection = blockDirection.normalized();
                         Set<List<EventDouble>> allTriangles = subsequences.findAll { it.size() == 3 }
                         List<EventDouble> newEvents = []
                         allTriangles.each {
                             // For each triangle find the equidistant ( = dt ) points
                             def tr = new TriangleDbl(it[0].point, it[1].point, it[2].point)
-                            Coord4d newPoint = tr.findEvent(blockDirection)
+                            Point4d newPoint = tr.findEvent(blockDirection)
                             if (newPoint != null) newEvents.add(new EventDouble(newPoint, tr.finalDir(blockDirection)))
                         }
                         if (newEvents.size() == block.size()) {

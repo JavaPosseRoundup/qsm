@@ -6,7 +6,7 @@ import org.freddy33.math.bigInt.SphericalVector3i
 import org.freddy33.math.bigInt.Vector3i
 import spock.lang.Specification
 
-import static org.freddy33.math.MathUtils.almostEquals
+import static org.freddy33.math.bigInt.MathUtilsInt.almostEquals
 import static org.freddy33.math.bigInt.SphericalVector3i.*
 import org.freddy33.qsm.sphere_surface_int.calc.EventInt
 import org.freddy33.qsm.sphere_surface_int.calc.EventTriangleInt

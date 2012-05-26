@@ -5,7 +5,7 @@ import org.freddy33.math.bigInt.SphericalVector3i
 import org.freddy33.math.bigInt.Vector3i
 
 import static SphericalVector3i.ONE
-import org.freddy33.math.MathUtils
+import org.freddy33.math.bigInt.MathUtilsInt
 
 /**
  * Date: 12/6/11
@@ -161,7 +161,7 @@ public class SpaceTimeInt {
                                 calcResult = CalcResult.createdEvents
                             }
                         } else {
-                            BigInteger maxTimeForBlock = MathUtils.max(block.maxMagSquared, block.maxRadius2)
+                            BigInteger maxTimeForBlock = MathUtilsInt.max(block.maxMagSquared, block.maxRadius2)
                             if (smallestBlockSize == null || maxTimeForBlock < smallestBlockSize) {
                                 smallestBlockSize = maxTimeForBlock
                             }

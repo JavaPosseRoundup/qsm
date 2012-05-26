@@ -3,8 +3,8 @@
  */
 package org.freddy33.qsm.sphere_dbl.ui
 
-import org.freddy33.math.dbl.Coord4d
-import org.freddy33.math.MathUtils
+import org.freddy33.math.dbl.Point4d
+
 import org.freddy33.qsm.sphere_dbl.SpaceTimeDouble
 import org.jzy3d.chart.Chart
 import org.jzy3d.colors.Color
@@ -16,6 +16,7 @@ import org.jzy3d.ui.ChartLauncher
 
 import java.awt.Graphics2D
 import java.awt.Rectangle
+import org.freddy33.math.dbl.MathUtilsDbl
 
 // G.var provides Global container for script vars
 class G {
@@ -45,7 +46,7 @@ def tt = new TicToc()
 Scatter scatter = new Scatter()
 float ratio = 100f
 SpaceTimeDouble spaceTime = new SpaceTimeDouble((int) ratio)
-float bigDist = (float) ratio * MathUtils.sin120 * 2f
+float bigDist = (float) ratio * MathUtilsDbl.sin120 * 2f
 int nextInt = 1 + (int) bigDist
 float nextX = (float) Math.sqrt((nextInt * nextInt) - (ratio * ratio))
 
@@ -65,7 +66,7 @@ for (int i = 1; i <= 3; i++) {
 */
 
 Coord3d[] calcPoints(SpaceTimeDouble st) {
-    List<Coord4d> points = st.currentPoints()
+    List<Point4d> points = st.currentPoints()
     points.addAll(st.fixedPoints)
     points.collect { new Coord3d(it.x, it.y, it.z) }.toArray(new Coord3d[0])
 }

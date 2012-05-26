@@ -1,7 +1,5 @@
 package org.freddy33.math.dbl
 
-import org.freddy33.math.MathUtils
-
 /**
  * Created with IntelliJ IDEA.
  * User: freds
@@ -10,12 +8,12 @@ import org.freddy33.math.MathUtils
  * To change this template use File | Settings | File Templates.
  */
 class TriangleDbl {
-    Coord4d p1, p2, p3
+    Point4d p1, p2, p3
     Vector3d v12, v13, v23
     Vector3d v12v23cross
     Double p12p13cross22
 
-    TriangleDbl(Coord4d p1, Coord4d p2, Coord4d p3) {
+    TriangleDbl(Point4d p1, Point4d p2, Point4d p3) {
         this.p1 = p1
         this.p2 = p2
         this.p3 = p3
@@ -55,14 +53,14 @@ class TriangleDbl {
         return finalDir
     }
 
-    Coord4d findEvent(Vector3d origDirection) {
+    Point4d findEvent(Vector3d origDirection) {
         if (isFlat()) {
             return null
         }
         double dt2 = Math.max(Math.max(v12().magSquared(), v13().magSquared()), v23().magSquared())
         double dt = Math.sqrt(dt2)
         // OK, it's a non flat triangle and dt is big enough => find center
-        Coord4d center = findCenter()
+        Point4d center = findCenter()
         center.t += dt
         // Then find how much above plane on center need to add
         double radius2 = radius2()
@@ -80,10 +78,10 @@ class TriangleDbl {
     }
 
     boolean isFlat() {
-        return MathUtils.eq(v12v23s2(), 0d)
+        return MathUtilsDbl.eq(v12v23s2(), 0d)
     }
 
-    Coord4d findCenter() {
+    Point4d findCenter() {
         if (isFlat()) {
             // Flat triangle
             throw new IllegalArgumentException("""Triangle $this is flat since $v12v23s2 is too small!
@@ -93,7 +91,7 @@ class TriangleDbl {
         double alpha = v23().magSquared() * (v12() % v13()) / v12v23s2()
         double beta = v13().magSquared() * (-v12() % v23()) / v12v23s2()
         double gama = v12().magSquared() * (-v13() % -v23()) / v12v23s2()
-        new Coord4d(
+        new Point4d(
                 alpha * p1.x + beta * p2.x + gama * p3.x,
                 alpha * p1.y + beta * p2.y + gama * p3.y,
                 alpha * p1.z + beta * p2.z + gama * p3.z,

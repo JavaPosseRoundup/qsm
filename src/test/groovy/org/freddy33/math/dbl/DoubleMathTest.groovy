@@ -1,8 +1,6 @@
 package org.freddy33.math.dbl
 
 import spock.lang.Specification
-import org.freddy33.math.dbl.Coord4d
-import org.freddy33.math.dbl.Vector3d
 
 class DoubleMathTest extends Specification {
     def "test Coord4d"() {
@@ -14,34 +12,34 @@ class DoubleMathTest extends Specification {
 
         where:
         coord << [
-                new Coord4d(0d, 0d, 0d),
-                new Coord4d(0d, 0d, 0d, 1d),
-                new Coord4d(1d, 1d, 1d),
-                new Coord4d(-1d, -1d, -1d, 1d)
+                new Point4d(0d, 0d, 0d),
+                new Point4d(0d, 0d, 0d, 1d),
+                new Point4d(1d, 1d, 1d),
+                new Point4d(-1d, -1d, -1d, 1d)
         ]
         mult3 << [
-                new Coord4d(0d, 0d, 0d),
-                new Coord4d(0d, 0d, 0d, 1d),
-                new Coord4d(3d, 3d, 3d),
-                new Coord4d(-3d, -3d, -3d, 1d)
+                new Point4d(0d, 0d, 0d),
+                new Point4d(0d, 0d, 0d, 1d),
+                new Point4d(3d, 3d, 3d),
+                new Point4d(-3d, -3d, -3d, 1d)
         ]
         plusX << [
-                new Coord4d(2d, 0d, 0d),
-                new Coord4d(2d, 0d, 0d, 1d),
-                new Coord4d(3d, 1d, 1d),
-                new Coord4d(1d, -1d, -1d, 1d)
+                new Point4d(2d, 0d, 0d),
+                new Point4d(2d, 0d, 0d, 1d),
+                new Point4d(3d, 1d, 1d),
+                new Point4d(1d, -1d, -1d, 1d)
         ]
         plusY << [
-                new Coord4d(0d, 2d, 0d),
-                new Coord4d(0d, 2d, 0d, 1d),
-                new Coord4d(1d, 3d, 1d),
-                new Coord4d(-1d, 1d, -1d, 1d)
+                new Point4d(0d, 2d, 0d),
+                new Point4d(0d, 2d, 0d, 1d),
+                new Point4d(1d, 3d, 1d),
+                new Point4d(-1d, 1d, -1d, 1d)
         ]
         plusZ << [
-                new Coord4d(0d, 0d, 2d),
-                new Coord4d(0d, 0d, 2d, 1d),
-                new Coord4d(1d, 1d, 3d),
-                new Coord4d(-1d, -1d, 1d, 1d)
+                new Point4d(0d, 0d, 2d),
+                new Point4d(0d, 0d, 2d, 1d),
+                new Point4d(1d, 1d, 3d),
+                new Point4d(-1d, -1d, 1d, 1d)
         ]
     }
 

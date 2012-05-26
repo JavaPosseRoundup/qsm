@@ -1,6 +1,6 @@
 package org.freddy33.qsm.sphere_surface_int.calc
 
-import org.freddy33.math.dbl.Coord4d
+import org.freddy33.math.dbl.Point4d
 import org.freddy33.math.dbl.Vector3d
 
 /**
@@ -11,18 +11,18 @@ import org.freddy33.math.dbl.Vector3d
  * To change this template use File | Settings | File Templates.
  */
 class EventDouble {
-    final Coord4d point
+    final Point4d point
     final Vector3d direction
     final Sign sign
     boolean used = false
 
     EventDouble(double x, double y, double z, double t, Vector3d dir) {
 //        this.point = new Coord4d((double)round(x),(double)round(y),(double)round(z))
-        this.point = new Coord4d(x, y, z, t)
+        this.point = new Point4d(x, y, z, t)
         this.direction = dir.normalized()
     }
 
-    EventDouble(Coord4d point, Vector3d dir) {
+    EventDouble(Point4d point, Vector3d dir) {
         this(point.x, point.y, point.z, point.t, dir)
     }
 }

@@ -7,11 +7,11 @@ package org.freddy33.math.bigInt
  * Time: 1:43 PM
  * To change this template use File | Settings | File Templates.
  */
-class TriangleInt {
+class Triangle4i {
     public final Point4i[] p = new Point4i[3]
     final BigInteger s16squared
 
-    TriangleInt(Point4i... p) {
+    Triangle4i(Point4i... p) {
         this.p = p
         // Surface calculated using Heron's formula 16*T^2= ( a^2 + b^2 + c^2 )^2 - 2( a^4 + b^4 + c^4 )
         BigInteger a2 = new Vector3i(p[0], p[1]).magSquared()

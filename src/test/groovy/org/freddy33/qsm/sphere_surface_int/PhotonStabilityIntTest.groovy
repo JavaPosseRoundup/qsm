@@ -1,12 +1,11 @@
 package org.freddy33.qsm.sphere_surface_int
 
-import org.freddy33.math.MathUtils
-
 import spock.lang.Specification
 
 import static org.freddy33.qsm.sphere_surface_int.TriangleIntTest.sin120
 import static org.freddy33.qsm.sphere_surface_int.SpaceTimeIntTest.findNextGoodCalc
 import org.freddy33.qsm.sphere_surface_int.calc.SpaceTimeInt
+import org.freddy33.math.bigInt.MathUtilsInt
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +31,7 @@ class PhotonStabilityIntTest extends Specification {
         }
 
         expect:
-        MathUtils.almostEquals(sumMagSq[0], sumMagSq[1])
+        MathUtilsInt.almostEquals(sumMagSq[0], sumMagSq[1])
     }
 
 /*

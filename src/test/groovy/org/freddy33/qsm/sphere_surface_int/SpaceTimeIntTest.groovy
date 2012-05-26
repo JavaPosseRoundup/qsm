@@ -1,6 +1,6 @@
 package org.freddy33.qsm.sphere_surface_int
 
-import org.freddy33.math.MathUtils
+import org.freddy33.math.bigInt.MathUtilsInt
 import org.freddy33.math.bigInt.Point4i
 import spock.lang.Specification
 
@@ -35,7 +35,7 @@ class SpaceTimeIntTest extends Specification {
                 return false
             }
         }
-        if (!MathUtils.almostEquals(st.currentTime, around)) {
+        if (!MathUtilsInt.almostEquals(st.currentTime, around)) {
             println "Current time ${st.currentTime} not around $around"
             return false
         }
@@ -49,37 +49,37 @@ class SpaceTimeIntTest extends Specification {
         expect:
         st.activeEvents.size() == 4
         st.deadEvents.size() == 0
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, 0G, 0G, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, 0G, ratio * ONE, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, ratio * sin120, ratio * cos120, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, -ratio * sin120, ratio * cos120, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, 0G, 0G, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, 0G, ratio * ONE, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, ratio * sin120, ratio * cos120, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, -ratio * sin120, ratio * cos120, 0G)) }
 
         findNextGoodCalc(st, bigDist, true)
         st.activeEvents.size() == 4
         st.deadEvents.size() == 4
         println "firstNextX=$deltaX, firstBigDist=$bigDist"
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX, 0G, 0G, bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX, 0G, -ratio * ONE, bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX, ratio * sin120, -ratio * cos120, bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX, -ratio * sin120, -ratio * cos120, bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX, 0G, 0G, bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX, 0G, -ratio * ONE, bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX, ratio * sin120, -ratio * cos120, bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX, -ratio * sin120, -ratio * cos120, bigDist), PRECISION) }
 
         findNextGoodCalc(st, 2G * bigDist, true)
         println "secondNextX=${2G * deltaX}, secondBigDist=${2G * bigDist}"
         st.activeEvents.size() == 4
         st.deadEvents.size() == 8
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(2G * deltaX, 0G, 0G, 2G * bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(2G * deltaX, 0G, ratio * ONE, 2G * bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(2G * deltaX, ratio * sin120, ratio * cos120, 2G * bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(2G * deltaX, -ratio * sin120, ratio * cos120, 2G * bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(2G * deltaX, 0G, 0G, 2G * bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(2G * deltaX, 0G, ratio * ONE, 2G * bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(2G * deltaX, ratio * sin120, ratio * cos120, 2G * bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(2G * deltaX, -ratio * sin120, ratio * cos120, 2G * bigDist), PRECISION) }
 
         findNextGoodCalc(st, 3G * bigDist, true)
         println "newNextX=${3G * deltaX}, newBigDist=${3G * bigDist}"
         st.activeEvents.size() == 4
         st.deadEvents.size() == 12
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(3G * deltaX, 0G, 0G, 3G * bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(3G * deltaX, 0G, -ratio * ONE, 3G * bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(3G * deltaX, ratio * sin120, -ratio * cos120, 3G * bigDist), PRECISION) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(3G * deltaX, -ratio * sin120, -ratio * cos120, 3G * bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(3G * deltaX, 0G, 0G, 3G * bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(3G * deltaX, 0G, -ratio * ONE, 3G * bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(3G * deltaX, ratio * sin120, -ratio * cos120, 3G * bigDist), PRECISION) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(3G * deltaX, -ratio * sin120, -ratio * cos120, 3G * bigDist), PRECISION) }
     }
 
     def "test single photon long time"() {
@@ -89,30 +89,30 @@ class SpaceTimeIntTest extends Specification {
         expect:
         st.activeEvents.size() == 4
         st.deadEvents.size() == 0
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, 0G, 0G, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, 0G, ratio * ONE, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, ratio * sin120, ratio * cos120, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, -ratio * sin120, ratio * cos120, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, 0G, 0G, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, 0G, ratio * ONE, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, ratio * sin120, ratio * cos120, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, -ratio * sin120, ratio * cos120, 0G)) }
 
         for (int i = 1; i < 1000; i++) {
             findNextGoodCalc(st, bigDist * i, false)
             st.activeEvents.size() == 4
             st.deadEvents.size() == 4 * i
             println "Neg Z i=$i time=${st.currentTime}"
-            st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, 0G, 0G, bigDist * i), PRECISION) }
-            st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, 0G, -ratio * ONE, bigDist * i), PRECISION) }
-            st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, ratio * sin120, -ratio * cos120, bigDist * i), PRECISION) }
-            st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, -ratio * sin120, -ratio * cos120, bigDist * i), PRECISION) }
+            st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX * i, 0G, 0G, bigDist * i), PRECISION) }
+            st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX * i, 0G, -ratio * ONE, bigDist * i), PRECISION) }
+            st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX * i, ratio * sin120, -ratio * cos120, bigDist * i), PRECISION) }
+            st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX * i, -ratio * sin120, -ratio * cos120, bigDist * i), PRECISION) }
 
             i++
             findNextGoodCalc(st, bigDist * i, false)
             st.activeEvents.size() == 4
             st.deadEvents.size() == 4 * i
             println "Pos Z i=$i time=${st.currentTime}"
-            st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, 0G, 0G, bigDist * i), PRECISION) }
-            st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, 0G, ratio * ONE, bigDist * i), PRECISION) }
-            st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, ratio * sin120, ratio * cos120, bigDist * i), PRECISION) }
-            st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(deltaX * i, -ratio * sin120, ratio * cos120, bigDist * i), PRECISION) }
+            st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX * i, 0G, 0G, bigDist * i), PRECISION) }
+            st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX * i, 0G, ratio * ONE, bigDist * i), PRECISION) }
+            st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX * i, ratio * sin120, ratio * cos120, bigDist * i), PRECISION) }
+            st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(deltaX * i, -ratio * sin120, ratio * cos120, bigDist * i), PRECISION) }
         }
     }
 
@@ -123,10 +123,10 @@ class SpaceTimeIntTest extends Specification {
         expect:
         st.activeEvents.size() == 4
         st.deadEvents.size() == 0
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, 0G, ratio * ONE_HALF, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, 0G, -ratio * ONE_HALF, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, ratio * sin120, 0G, 0G)) }
-        st.activeEvents.any { MathUtils.almostEquals(it.point, new Point4i(0G, -ratio * sin120, 0G, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, 0G, ratio * ONE_HALF, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, 0G, -ratio * ONE_HALF, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, ratio * sin120, 0G, 0G)) }
+        st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, -ratio * sin120, 0G, 0G)) }
 
         findNextGoodCalc(st, bigDist, true)
         st.activeEvents.size() == 4

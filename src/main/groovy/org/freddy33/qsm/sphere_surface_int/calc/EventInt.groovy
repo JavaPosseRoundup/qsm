@@ -1,10 +1,11 @@
 package org.freddy33.qsm.sphere_surface_int.calc
 
-import org.freddy33.math.MathUtils
 import org.freddy33.math.bigInt.Point4i
 import org.freddy33.math.bigInt.SphericalVector3i
 import org.freddy33.math.bigInt.Vector3i
-import org.freddy33.math.bigInt.TriangleInt
+
+import org.freddy33.math.bigInt.MathUtilsInt
+import org.freddy33.math.bigInt.Triangle4i
 
 /**
  * User: freds
@@ -170,7 +171,7 @@ class EventBlockInt {
         tr[2] = new EventTriangleInt(e[0], e[2], e[3], this)
         tr[3] = new EventTriangleInt(e[1], e[2], e[3], this)
 
-        this.maxRadius2 = MathUtils.max(tr.collect {it.radius2()})
+        this.maxRadius2 = MathUtilsInt.max(tr.collect {it.radius2()})
     }
 
     EventInt e1() { e[0] }
@@ -197,12 +198,12 @@ class EventBlockInt {
                 return false
             }
             // Check same 3D plane using diff between fDir of triangles
-            if (!MathUtils.almostEquals(tr1().fDir, tr2().fDir) ||
-                    !MathUtils.almostEquals(tr1().fDir, tr3().fDir) ||
-                    !MathUtils.almostEquals(tr1().fDir, tr4().fDir) ||
-                    !MathUtils.almostEquals(tr2().fDir, tr3().fDir) ||
-                    !MathUtils.almostEquals(tr2().fDir, tr4().fDir) ||
-                    !MathUtils.almostEquals(tr3().fDir, tr4().fDir)
+            if (!MathUtilsInt.almostEquals(tr1().fDir, tr2().fDir) ||
+                    !MathUtilsInt.almostEquals(tr1().fDir, tr3().fDir) ||
+                    !MathUtilsInt.almostEquals(tr1().fDir, tr4().fDir) ||
+                    !MathUtilsInt.almostEquals(tr2().fDir, tr3().fDir) ||
+                    !MathUtilsInt.almostEquals(tr2().fDir, tr4().fDir) ||
+                    !MathUtilsInt.almostEquals(tr3().fDir, tr4().fDir)
             ) {
                 /*if (log)*/ println "Block $this is not making a plane"
                 return false
@@ -228,11 +229,11 @@ class EventBlockInt {
     }
 
     private static BigInteger calcTotalSurface16Squared(List<Point4i> points) {
-        TriangleInt[] ts = [
-         new TriangleInt(points[0], points[1], points[2]),
-         new TriangleInt(points[0], points[1], points[3]),
-         new TriangleInt(points[0], points[2], points[3]),
-         new TriangleInt(points[1], points[2], points[3])
+        Triangle4i[] ts = [
+         new Triangle4i(points[0], points[1], points[2]),
+         new Triangle4i(points[0], points[1], points[3]),
+         new Triangle4i(points[0], points[2], points[3]),
+         new Triangle4i(points[1], points[2], points[3])
         ]
         BigInteger result = 0G
         ts.each { result += it.s16squared }

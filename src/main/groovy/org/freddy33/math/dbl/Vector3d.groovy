@@ -1,7 +1,5 @@
 package org.freddy33.math.dbl
 
-import org.freddy33.math.MathUtils;
-
 class Vector3d {
     double x, y, z
 
@@ -11,7 +9,7 @@ class Vector3d {
         z = pz
     }
 
-    public Vector3d(Coord4d p1, Coord4d p2) {
+    public Vector3d(Point4d p1, Point4d p2) {
         x = p2.x - p1.x;
         y = p2.y - p1.y;
         z = p2.z - p1.z;
@@ -79,7 +77,7 @@ class Vector3d {
 
     @Override
     boolean equals(Object obj) {
-        MathUtils.eq(this, (Vector3d) obj)
+        MathUtilsDbl.eq(this, (Vector3d) obj)
     }
 
     String toString() {

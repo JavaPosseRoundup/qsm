@@ -1,25 +1,22 @@
 package org.freddy33.qsm.sphere_dbl;
 
 
-import org.freddy33.math.dbl.Coord4d
-import org.freddy33.math.MathUtils
-
 import org.freddy33.math.dbl.Vector3d
 import spock.lang.Specification
 
-import static org.freddy33.math.MathUtils.getCos120
-import static org.freddy33.math.MathUtils.getSin120
 import org.freddy33.math.dbl.TriangleDbl
 import org.freddy33.qsm.sphere_surface_int.calc.EventDouble
+import org.freddy33.math.dbl.Point4d
+import org.freddy33.math.dbl.MathUtilsDbl
 
 public class TriangleDoubleTest extends Specification {
     static def s22 = Math.sqrt(2d) / 2d
     static def evt1 = new EventDouble(0d, 0d, 0d, 3d, new Vector3d(3d, 0d, 0d))
     static def evt2 = new EventDouble(0d, 0d, 1d, 3d, new Vector3d(3d, 3d, 0d))
-    static def evt3 = new EventDouble(0d, org.freddy33.math.MathUtils.sin120, org.freddy33.math.MathUtils.cos120, 3d, evt1.direction)
-    static def evt4 = new EventDouble(0d, -org.freddy33.math.MathUtils.sin120, org.freddy33.math.MathUtils.cos120, 3d, evt1.direction)
+    static def evt3 = new EventDouble(0d, MathUtilsDbl.sin120, MathUtilsDbl.cos120, 3d, evt1.direction)
+    static def evt4 = new EventDouble(0d, -MathUtilsDbl.sin120, MathUtilsDbl.cos120, 3d, evt1.direction)
     static def ratio = 1000d
-    static double bigDist = ratio * org.freddy33.math.MathUtils.sin120 * 2d
+    static double bigDist = ratio * MathUtilsDbl.sin120 * 2d
     static double nextX = Math.sqrt((bigDist * bigDist) - (ratio * ratio))
 
     def "test Event"() {
@@ -30,7 +27,7 @@ public class TriangleDoubleTest extends Specification {
         event << [
                 new EventDouble(0d, 0d, 0d, 3d, new Vector3d(3d, 0d, 0d)),
                 new EventDouble(0d, 0d, 1d, 3d, new Vector3d(3d, 3d, 0d)),
-                new EventDouble(0d, org.freddy33.math.MathUtils.sin120, org.freddy33.math.MathUtils.cos120, 3d, new Vector3d(3d, 0d, 0d)),
+                new EventDouble(0d, MathUtilsDbl.sin120, MathUtilsDbl.cos120, 3d, new Vector3d(3d, 0d, 0d)),
 
         ]
         dir << [
@@ -45,7 +42,7 @@ public class TriangleDoubleTest extends Specification {
         !triangle.isFlat()
         triangle.findCenter() == center
         triangle.finalDir(evt1.direction) == dir
-        MathUtils.eq(triangle.radius2(), radius2)
+        MathUtilsDbl.eq(triangle.radius2(), radius2)
         triangle.findEvent(evt1.direction) == eventAt2
 
         where:
@@ -62,12 +59,12 @@ public class TriangleDoubleTest extends Specification {
                 1d
         ]
         center << [
-                new Coord4d(0d, 0d, 0d, 3d),
-                new Coord4d(0d, 0d, -1d, 3d)
+                new Point4d(0d, 0d, 0d, 3d),
+                new Point4d(0d, 0d, -1d, 3d)
         ]
         eventAt2 << [
-                new Coord4d(Math.sqrt(2d), 0d, 0d, 4d),
-                new Coord4d(Math.sqrt(2d), 0d, -1d, 4d)
+                new Point4d(Math.sqrt(2d), 0d, 0d, 4d),
+                new Point4d(Math.sqrt(2d), 0d, -1d, 4d)
         ]
     }
 
@@ -77,7 +74,7 @@ public class TriangleDoubleTest extends Specification {
         !triangle.isFlat()
         triangle.findCenter() == center
         triangle.finalDir(evt1.direction) == dir
-        MathUtils.eq(triangle.radius2(), radius2)
+        MathUtilsDbl.eq(triangle.radius2(), radius2)
         triangle.findEvent(evt1.direction) == eventAt2
 
         where:
@@ -94,12 +91,12 @@ public class TriangleDoubleTest extends Specification {
                 ratio * ratio
         ]
         center << [
-                new Coord4d(0d, 0d, 0d, 3d),
-                new Coord4d(0d, 0d, -ratio, 3d)
+                new Point4d(0d, 0d, 0d, 3d),
+                new Point4d(0d, 0d, -ratio, 3d)
         ]
         eventAt2 << [
-                new Coord4d(nextX, 0d, 0d, 3d + bigDist),
-                new Coord4d(nextX, 0d, -ratio, 3d + bigDist)
+                new Point4d(nextX, 0d, 0d, 3d + bigDist),
+                new Point4d(nextX, 0d, -ratio, 3d + bigDist)
         ]
     }
 }

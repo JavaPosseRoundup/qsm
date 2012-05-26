@@ -2,34 +2,30 @@ package org.freddy33.math.bigInt
 
 import spock.lang.Specification
 
-import static org.freddy33.math.MathUtils.almostEquals
+import static MathUtilsInt.almostEquals
 import static org.freddy33.math.bigInt.SphericalVector3i.*
-import org.freddy33.math.bigInt.Point4i
-import org.freddy33.math.bigInt.SphericalVector3i
-import org.freddy33.math.bigInt.Vector3i
-import org.freddy33.math.MathUtils
 
 class IntMathTest extends Specification {
     def "basic Math"() {
         expect:
-        org.freddy33.math.MathUtils.almostEquals(MathUtils.EPSILON_INT - 1G, 0G)
-        almostEquals(1G - MathUtils.EPSILON_INT, 0G)
-        almostEquals(0G, MathUtils.EPSILON_INT - 1G)
-        almostEquals(0G, 1G - MathUtils.EPSILON_INT)
+        MathUtilsInt.almostEquals(MathUtilsInt.EPSILON_INT - 1G, 0G)
+        almostEquals(1G - MathUtilsInt.EPSILON_INT, 0G)
+        almostEquals(0G, MathUtilsInt.EPSILON_INT - 1G)
+        almostEquals(0G, 1G - MathUtilsInt.EPSILON_INT)
 
-        !almostEquals(MathUtils.EPSILON_INT, 0G)
-        !almostEquals(-MathUtils.EPSILON_INT, 0G)
-        !almostEquals(MathUtils.EPSILON_INT + 1G, 1G)
-        !almostEquals(MathUtils.EPSILON_INT - 1G, -1G)
-        !almostEquals(0G, MathUtils.EPSILON_INT)
-        !almostEquals(0G, -MathUtils.EPSILON_INT)
-        !almostEquals(1G, 1G + MathUtils.EPSILON_INT)
-        !almostEquals(-1G, MathUtils.EPSILON_INT - 1G)
+        !almostEquals(MathUtilsInt.EPSILON_INT, 0G)
+        !almostEquals(-MathUtilsInt.EPSILON_INT, 0G)
+        !almostEquals(MathUtilsInt.EPSILON_INT + 1G, 1G)
+        !almostEquals(MathUtilsInt.EPSILON_INT - 1G, -1G)
+        !almostEquals(0G, MathUtilsInt.EPSILON_INT)
+        !almostEquals(0G, -MathUtilsInt.EPSILON_INT)
+        !almostEquals(1G, 1G + MathUtilsInt.EPSILON_INT)
+        !almostEquals(-1G, MathUtilsInt.EPSILON_INT - 1G)
 
-        almostEquals(MathUtils.EPSILON_INT, 1G)
-        almostEquals(-MathUtils.EPSILON_INT, -1G)
-        almostEquals(1G, MathUtils.EPSILON_INT)
-        almostEquals(-1G, -MathUtils.EPSILON_INT)
+        almostEquals(MathUtilsInt.EPSILON_INT, 1G)
+        almostEquals(-MathUtilsInt.EPSILON_INT, -1G)
+        almostEquals(1G, MathUtilsInt.EPSILON_INT)
+        almostEquals(-1G, -MathUtilsInt.EPSILON_INT)
         !almostEquals(-SphericalVector3i.D180, SphericalVector3i.D180)
     }
 
