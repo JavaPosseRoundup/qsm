@@ -54,9 +54,9 @@ class Matrix3d {
 
     static Matrix3d rotX(double a) {
         new Matrix3d(
-                1d,     0d,      0d,
-                0d, cos(a), sin(a),
-                0d, -sin(a),  cos(a)
+                1d,      0d,     0d,
+                0d,  cos(a), sin(a),
+                0d, -sin(a), cos(a)
         )
     }
 

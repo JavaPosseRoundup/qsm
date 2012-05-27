@@ -8,6 +8,7 @@ package org.freddy33.math.dbl
  * To change this template use File | Settings | File Templates.
  */
 class MathUtilsDbl {
+    public static double sin60 = Math.sin(Math.PI / 3d)
     public static double sin120 = Math.sin(2d * Math.PI / 3d)
     public static double cos120 = -0.5d
     public static final double EPSILON = 1e-6d

@@ -9,7 +9,7 @@ package org.freddy33.math.bigInt
  */
 class MathUtilsInt {
     public static final BigInteger EPSILON_INT = 2G
-    public static final BigInteger D5 = 2G * 2G * 3G * 5G * 7G
+    public static final BigInteger D5 = 2G * 3G
     public static final BigInteger D45 = D5 * 5G
     public static final BigInteger D30 = D5 * 6G
     public static final BigInteger D90 = D30 * 3G
