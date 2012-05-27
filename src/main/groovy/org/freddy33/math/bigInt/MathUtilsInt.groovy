@@ -1,9 +1,5 @@
 package org.freddy33.math.bigInt
 
-import org.freddy33.math.bigInt.Point4i
-import org.freddy33.math.bigInt.SphericalVector3i
-import org.freddy33.math.bigInt.Vector3i
-
 /**
  * Created by IntelliJ IDEA.
  * User: freds
@@ -13,7 +9,19 @@ import org.freddy33.math.bigInt.Vector3i
  */
 class MathUtilsInt {
     public static final BigInteger EPSILON_INT = 2G
+    public static final BigInteger D5 = 2G * 2G * 3G * 5G * 7G
+    public static final BigInteger D45 = D5 * 5G
+    public static final BigInteger D30 = D5 * 6G
+    public static final BigInteger D90 = D30 * 3G
+    public static final BigInteger D180 = D90 * 2G
+    public static final BigInteger D120 = D30 * 4G
+    public static final BigInteger DIV = D90 * 4G
+    public static final BigInteger ONE_HALF = (BigInteger) (DIV * Math.PI)
+    public static final BigInteger ONE = ONE_HALF * 2G
 
+    static {
+        println "Trig Integer for PI=$MathUtilsInt.D180 ONE=$MathUtilsInt.ONE"
+    }
 
     static boolean almostEquals(BigInteger a, BigInteger b) {
         almostEquals(a, b, EPSILON_INT)
@@ -81,11 +89,11 @@ class MathUtilsInt {
         if (!almostEquals(a.r, b.r) || !isSmallInt(a.teta - b.teta)) return false
         if (isSmallInt(a.phi - b.phi)) return true
         // Check when phi +- D180
-        if (isSmallInt(SphericalVector3i.D180 - a.phi) && isSmallInt(SphericalVector3i.D180 + b.phi)) {
+        if (isSmallInt(D180 - a.phi) && isSmallInt(D180 + b.phi)) {
             // a.phi is almost +D180 and b.phi almost -D180
             return isSmallInt(a.phi + b.phi)
         }
-        if (isSmallInt(SphericalVector3i.D180 + a.phi) && isSmallInt(SphericalVector3i.D180 - b.phi)) {
+        if (isSmallInt(D180 + a.phi) && isSmallInt(D180 - b.phi)) {
             // a.phi is almost -D180 and b.phi almost D180
             return isSmallInt(a.phi + b.phi)
         }

@@ -18,6 +18,10 @@ class Point4d {
         return new Point4d(x, y, z, t);
     }
 
+    public Point4d plus(Point4d v) {
+        return new Point4d(x + v.x, y + v.y, z + v.z, t + v.t)
+    }
+
     public Point4d plus(Vector3d v) {
         return new Point4d(x + v.x, y + v.y, z + v.z, t)
     }

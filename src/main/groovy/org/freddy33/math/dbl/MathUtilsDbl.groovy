@@ -27,6 +27,10 @@ class MathUtilsDbl {
         eq(a.x, b.x) && eq(a.y, b.y) && eq(a.z, b.z) && Math.abs(a.t - b.t) < 1d
     }
 
+    static boolean eq(Point3d a, Point3d b) {
+        eq(a.x, b.x) && eq(a.y, b.y) && eq(a.z, b.z)
+    }
+
     static boolean eq(Vector3d a, Vector3d b) {
         eq(a.x, b.x) && eq(a.y, b.y) && eq(a.z, b.z)
     }

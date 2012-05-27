@@ -1,12 +1,10 @@
 package org.freddy33.qsm.flat_disk_surface.calc
 
-import org.freddy33.qsm.sphere_surface_int.calc.Sign
-import org.freddy33.math.dbl.Point4d
-import org.freddy33.math.dbl.SphericalUnitVector2d
-import org.freddy33.math.bigInt.Point4i
 import org.freddy33.math.bigInt.Point2i
 import org.freddy33.math.dbl.Matrix3d
 import org.freddy33.math.dbl.Point3d
+import org.freddy33.qsm.sphere_surface_int.calc.Sign
+import org.freddy33.math.dbl.Point4d
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,74 +14,65 @@ import org.freddy33.math.dbl.Point3d
  * To change this template use File | Settings | File Templates.
  */
 class EventFlat {
-    static final WaitingEventShape shape = WaitingEventShape.SQUARE
     final EventBlockFlat belongsTo
     final Point2i point
     final Sign sign
-    BigInteger currentWaitingDist
-    List<WaitingEventFlat> waitingEvents
 
     EventFlat(Point2i point, EventBlockFlat belongs) {
         this.belongsTo = belongs
         this.point = point
-        this.currentWaitingDist = 0G
-        this.waitingEvents = Collections.emptyList()
     }
 
-    public BigInteger getCurrentWaitingDist() {
-        return currentWaitingDist
-    }
-
-    def incrementTime() {
-        currentWaitingDist++
-        setWaitingEventDistance(currentWaitingDist)
-    }
-
-    def setWaitingEventDistance(BigInteger waitingEventsDist) {
-        waitingEvents.clear()
-        if (shape == WaitingEventShape.SQUARE) {
-            (-waitingEventsDist..waitingEventsDist).each {
-                waitingEvents.add(new WaitingEventFlat(this, new Point2i(it, waitingEventsDist)))
-                waitingEvents.add(new WaitingEventFlat(this, new Point2i(it, -waitingEventsDist)))
-                if (it != waitingEventsDist || it != -waitingEventsDist) {
-                    waitingEvents.add(new WaitingEventFlat(this, new Point2i(waitingEventsDist, it)))
-                    waitingEvents.add(new WaitingEventFlat(this, new Point2i(-waitingEventsDist, it)))
+    static List<Point2i> calcWaitingEvent(BigInteger waitingEventsDist, WaitingEventShape shape) {
+        List<Point2i> waitingEvents = []
+        switch (shape) {
+            case WaitingEventShape.SQUARE:
+                (-waitingEventsDist..waitingEventsDist).each {
+                    waitingEvents.add(new Point2i(it, waitingEventsDist))
+                    waitingEvents.add(new Point2i(it, -waitingEventsDist))
+                    if (it != waitingEventsDist || it != -waitingEventsDist) {
+                        waitingEvents.add(new Point2i(waitingEventsDist, it))
+                        waitingEvents.add(new Point2i(-waitingEventsDist, it))
+                    }
                 }
-            }
-        } else if (shape == WaitingEventShape.DIAMOND) {
-            (0G..waitingEventsDist).each {
-                waitingEvents.add(new WaitingEventFlat(this, new Point2i(it, waitingEventsDist-it)))
-                waitingEvents.add(new WaitingEventFlat(this, new Point2i(it-waitingEventsDist, -it)))
-                if (it != 0 || it != waitingEventsDist) {
-                    waitingEvents.add(new WaitingEventFlat(this, new Point2i(it, it-waitingEventsDist)))
-                    waitingEvents.add(new WaitingEventFlat(this, new Point2i(it-waitingEventsDist, it)))
+                break;
+            case WaitingEventShape.DIAMOND:
+                (0G..waitingEventsDist).each {
+                    waitingEvents.add(new Point2i(it, waitingEventsDist - it))
+                    waitingEvents.add(new Point2i(it - waitingEventsDist, -it))
+                    if (it != 0 && it != waitingEventsDist) {
+                        waitingEvents.add(new Point2i(it, it - waitingEventsDist))
+                        waitingEvents.add(new Point2i(it - waitingEventsDist, it))
+                    }
                 }
-            }
-        } else {
-            throw new UnsupportedOperationException("Shape $shape not supported!")
+                break;
+            default:
+                throw new UnsupportedOperationException("Shape $shape not supported!")
         }
+        waitingEvents
     }
 
-    List<Point3d> getAllWaitingEvents(BigInteger currentTime) {
-        List<Point3d> result = []
-        Matrix3d transform = belongsTo.plane.transform
+    List<Point4d> getAllWaitingEvents(BigInteger currentTime, WaitingEventShape shape) {
+        List<Point4d> result = []
+        Matrix3d transform = belongsTo.plane.traInv
         BigInteger waitingTime = currentTime - belongsTo.createdTime
-        setWaitingEventDistance(waitingTime)
+        List<Point2i> waitingEvents = calcWaitingEvent(waitingTime, shape)
         waitingEvents.each { we ->
-            result.add(transform * new Point3d((double)we.pos.x, (double)we.pos.y, (double)waitingTime))
+            result.add(belongsTo.origin + transform * new Point4d(
+                    (double) point.x + we.x,
+                    (double) point.y + we.y,
+                    (double) waitingTime, // Z=T since all speed of light
+                    (double) waitingTime))
         }
         result
     }
+
+    @Override
+    String toString() {
+        "ef($point)"
+    }
 }
 
-enum WaitingEventShape { SQUARE, DIAMOND }
-
-class WaitingEventFlat {
-    final EventFlat from
-    final Point2i pos
-
-    WaitingEventFlat(EventFlat from, Point2i pos) {
-        this.from = from
-        this.pos = pos
-    }
+enum WaitingEventShape {
+    SQUARE, DIAMOND
 }

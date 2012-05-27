@@ -4,8 +4,8 @@ import org.freddy33.math.bigInt.MathUtilsInt
 import org.freddy33.math.bigInt.Point4i
 import spock.lang.Specification
 
-import static org.freddy33.math.bigInt.SphericalVector3i.ONE
-import static org.freddy33.math.bigInt.SphericalVector3i.ONE_HALF
+import static org.freddy33.math.bigInt.MathUtilsInt.ONE
+import static org.freddy33.math.bigInt.MathUtilsInt.ONE_HALF
 import static org.freddy33.qsm.sphere_surface_int.TriangleIntTest.cos120
 import static org.freddy33.qsm.sphere_surface_int.TriangleIntTest.sin120
 import org.freddy33.qsm.sphere_surface_int.calc.SpaceTimeInt
