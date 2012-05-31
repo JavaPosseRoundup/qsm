@@ -16,7 +16,7 @@ class EulerAngles3d {
     final Matrix3d tra
     final Matrix3d traInv
 
-    EulerAngles3d(SphericalUnitVector2d newZ, Vector3d newYAligned) {
+    static EulerAngles3d fromNewZAndXYProj(SphericalUnitVector2d newZ, Vector3d newYAligned) {
         def tempPlane = new EulerAngles3d(newZ, 0d)
         Vector3d YAligned = tempPlane.tra * newYAligned
         def newY = new SphericalUnitVector2d(new Vector3d(YAligned.x, YAligned.y, 0d))
@@ -63,7 +63,7 @@ class EulerAngles3d {
 
     @Override
     String toString() {
-        "ea($phi, $teta, $psi)"
+        "ea($phi, $teta, $psi, $tra, $traInv)"
     }
 
     @Override

@@ -38,7 +38,7 @@ public class EventBlockFlat {
 
     List<Point4d> getEventPoints() {
         events.collect {
-            origin + (singlePlane.traInv * new Point4d(it.point.x, it.point.y, 0d, 0d))
+            origin + (singlePlane.traInv * new Point4d(it.point.x, it.point.y, it.point.z, 0d))
         }
     }
 

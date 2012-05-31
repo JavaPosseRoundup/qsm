@@ -56,18 +56,16 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
         this.block = block
         setWidth(3f)
         float maxDist = (float) TrigoInt.ONE * 2f
-        bbox.add((float)2f*maxDist, maxDist, maxDist)
-        bbox.add(0f, -maxDist, maxDist)
-        bbox.add(0f, -maxDist, -maxDist)
-        bbox.add(0f, maxDist, -maxDist)
+        bbox.add(maxDist, maxDist, maxDist)
+        bbox.add(-maxDist, -maxDist, -maxDist)
     }
 
     public void incrementTime() {
-        currentTime += 10G
+        currentTime += 1G
     }
 
     public void decrementTime() {
-        currentTime -= 10G
+        currentTime -= 1G
         if (currentTime < 0G) currentTime = 0G
     }
 

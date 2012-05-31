@@ -16,8 +16,8 @@ public enum BlockType implements EventsBuilder {
             return new EventFlat[] {
                     new EventFlat(new Point3d(0d, 0d, 0d), from, EventSign.plus_1),
                     new EventFlat(new Point3d(0d, size, 0d), from, EventSign.minus_1),
-                    new EventFlat(new Point3d(size * MathUtilsDbl.sin60, -size * MathUtilsDbl.sin30, 0d), from, EventSign.plus_i),
-                    new EventFlat(new Point3d(-size * MathUtilsDbl.sin60, -size * MathUtilsDbl.sin30, 0d), from, EventSign.minus_i)
+                    new EventFlat(new Point3d(size * MathUtilsDbl.sin60, -size * MathUtilsDbl.cos60, 0d), from, EventSign.plus_i),
+                    new EventFlat(new Point3d(-size * MathUtilsDbl.sin60, -size * MathUtilsDbl.cos60, 0d), from, EventSign.minus_i)
             };
         }
     },
@@ -25,10 +25,10 @@ public enum BlockType implements EventsBuilder {
         @Override
         public EventFlat[] createEvents(EventBlockFlat from, double size) {
             Point3d[] point3ds = new Point3d[] {
-                    new Point3d(size * MathUtilsDbl.sin30, 0d, size * MathUtilsDbl.sin45 / 2d),
-                    new Point3d(-size * MathUtilsDbl.sin30, 0d, size * MathUtilsDbl.sin45 / 2d),
-                    new Point3d(0d, size * MathUtilsDbl.sin30, -size * MathUtilsDbl.sin45 / 2d),
-                    new Point3d(0d, -size * MathUtilsDbl.sin30, -size * MathUtilsDbl.sin45 / 2d)
+                    new Point3d(size * MathUtilsDbl.cos60, 0d, size * MathUtilsDbl.sin45 / 2d),
+                    new Point3d(-size * MathUtilsDbl.cos60, 0d, size * MathUtilsDbl.sin45 / 2d),
+                    new Point3d(0d, size * MathUtilsDbl.cos60, -size * MathUtilsDbl.sin45 / 2d),
+                    new Point3d(0d, -size * MathUtilsDbl.cos60, -size * MathUtilsDbl.sin45 / 2d)
             };
             return new EventFlat[] {
                     new EventFlat(point3ds[0], point3ds[1], from, EventSign.plus_1),

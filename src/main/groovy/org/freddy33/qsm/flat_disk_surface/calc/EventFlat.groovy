@@ -34,9 +34,11 @@ class EventFlat {
         this.point = point
 
         // The plane is dictated for vector Z=(point,origin), Psi=found from Y = XY projection of (point,-anotherPoint)
-        this.plane = new EulerAngles3d(
+        this.plane = EulerAngles3d.fromNewZAndXYProj(
                 new SphericalUnitVector2d(new Vector3d(point, Point3d.ORIGIN)),
                 new Vector3d(point, -anotherPoint))
+
+        println "Created double plane event $this"
     }
 
     /**
@@ -47,6 +49,8 @@ class EventFlat {
         this.sign = sign
         this.plane = null
         this.point = point
+
+        println "Created single plane event $this"
     }
 
     static List<Line2d> calcWaitingEvent(BigInteger waitingEventsDist) {
@@ -93,32 +97,28 @@ class EventFlat {
     List<Line4d> getAllWaitingEvents(BigInteger currentTime) {
         List<Line4d> result = []
         BigInteger waitingTime = currentTime - belongsTo.createdTime
+        final double wt = (double)waitingTime
         List<Line2d> waitingEvents = calcWaitingEvent(waitingTime)
         waitingEvents.each { we ->
             result.add(new Line4d(
-                    transformToGlobalCoord(we.a, waitingTime),
-                    transformToGlobalCoord(we.b, waitingTime)))
+                    transformToGlobalCoord(we.a, wt),
+                    transformToGlobalCoord(we.b, wt)))
         }
         result
     }
 
-    Point4d transformToGlobalCoord(Point2d p, BigInteger waitingTime) {
+    Point4d transformToGlobalCoord(Point2d p, double wt) {
         if (this.plane == null) {
-            belongsTo.origin + belongsTo.singlePlane.traInv * new Point4d(
+            return belongsTo.origin + belongsTo.singlePlane.traInv * new Point4d(
                     point.x + p.x,
                     point.y + p.y,
-                    (double) waitingTime * GlobalParams.K,
-                    (double) waitingTime)
+                    point.z + wt * GlobalParams.K,
+                    wt)
         } else {
-            belongsTo.origin + belongsTo.singlePlane.traInv * (
-                new Point4d( point.x, point.y, 0d, 0d ) + (
-                plane.traInv * new Point4d(
-                    p.x,
-                    p.y,
-                    (double) waitingTime * GlobalParams.K,
-                    (double) waitingTime)
-                )
+            Point4d localPoint = new Point4d( point.x, point.y, point.z, 0d ) + (
+                plane.traInv * new Point4d( p.x, p.y, wt * GlobalParams.K, wt)
             )
+            return belongsTo.origin + belongsTo.singlePlane.traInv * localPoint
         }
     }
 

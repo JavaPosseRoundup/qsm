@@ -14,6 +14,8 @@ import org.freddy33.math.dbl.Point4d
 import static org.freddy33.math.bigInt.TrigoInt.ONE
 import static org.freddy33.math.bigInt.TrigoInt.ONE_HALF
 import org.freddy33.math.dbl.Line4d
+import org.freddy33.qsm.flat_disk_surface.calc.BlockType
+import org.freddy33.qsm.flat_disk_surface.calc.GlobalParams
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,6 +30,8 @@ class EventBlockFlatTest extends Specification {
     public static final BigInteger CREATION_TIME = 7G
     public static final double one = (double) SIZE * ONE
     public static final double oneHalf = (double) SIZE * ONE_HALF
+    public static final double oneCos60 = (double) SIZE * ONE * MathUtilsDbl.cos60
+    public static final double oneSin60 = (double) SIZE * ONE * MathUtilsDbl.sin60
 
     def "simple flat photon"() {
         def photon = EventBlockFlat.createPhoton(
@@ -41,70 +45,45 @@ class EventBlockFlatTest extends Specification {
         expect:
         photon.events.length == 4
         photon.triangles.length == 4
+        photon.type == BlockType.FlatStar
         MathUtilsDbl.eq(photon.singlePlane.phi, PI/2d)
         MathUtilsDbl.eq(photon.singlePlane.teta, PI/2d)
         MathUtilsDbl.eq(photon.singlePlane.psi, 0d)
         List<Point4d> pts = photon.getEventPoints()
         pts[0].equals(new Point4d(0d, 0d, 0d, (double)CREATION_TIME))
         pts[1].equals(new Point4d(0d, 0d, one, (double)CREATION_TIME))
-        pts[2].equals(new Point4d(0d, oneHalf, -oneHalf, (double)CREATION_TIME))
-        pts[3].equals(new Point4d(0d, -oneHalf, -oneHalf, (double)CREATION_TIME))
-        BigInteger oneTime = CREATION_TIME + 1G
-        List<Line4d>[] wPts1 = photon.getWaitingEvents(oneTime)
-        wPts1.length == 4
-        wPts1.every { it.size() == 4 }
-        wPts1[0].any { it.a.equals(new Point4d(1d,  1d,  0d, (double)oneTime)) }
-        wPts1[0].any { it.a.equals(new Point4d(1d, -1d,  0d, (double)oneTime)) }
-        wPts1[0].any { it.a.equals(new Point4d(1d,  0d,  1d, (double)oneTime)) }
-        wPts1[0].any { it.a.equals(new Point4d(1d,  0d, -1d, (double)oneTime)) }
+        pts[2].equals(new Point4d(0d, oneSin60, -oneCos60, (double)CREATION_TIME))
+        pts[3].equals(new Point4d(0d, -oneSin60, -oneCos60, (double)CREATION_TIME))
+    }
 
-        wPts1[1].any { it.a.equals(new Point4d(1d,  1d, one, (double)oneTime)) }
-        wPts1[1].any { it.a.equals(new Point4d(1d, -1d, one, (double)oneTime)) }
-        wPts1[1].any { it.a.equals(new Point4d(1d,  0d, one+1d, (double)oneTime)) }
-        wPts1[1].any { it.a.equals(new Point4d(1d,  0d, one-1d, (double)oneTime)) }
+    private boolean verifyByWaitingTime(EventBlockFlat photon, BigInteger waitingTime) {
+        BigInteger newTime = CREATION_TIME + waitingTime
+        List<Line4d>[] wes = photon.getWaitingEvents(newTime)
+        wes.length == 4
+        wes.every { it.size() == 4 }
+        double nz = GlobalParams.K * waitingTime
+        double wt = (double)waitingTime
+        double nt = (double)newTime
 
-        wPts1[2].any { it.a.equals(new Point4d(1d, oneHalf+1d, -oneHalf, (double)oneTime)) }
-        wPts1[2].any { it.a.equals(new Point4d(1d, oneHalf-1d, -oneHalf, (double)oneTime)) }
-        wPts1[2].any { it.a.equals(new Point4d(1d, oneHalf, -oneHalf+1d, (double)oneTime)) }
-        wPts1[2].any { it.a.equals(new Point4d(1d, oneHalf, -oneHalf-1d, (double)oneTime)) }
+        wes[0].any { it.a.equals(new Point4d(nz, wt,  0d, nt)) }
+        wes[0].any { it.a.equals(new Point4d(nz, -wt,  0d, (double)newTime)) }
+        wes[0].any { it.a.equals(new Point4d(nz,  0d,  wt, (double)newTime)) }
+        wes[0].any { it.a.equals(new Point4d(nz,  0d, -wt, (double)newTime)) }
 
-        wPts1[3].any { it.a.equals(new Point4d(1d, -oneHalf+1d, -oneHalf, (double)oneTime)) }
-        wPts1[3].any { it.a.equals(new Point4d(1d, -oneHalf-1d, -oneHalf, (double)oneTime)) }
-        wPts1[3].any { it.a.equals(new Point4d(1d,    -oneHalf, -oneHalf+1d, (double)oneTime)) }
-        wPts1[3].any { it.a.equals(new Point4d(1d,    -oneHalf, -oneHalf-1d, (double)oneTime)) }
+        wes[1].any { it.a.equals(new Point4d(nz,  1d, one, (double)newTime)) }
+        wes[1].any { it.a.equals(new Point4d(1d, -1d, one, (double)newTime)) }
+        wes[1].any { it.a.equals(new Point4d(1d,  0d, one+1d, (double)newTime)) }
+        wes[1].any { it.a.equals(new Point4d(1d,  0d, one-1d, (double)newTime)) }
 
-        BigInteger twoTime = CREATION_TIME + 2G
-        List<Point4d>[] wPts2 = photon.getWaitingEvents(twoTime)
-        wPts2.length == 4
-        wPts2.every { it.size() == 8 }
-        wPts2[0].any { it.equals(new Point4d(2d,  2d,  0d, (double)twoTime)) }
-        wPts2[0].any { it.equals(new Point4d(2d, -2d,  0d, (double)twoTime)) }
-        wPts2[0].any { it.equals(new Point4d(2d,  0d,  2d, (double)twoTime)) }
-        wPts2[0].any { it.equals(new Point4d(2d,  0d, -2d, (double)twoTime)) }
+        wes[2].any { it.a.equals(new Point4d(1d, oneHalf+1d, -oneHalf, (double)newTime)) }
+        wes[2].any { it.a.equals(new Point4d(1d, oneHalf-1d, -oneHalf, (double)newTime)) }
+        wes[2].any { it.a.equals(new Point4d(1d, oneHalf, -oneHalf+1d, (double)newTime)) }
+        wes[2].any { it.a.equals(new Point4d(1d, oneHalf, -oneHalf-1d, (double)newTime)) }
 
-        wPts2[0].any { it.equals(new Point4d(2d,  1d,  1d, (double)twoTime)) }
-        wPts2[0].any { it.equals(new Point4d(2d, -1d,  1d, (double)twoTime)) }
-        wPts2[0].any { it.equals(new Point4d(2d,  1d, -1d, (double)twoTime)) }
-        wPts2[0].any { it.equals(new Point4d(2d, -1d, -1d, (double)twoTime)) }
-
-        BigInteger twelveTime = CREATION_TIME + 12G
-        List<Point4d>[] wPts12 = photon.getWaitingEvents(twelveTime)
-        wPts12.length == 4
-        wPts12.every { it.size() == 4*12 }
-        wPts12[0].any { it.equals(new Point4d(12d,  12d,  0d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d, -12d,  0d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d,  0d,  12d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d,  0d, -12d, (double)twelveTime)) }
-
-        wPts12[0].any { it.equals(new Point4d(12d,  1d,  11d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d, -1d,  11d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d,  11d, -1d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d, -11d, -1d, (double)twelveTime)) }
-
-        wPts12[0].any { it.equals(new Point4d(12d,  6d,   6d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d, -6d,   6d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d,  6d,  -6d, (double)twelveTime)) }
-        wPts12[0].any { it.equals(new Point4d(12d, -6d,  -6d, (double)twelveTime)) }
+        wes[3].any { it.a.equals(new Point4d(1d, -oneHalf+1d, -oneHalf, (double)newTime)) }
+        wes[3].any { it.a.equals(new Point4d(1d, -oneHalf-1d, -oneHalf, (double)newTime)) }
+        wes[3].any { it.a.equals(new Point4d(1d,    -oneHalf, -oneHalf+1d, (double)newTime)) }
+        wes[3].any { it.a.equals(new Point4d(1d,    -oneHalf, -oneHalf-1d, (double)newTime)) }
     }
 
     def "simple flat electron"() {
@@ -123,22 +102,12 @@ class EventBlockFlatTest extends Specification {
         MathUtilsDbl.eq(electron.singlePlane.teta, PI/2d)
         MathUtilsDbl.eq(electron.singlePlane.psi, 0d)
         List<Point4d> pts = electron.getEventPoints()
-        pts[0].equals(new Point4d(0d, 0d, oneHalf, (double)CREATION_TIME))
-        pts[1].equals(new Point4d(0d, 0d, -oneHalf, (double)CREATION_TIME))
-        pts[2].equals(new Point4d(0d, one, 0d, (double)CREATION_TIME))
-        pts[3].equals(new Point4d(0d, -one, 0d, (double)CREATION_TIME))
+        pts[0].equals(new Point4d(oneHalf * MathUtilsDbl.sin45, oneCos60, 0d, (double)CREATION_TIME))
+        pts[1].equals(new Point4d(oneHalf * MathUtilsDbl.sin45, -oneCos60, 0d, (double)CREATION_TIME))
+        pts[2].equals(new Point4d(-oneHalf * MathUtilsDbl.sin45, 0d, oneCos60, (double)CREATION_TIME))
+        pts[3].equals(new Point4d(-oneHalf * MathUtilsDbl.sin45, 0d, -oneCos60, (double)CREATION_TIME))
         BigInteger oneTime = CREATION_TIME + 1G
-        List<Point4d>[] wPts1 = electron.getWaitingEvents(oneTime)
+        List<Line4d>[] wPts1 = electron.getWaitingEvents(oneTime)
         wPts1.length == 4
-        wPts1.every { it.size() == 4 }
-        wPts1[0].any { it.equals(new Point4d(1d,  1d,    oneHalf, (double)oneTime)) }
-        wPts1[0].any { it.equals(new Point4d(1d, -1d,    oneHalf, (double)oneTime)) }
-        wPts1[0].any { it.equals(new Point4d(1d,  0d, oneHalf+1d, (double)oneTime)) }
-        wPts1[0].any { it.equals(new Point4d(1d,  0d, oneHalf-1d, (double)oneTime)) }
-
-        wPts1[2].any { it.equals(new Point4d(1d, one+1d,  0d, (double)oneTime)) }
-        wPts1[2].any { it.equals(new Point4d(1d, one-1d,  0d, (double)oneTime)) }
-        wPts1[2].any { it.equals(new Point4d(1d,    one,  1d, (double)oneTime)) }
-        wPts1[2].any { it.equals(new Point4d(1d,    one, -1d, (double)oneTime)) }
     }
 }

@@ -11,11 +11,13 @@ class MathUtilsDbl {
     // The basic block of trigo int
 
     // Also 1/2
-    public static double sin30 = Math.cos(Math.PI / 6d)
+    public static double cos60 = Math.cos(Math.PI / 3d)
     // Also sqrt(2)/2
     public static double sin45 = Math.sin(Math.PI / 4d)
     // Also sqrt(3)/2
     public static double sin60 = Math.sin(Math.PI / 3d)
+    // Also sqrt(3)/2
+    public static double sin30 = Math.sin(Math.PI / 6d)
 
     // TODO: Should not use theses
     public static double sin120 = Math.sin(2d * Math.PI / 3d)
