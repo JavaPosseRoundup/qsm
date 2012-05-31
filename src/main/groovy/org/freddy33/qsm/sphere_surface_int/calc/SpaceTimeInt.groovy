@@ -4,8 +4,9 @@ import org.freddy33.math.bigInt.Point4i
 import org.freddy33.math.bigInt.SphericalVector3i
 import org.freddy33.math.bigInt.Vector3i
 
-import static org.freddy33.math.bigInt.MathUtilsInt.ONE
+import static org.freddy33.math.bigInt.TrigoInt.ONE
 import org.freddy33.math.bigInt.MathUtilsInt
+import org.freddy33.math.bigInt.TrigoInt
 
 /**
  * Date: 12/6/11
@@ -34,14 +35,14 @@ public class SpaceTimeInt {
 
     def initPhoton(BigInteger size) {
         addPhoton(new Point4i(0G, 0G, 0G, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, 0G),
                 new SphericalVector3i(0G, 0G),
                 size)
     }
 
     def initElectron(BigInteger size) {
         addElectron(new Point4i(0G, 0G, 0G, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, 0G),
                 new SphericalVector3i(0G, 0G),
                 size)
     }
@@ -61,8 +62,8 @@ public class SpaceTimeInt {
         addEvent(c, v)
         //Real size is in div units
         addEvent(c + (p * (size * ONE)), v)
-        Vector3i cos120 = (p * (size * SphericalVector3i.cos(MathUtilsInt.D120))).toCartesian()
-        Vector3i sin120 = (py * (size * SphericalVector3i.sin(MathUtilsInt.D120))).toCartesian()
+        Vector3i cos120 = (p * (size * TrigoInt.cos(TrigoInt.D120))).toCartesian()
+        Vector3i sin120 = (py * (size * TrigoInt.sin(TrigoInt.D120))).toCartesian()
         addEvent(c + cos120 + sin120, v)
         addEvent(c + cos120 - sin120, v)
     }
@@ -80,9 +81,9 @@ public class SpaceTimeInt {
             throw new IllegalArgumentException("Polarization $v and vector $p are not perpendicular!");
         }
         // Multiply by D180 is like div by 2
-        Vector3i midLine = (p * (size * MathUtilsInt.ONE_HALF)).toCartesian()
+        Vector3i midLine = (p * (size * TrigoInt.ONE_HALF)).toCartesian()
         // Sin 120 is sqrt(3)/2
-        Vector3i sqrt3div2 = (py * (size * SphericalVector3i.sin(MathUtilsInt.D120))).toCartesian()
+        Vector3i sqrt3div2 = (py * (size * TrigoInt.sin(TrigoInt.D120))).toCartesian()
 
         addEvent(c - midLine, v)
         addEvent(c + midLine, v)

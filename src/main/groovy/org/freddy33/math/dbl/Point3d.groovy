@@ -1,7 +1,9 @@
 package org.freddy33.math.dbl
 
 class Point3d {
-    double x, y, z;
+    public static ORIGIN = new Point3d(0d,0d,0d)
+
+    public final double x, y, z
 
     public Point3d(double xi, double yi, double zi) {
         x = xi
@@ -23,6 +25,10 @@ class Point3d {
 
     public Point3d multiply(double m) {
         new Point3d(x * m, y * m, z * m)
+    }
+
+    public Point3d negative() {
+        new Point3d(-x, -y, -z)
     }
 
     public double magSquared(Point3d c) {

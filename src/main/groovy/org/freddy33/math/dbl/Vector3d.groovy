@@ -9,6 +9,12 @@ class Vector3d {
         z = pz
     }
 
+    public Vector3d(Point3d p1, Point3d p2) {
+        x = p2.x - p1.x;
+        y = p2.y - p1.y;
+        z = p2.z - p1.z;
+    }
+
     public Vector3d(Point4d p1, Point4d p2) {
         x = p2.x - p1.x;
         y = p2.y - p1.y;
@@ -81,6 +87,6 @@ class Vector3d {
     }
 
     String toString() {
-        "v($x, $y, $z, $t)"
+        "v($x, $y, $z)"
     }
 }

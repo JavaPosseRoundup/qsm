@@ -20,3 +20,17 @@ class Triangle2d {
         s = Math.sqrt ( ( a2+b2+c2 ) * ( a2+b2+c2 ) - ( 2G * ( a2*a2 + b2*b2 +c2*c2 ) ) ) / 4d
     }
 }
+
+class Triangle3d {
+    public final Point3d[] p = new Point3d[3]
+    final double s
+
+    Triangle3d(Point3d... p) {
+        this.p = p
+        // Surface calculated using Heron's formula 16*T^2= ( a^2 + b^2 + c^2 )^2 - 2( a^4 + b^4 + c^4 )
+        double a2 = new Vector3d(p[0], p[1]).magSquared()
+        double b2 = new Vector3d(p[1], p[2]).magSquared()
+        double c2 = new Vector3d(p[2], p[0]).magSquared()
+        s = Math.sqrt ( ( a2+b2+c2 ) * ( a2+b2+c2 ) - ( 2G * ( a2*a2 + b2*b2 +c2*c2 ) ) ) / 4d
+    }
+}

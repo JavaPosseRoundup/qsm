@@ -10,15 +10,16 @@ import static org.freddy33.math.bigInt.MathUtilsInt.almostEquals
 
 import org.freddy33.qsm.sphere_surface_int.calc.EventInt
 import org.freddy33.qsm.sphere_surface_int.calc.EventTriangleInt
-import org.freddy33.math.bigInt.MathUtilsInt
+
+import org.freddy33.math.bigInt.TrigoInt
 
 public class TriangleIntTest extends Specification {
-    public static final BigInteger sin120 = SphericalVector3i.sin(MathUtilsInt.D120)
-    public static final BigInteger cos120 = SphericalVector3i.cos(MathUtilsInt.D120)
-    public static final BigInteger sin45 = SphericalVector3i.sin(MathUtilsInt.D45)
+    public static final BigInteger sin120 = TrigoInt.sin(TrigoInt.D120)
+    public static final BigInteger cos120 = TrigoInt.cos(TrigoInt.D120)
+    public static final BigInteger sin45 = TrigoInt.sin(TrigoInt.D45)
 
-    static def evt1 = new EventInt(new Point4i(0G, 0G, 0G, 3G), new SphericalVector3i(3G * MathUtilsInt.ONE, MathUtilsInt.D90, 0G))
-    static def evt2 = new EventInt(new Point4i(0G, 0G, MathUtilsInt.ONE, 3G), new SphericalVector3i(3G * MathUtilsInt.ONE, MathUtilsInt.D90, MathUtilsInt.D45))
+    static def evt1 = new EventInt(new Point4i(0G, 0G, 0G, 3G), new SphericalVector3i(3G * TrigoInt.ONE, TrigoInt.D90, 0G))
+    static def evt2 = new EventInt(new Point4i(0G, 0G, TrigoInt.ONE, 3G), new SphericalVector3i(3G * TrigoInt.ONE, TrigoInt.D90, TrigoInt.D45))
     static def evt3 = new EventInt(new Point4i(0G, sin120, cos120, 3G), evt1.dir)
     static def evt4 = new EventInt(new Point4i(0G, -sin120, cos120, 3G), evt1.dir)
 
@@ -37,19 +38,19 @@ public class TriangleIntTest extends Specification {
                 evt1,
                 evt2,
                 evt3,
-                new EventInt(new Point4i(0G, 0G, 0G, 3G), new SphericalVector3i(5G * MathUtilsInt.ONE, MathUtilsInt.D45, MathUtilsInt.D45))
+                new EventInt(new Point4i(0G, 0G, 0G, 3G), new SphericalVector3i(5G * TrigoInt.ONE, TrigoInt.D45, TrigoInt.D45))
         ]
         dir << [
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, MathUtilsInt.D45),
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
-                new SphericalVector3i(MathUtilsInt.D45, MathUtilsInt.D45)
+                new SphericalVector3i(TrigoInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, TrigoInt.D45),
+                new SphericalVector3i(TrigoInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D45, TrigoInt.D45)
         ]
         dirVect << [
-                new Vector3i(MathUtilsInt.ONE, 0G, 0G),
+                new Vector3i(TrigoInt.ONE, 0G, 0G),
                 new Vector3i(sin45, sin45, 0G),
-                new Vector3i(MathUtilsInt.ONE, 0G, 0G),
-                new Vector3i((BigInteger) sin45 * sin45 / MathUtilsInt.ONE, (BigInteger) sin45 * sin45 / MathUtilsInt.ONE, sin45)
+                new Vector3i(TrigoInt.ONE, 0G, 0G),
+                new Vector3i((BigInteger) sin45 * sin45 / TrigoInt.ONE, (BigInteger) sin45 * sin45 / TrigoInt.ONE, sin45)
         ]
     }
 
@@ -58,7 +59,7 @@ public class TriangleIntTest extends Specification {
         !triangle.isFlat()
         almostEquals(triangle.findCenter(), center)
         triangle.fDir == dir || triangle.fDir == -dir
-        almostEquals(triangle.radius2(), MathUtilsInt.ONE * MathUtilsInt.ONE)
+        almostEquals(triangle.radius2(), TrigoInt.ONE * TrigoInt.ONE)
 
         where:
         triangle << [
@@ -68,15 +69,15 @@ public class TriangleIntTest extends Specification {
                 new EventTriangleInt(evt2, evt3, evt4, null)
         ]
         dir << [
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, 0G)
+                new SphericalVector3i(TrigoInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, 0G)
         ]
         center << [
                 new Point4i(0G, sin120, -cos120, 3G),
                 new Point4i(0G, -sin120, -cos120, 3G),
-                new Point4i(0G, 0G, -MathUtilsInt.ONE, 3G),
+                new Point4i(0G, 0G, -TrigoInt.ONE, 3G),
                 new Point4i(0G, 0G, 0G, 3G)
         ]
     }
@@ -86,7 +87,7 @@ public class TriangleIntTest extends Specification {
         !triangle.isFlat()
         almostEquals(triangle.findCenter(), center, 100G)
         triangle.fDir == dir || triangle.fDir == -dir
-        almostEquals(triangle.radius2(), MathUtilsInt.ONE * MathUtilsInt.ONE * ratio * ratio)
+        almostEquals(triangle.radius2(), TrigoInt.ONE * TrigoInt.ONE * ratio * ratio)
 
         where:
         triangle << [
@@ -96,15 +97,15 @@ public class TriangleIntTest extends Specification {
                 new EventTriangleInt(bigEvt2, bigEvt3, bigEvt4, null)
         ]
         dir << [
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, 0G),
-                new SphericalVector3i(MathUtilsInt.D90, 0G)
+                new SphericalVector3i(TrigoInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, 0G),
+                new SphericalVector3i(TrigoInt.D90, 0G)
         ]
         center << [
                 new Point4i(0G, sin120, -cos120, 3G) * ratio,
                 new Point4i(0G, -sin120, -cos120, 3G) * ratio,
-                new Point4i(0G, 0G, -MathUtilsInt.ONE, 3G) * ratio,
+                new Point4i(0G, 0G, -TrigoInt.ONE, 3G) * ratio,
                 new Point4i(0G, 0G, 0G, 3G) * ratio
         ]
     }

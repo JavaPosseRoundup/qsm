@@ -2,6 +2,7 @@ package org.freddy33.qsm.sphere_surface_int.calc
 
 import org.freddy33.math.dbl.Point4d
 import org.freddy33.math.dbl.Vector3d
+import org.freddy33.math.bigInt.EventSign
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +14,7 @@ import org.freddy33.math.dbl.Vector3d
 class EventDouble {
     final Point4d point
     final Vector3d direction
-    final Sign sign
+    final EventSign sign
     boolean used = false
 
     EventDouble(double x, double y, double z, double t, Vector3d dir) {

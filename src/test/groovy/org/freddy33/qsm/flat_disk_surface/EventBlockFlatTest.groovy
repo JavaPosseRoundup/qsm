@@ -11,8 +11,8 @@ import static java.lang.Math.PI
 
 import org.freddy33.math.dbl.Point4d
 
-import static org.freddy33.math.bigInt.MathUtilsInt.ONE
-import static org.freddy33.math.bigInt.MathUtilsInt.ONE_HALF
+import static org.freddy33.math.bigInt.TrigoInt.ONE
+import static org.freddy33.math.bigInt.TrigoInt.ONE_HALF
 import org.freddy33.math.dbl.Line4d
 
 /**
@@ -41,9 +41,9 @@ class EventBlockFlatTest extends Specification {
         expect:
         photon.events.length == 4
         photon.triangles.length == 4
-        MathUtilsDbl.eq(photon.plane.phi, PI/2d)
-        MathUtilsDbl.eq(photon.plane.teta, PI/2d)
-        MathUtilsDbl.eq(photon.plane.psi, 0d)
+        MathUtilsDbl.eq(photon.singlePlane.phi, PI/2d)
+        MathUtilsDbl.eq(photon.singlePlane.teta, PI/2d)
+        MathUtilsDbl.eq(photon.singlePlane.psi, 0d)
         List<Point4d> pts = photon.getEventPoints()
         pts[0].equals(new Point4d(0d, 0d, 0d, (double)CREATION_TIME))
         pts[1].equals(new Point4d(0d, 0d, one, (double)CREATION_TIME))
@@ -119,9 +119,9 @@ class EventBlockFlatTest extends Specification {
         expect:
         electron.events.length == 4
         electron.triangles.length == 4
-        MathUtilsDbl.eq(electron.plane.phi, PI/2d)
-        MathUtilsDbl.eq(electron.plane.teta, PI/2d)
-        MathUtilsDbl.eq(electron.plane.psi, 0d)
+        MathUtilsDbl.eq(electron.singlePlane.phi, PI/2d)
+        MathUtilsDbl.eq(electron.singlePlane.teta, PI/2d)
+        MathUtilsDbl.eq(electron.singlePlane.psi, 0d)
         List<Point4d> pts = electron.getEventPoints()
         pts[0].equals(new Point4d(0d, 0d, oneHalf, (double)CREATION_TIME))
         pts[1].equals(new Point4d(0d, 0d, -oneHalf, (double)CREATION_TIME))

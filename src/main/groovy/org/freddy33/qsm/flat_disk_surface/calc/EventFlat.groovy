@@ -1,19 +1,19 @@
 package org.freddy33.qsm.flat_disk_surface.calc
 
-import org.freddy33.math.bigInt.Point2i
-import org.freddy33.math.dbl.Matrix3d
-import org.freddy33.math.dbl.Point3d
-import org.freddy33.qsm.sphere_surface_int.calc.Sign
 import org.freddy33.math.dbl.Point4d
 import org.freddy33.math.dbl.Point2d
 
-import static org.freddy33.math.dbl.MathUtilsDbl.sin60
-import org.freddy33.math.dbl.Line3d
 import org.freddy33.math.dbl.Line2d
 import org.freddy33.math.dbl.Line4d
+import org.freddy33.math.bigInt.EventSign
+import org.freddy33.math.dbl.Point3d
+import org.freddy33.math.dbl.EulerAngles3d
+import org.freddy33.math.dbl.SphericalUnitVector2d
+import org.freddy33.math.dbl.Vector3d
+import org.freddy33.math.bigInt.TrigoInt
+import org.freddy33.math.dbl.TrigoDbl
 
 /**
- * Created with IntelliJ IDEA.
  * User: freds
  * Date: 5/25/12
  * Time: 2:57 PM
@@ -21,17 +21,37 @@ import org.freddy33.math.dbl.Line4d
  */
 class EventFlat {
     final EventBlockFlat belongsTo
-    final Point2d point
-    final Sign sign
+    final Point3d point
+    final EventSign sign
+    final EulerAngles3d plane
 
-    EventFlat(Point2d point, EventBlockFlat belongs) {
+    /**
+     * Constructor for pyramid like event blocks where internal euler plane is changed for each points
+     */
+    EventFlat(Point3d point, Point3d anotherPoint, EventBlockFlat belongs, EventSign sign) {
         this.belongsTo = belongs
+        this.sign = sign
+        this.point = point
+
+        // The plane is dictated for vector Z=(point,origin), Psi=found from Y = XY projection of (point,-anotherPoint)
+        this.plane = new EulerAngles3d(
+                new SphericalUnitVector2d(new Vector3d(point, Point3d.ORIGIN)),
+                new Vector3d(point, -anotherPoint))
+    }
+
+    /**
+     * Constructor
+     */
+    EventFlat(Point3d point, EventBlockFlat belongs, EventSign sign) {
+        this.belongsTo = belongs
+        this.sign = sign
+        this.plane = null
         this.point = point
     }
 
-    static List<Line2d> calcWaitingEvent(BigInteger waitingEventsDist, WaitingEventShape shape) {
+    static List<Line2d> calcWaitingEvent(BigInteger waitingEventsDist) {
         double d = (double)waitingEventsDist
-        switch (shape) {
+        switch (GlobalParams.SHAPE) {
             case WaitingEventShape.SQUARE:
                 return [
                         new Line2d(new Point2d(-d,  d), new Point2d( d,  d)),
@@ -47,54 +67,64 @@ class EventFlat {
                         new Line2d(new Point2d( 0, -d), new Point2d(-d,  0))
                 ]
             case WaitingEventShape.TRIANGLE:
-                return [
-                        new Line2d(new Point2d(-d, 0), new Point2d( -d*sin60, d/2d)),
-                        new Line2d(new Point2d(-d*sin60, d/2d), new Point2d( -d/2d, d*sin60)),
-                        new Line2d(new Point2d(-d/2d, d*sin60), new Point2d( 0, d)),
-                        new Line2d(new Point2d( 0, d), new Point2d( d/2d, d*sin60)),
-                        new Line2d(new Point2d( d/2d, d*sin60), new Point2d(d*sin60,  d/2)),
-                        new Line2d(new Point2d( d*sin60, d/2d), new Point2d(d, 0)),
-
-                        new Line2d(new Point2d(-d, 0), new Point2d( -d*sin60, -d/2d)),
-                        new Line2d(new Point2d(-d*sin60, -d/2d), new Point2d( -d/2d, -d*sin60)),
-                        new Line2d(new Point2d(-d/2d, -d*sin60), new Point2d( 0, -d)),
-                        new Line2d(new Point2d( 0, -d), new Point2d( d/2d, -d*sin60)),
-                        new Line2d(new Point2d( d/2d, -d*sin60), new Point2d(d*sin60,  -d/2)),
-                        new Line2d(new Point2d( d*sin60, -d/2d), new Point2d(d, 0))
-                ]
+                return circleWithLines(TrigoInt.D30 * 2G, d)
+            case WaitingEventShape.CIRCLE:
+                return circleWithLines(1G, d)
             default:
-                throw new UnsupportedOperationException("Shape $shape not supported!")
+                throw new UnsupportedOperationException("Shape ${GlobalParams.SHAPE} not supported!")
         }
     }
 
-    List<Line4d> getAllWaitingEvents(BigInteger currentTime, WaitingEventShape shape) {
+    public static Line2d[] circleWithLines(BigInteger angleIncrement, double size) {
+        List<Line2d> result = []
+        for (BigInteger a = 0G; a < TrigoInt.DIV;) {
+            BigInteger b = a + angleIncrement
+            result.add(new Line2d(pointOnUnitCircle(a) * size, pointOnUnitCircle(b) * size))
+            a = b
+        }
+        result.toArray(new Line2d[result.size()])
+    }
+
+    public static Point2d pointOnUnitCircle(BigInteger angle) {
+        BigInteger a
+        new Point2d(TrigoDbl.cos(angle), TrigoDbl.sin(angle))
+    }
+
+    List<Line4d> getAllWaitingEvents(BigInteger currentTime) {
         List<Line4d> result = []
-        Matrix3d transform = belongsTo.plane.traInv
         BigInteger waitingTime = currentTime - belongsTo.createdTime
-        List<Line2d> waitingEvents = calcWaitingEvent(waitingTime, shape)
+        List<Line2d> waitingEvents = calcWaitingEvent(waitingTime)
         waitingEvents.each { we ->
             result.add(new Line4d(
-                    belongsTo.origin + transform * new Point4d(
-                    (double) point.x + we.a.x,
-                    (double) point.y + we.a.y,
-                    (double) waitingTime * 2d * sin60, // Z=2*sin60*T for all 60 degree
-                    (double) waitingTime),
-                    belongsTo.origin + transform * new Point4d(
-                    (double) point.x + we.b.x,
-                    (double) point.y + we.b.y,
-                    (double) waitingTime * 2d * sin60, // Z=T since all speed of light
-                    (double) waitingTime)
-            ))
+                    transformToGlobalCoord(we.a, waitingTime),
+                    transformToGlobalCoord(we.b, waitingTime)))
         }
         result
     }
 
+    Point4d transformToGlobalCoord(Point2d p, BigInteger waitingTime) {
+        if (this.plane == null) {
+            belongsTo.origin + belongsTo.singlePlane.traInv * new Point4d(
+                    point.x + p.x,
+                    point.y + p.y,
+                    (double) waitingTime * GlobalParams.K,
+                    (double) waitingTime)
+        } else {
+            belongsTo.origin + belongsTo.singlePlane.traInv * (
+                new Point4d( point.x, point.y, 0d, 0d ) + (
+                plane.traInv * new Point4d(
+                    p.x,
+                    p.y,
+                    (double) waitingTime * GlobalParams.K,
+                    (double) waitingTime)
+                )
+            )
+        }
+    }
+
     @Override
     String toString() {
-        "ef($point)"
+        "ef($point, $sign, $plane)"
     }
 }
 
-enum WaitingEventShape {
-    SQUARE, DIAMOND, TRIANGLE
-}

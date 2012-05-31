@@ -4,8 +4,8 @@ import org.freddy33.math.bigInt.MathUtilsInt
 import org.freddy33.math.bigInt.Point4i
 import spock.lang.Specification
 
-import static org.freddy33.math.bigInt.MathUtilsInt.ONE
-import static org.freddy33.math.bigInt.MathUtilsInt.ONE_HALF
+import static org.freddy33.math.bigInt.TrigoInt.ONE
+import static org.freddy33.math.bigInt.TrigoInt.ONE_HALF
 import static org.freddy33.qsm.sphere_surface_int.TriangleIntTest.cos120
 import static org.freddy33.qsm.sphere_surface_int.TriangleIntTest.sin120
 import org.freddy33.qsm.sphere_surface_int.calc.SpaceTimeInt
@@ -94,7 +94,7 @@ class SpaceTimeIntTest extends Specification {
         st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, ratio * sin120, ratio * cos120, 0G)) }
         st.activeEvents.any { MathUtilsInt.almostEquals(it.point, new Point4i(0G, -ratio * sin120, ratio * cos120, 0G)) }
 
-        for (int i = 1; i < 1000; i++) {
+        for (int i = 1; i < 100; i++) {
             findNextGoodCalc(st, bigDist * i, false)
             st.activeEvents.size() == 4
             st.deadEvents.size() == 4 * i

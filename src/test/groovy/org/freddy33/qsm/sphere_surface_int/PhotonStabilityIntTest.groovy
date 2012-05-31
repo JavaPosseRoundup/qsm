@@ -17,7 +17,7 @@ import org.freddy33.math.bigInt.MathUtilsInt
 class PhotonStabilityIntTest extends Specification {
     static BigInteger ratio = 100G
     static BigInteger bigDist = ratio * sin120 * 2G
-    public static final int ITERATIONS = 10000
+    public static final int ITERATIONS = 100
 
     def "test D value photon long time"() {
         def st = new SpaceTimeInt(ratio)

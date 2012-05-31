@@ -4,21 +4,20 @@ import org.jzy3d.plot3d.primitives.Scatter
 import org.jzy3d.colors.ISingleColorable
 
 import org.jzy3d.colors.Color
-import org.freddy33.math.bigInt.Point4i
+
 import org.jzy3d.maths.Coord3d
 import javax.media.opengl.GL2
 import javax.media.opengl.glu.GLU
 import org.jzy3d.plot3d.rendering.view.Camera
-import org.freddy33.qsm.sphere_surface_int.calc.EventInt
-import org.freddy33.qsm.sphere_surface_int.calc.EventBlockInt
-import org.freddy33.qsm.sphere_surface_int.calc.EventTriangleInt
+
 import org.freddy33.qsm.flat_disk_surface.calc.EventBlockFlat
 import org.freddy33.math.dbl.Point4d
 import org.freddy33.math.dbl.Point3d
 import org.freddy33.math.dbl.SphericalUnitVector2d
 import org.freddy33.math.dbl.Vector3d
-import org.freddy33.math.bigInt.MathUtilsInt
+
 import org.freddy33.math.dbl.Line4d
+import org.freddy33.math.bigInt.TrigoInt
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,7 +55,7 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
     public InteractiveFlatScatter(EventBlockFlat block) {
         this.block = block
         setWidth(3f)
-        float maxDist = (float) MathUtilsInt.ONE * 2f
+        float maxDist = (float) TrigoInt.ONE * 2f
         bbox.add((float)2f*maxDist, maxDist, maxDist)
         bbox.add(0f, -maxDist, maxDist)
         bbox.add(0f, -maxDist, -maxDist)

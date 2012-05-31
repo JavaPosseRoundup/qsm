@@ -6,6 +6,7 @@ import org.freddy33.math.bigInt.Vector3i
 
 import org.freddy33.math.bigInt.MathUtilsInt
 import org.freddy33.math.bigInt.Triangle4i
+import org.freddy33.math.bigInt.EventSign
 
 /**
  * User: freds
@@ -18,7 +19,7 @@ class EventInt {
     public final EventTriangleInt createdByTriangle
     public final Point4i point
     public final SphericalVector3i dir
-    public final Sign sign
+    public final EventSign sign
     public boolean used = false
 
     EventInt(Point4i p, SphericalVector3i v) {
