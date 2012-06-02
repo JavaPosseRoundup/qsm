@@ -111,6 +111,14 @@ public class SphericalUnitVector2d {
         new SphericalUnitVector2d(this.toCartesian().cross(v.toCartesian()))
     }
 
+    SphericalUnitVector2d plusPiOver2() {
+        double newTeta = teta + PI / 2d
+        if (newTeta >= PI) {
+            newTeta = teta - PI / 2d
+        }
+        new SphericalUnitVector2d(newTeta, phi)
+    }
+
     public boolean isNormalized() {
         true
     }

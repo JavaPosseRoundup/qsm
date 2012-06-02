@@ -34,3 +34,11 @@ class Triangle3d {
         s = Math.sqrt ( ( a2+b2+c2 ) * ( a2+b2+c2 ) - ( 2G * ( a2*a2 + b2*b2 +c2*c2 ) ) ) / 4d
     }
 }
+
+class Triangle4d {
+    public final Point4d[] p = new Point4d[3]
+
+    Triangle4d(Point4d... p) {
+        this.p = p
+    }
+}

@@ -19,8 +19,16 @@ class Point3d {
         return new Point3d(x + v.x, y + v.y, z + v.z)
     }
 
+    public Point3d plus(SphericalUnitVector2d sv) {
+        return plus(sv.toCartesian())
+    }
+
     public Point3d minus(Vector3d v) {
         new Point3d(x - v.x, y - v.y, z - v.z)
+    }
+
+    public Point3d minus(SphericalUnitVector2d sv) {
+        return minus(sv.toCartesian())
     }
 
     public Point3d multiply(double m) {

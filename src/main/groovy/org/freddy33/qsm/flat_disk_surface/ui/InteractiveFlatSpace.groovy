@@ -50,6 +50,18 @@ class InteractiveFlatSpaceFrame {
                         message = "Step: ${scatter.currentTime}";
                         chart.render();
                         break;
+                    case 'i':
+                        scatter.incrementTimeIncrement()
+                        break;
+                    case 'o':
+                        scatter.decrementTimeIncrement()
+                        break;
+                    case 't':
+                        scatter.toggleDrawTriangles()
+                        break;
+                    case 'k':
+                        scatter.toggleDrawMoments()
+                        break;
                     case 'p':
                         scatter.printDetails()
                         break;
@@ -72,8 +84,8 @@ class InteractiveFlatSpaceFrame {
     }
 
     def InteractiveFlatScatter createScatter() {
-//        scatter = InteractiveFlatScatter.createWithPhoton()
-        scatter = InteractiveFlatScatter.createWithElectron()
+        scatter = InteractiveFlatScatter.createWithPhoton()
+//        scatter = InteractiveFlatScatter.createWithElectron()
         scatter
     }
 }

@@ -24,6 +24,7 @@ class EventFlat {
     final Point3d point
     final EventSign sign
     final EulerAngles3d plane
+    final SphericalUnitVector2d moment
 
     /**
      * Constructor for pyramid like event blocks where internal euler plane is changed for each points
@@ -34,11 +35,8 @@ class EventFlat {
         this.point = point
 
         // The plane is dictated for vector Z=(point,origin), Psi=found from Y = XY projection of (point,-anotherPoint)
-        this.plane = EulerAngles3d.fromNewZAndXYProj(
-                new SphericalUnitVector2d(new Vector3d(point, Point3d.ORIGIN)),
-                new Vector3d(point, -anotherPoint))
-
-        println "Created double plane event $this"
+        this.moment = new SphericalUnitVector2d(new Vector3d(point, Point3d.ORIGIN))
+        this.plane = EulerAngles3d.fromNewZAndXYProj(moment, new Vector3d(point, -anotherPoint))
     }
 
     /**
@@ -49,8 +47,8 @@ class EventFlat {
         this.sign = sign
         this.plane = null
         this.point = point
-
-        println "Created single plane event $this"
+        // Always equals to Z
+        this.moment = new SphericalUnitVector2d(0d,0d)
     }
 
     static List<Line2d> calcWaitingEvent(BigInteger waitingEventsDist) {

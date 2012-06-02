@@ -18,6 +18,8 @@ import org.freddy33.math.dbl.Vector3d
 
 import org.freddy33.math.dbl.Line4d
 import org.freddy33.math.bigInt.TrigoInt
+import org.freddy33.math.dbl.Triangle3d
+import org.freddy33.math.dbl.Triangle4d
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,9 +30,14 @@ import org.freddy33.math.bigInt.TrigoInt
  */
 class InteractiveFlatScatter extends Scatter implements ISingleColorable {
     final EventBlockFlat block
+    BigInteger timeIncrement = 1G
     BigInteger currentTime = 0G
-    Color activating = Color.BLACK;
-    Color[] eventColor = [ Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW ];
+    boolean drawMoments = false
+    boolean drawTriangles = true
+    boolean drawActivatingLines = true
+    Color blockLines = Color.BLACK;
+    Color activating = Color.MAGENTA;
+    Color[] eventColor = [ Color.RED, Color.BLUE, Color.GREEN, Color.CYAN ];
 
     static InteractiveFlatScatter createWithPhoton() {
         new InteractiveFlatScatter(EventBlockFlat.createPhoton(
@@ -60,12 +67,46 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
         bbox.add(-maxDist, -maxDist, -maxDist)
     }
 
+    boolean getDrawMoments() {
+        return drawMoments
+    }
+
+    void setDrawMoments(boolean drawMoments) {
+        this.drawMoments = drawMoments
+    }
+
+    boolean getDrawTriangles() {
+        return drawTriangles
+    }
+
+    void setDrawTriangles(boolean drawTriangles) {
+        this.drawTriangles = drawTriangles
+    }
+
+    boolean getDrawActivatingLines() {
+        return drawActivatingLines
+    }
+
+    void setDrawActivatingLines(boolean drawActivatingLines) {
+        this.drawActivatingLines = drawActivatingLines
+    }
+
+    public void incrementTimeIncrement() {
+        timeIncrement++
+    }
+
+    public void decrementTimeIncrement() {
+        timeIncrement--
+        if (timeIncrement < 1G)
+            timeIncrement = 1G
+    }
+
     public void incrementTime() {
-        currentTime += 1G
+        currentTime += timeIncrement
     }
 
     public void decrementTime() {
-        currentTime -= 1G
+        currentTime -= timeIncrement
         if (currentTime < 0G) currentTime = 0G
     }
 
@@ -77,7 +118,7 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
         if (transform != null)
             transform.execute(gl);
 
-        gl.glPointSize(3f);
+        gl.glPointSize(4f);
         gl.glLineWidth(1f);
 
         // Print original events
@@ -88,6 +129,37 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
             setVertex3d(gl, originalEvents[i])
         }
         gl.glEnd();
+
+        // Draw moment vector if asked
+        if (drawMoments) {
+            List<Line4d>[] allMoments = block.getEventMoments((double) timeIncrement)
+            for (int i = 0; i < allMoments.length; i++) {
+                List<Line4d> moment = allMoments[i];
+                for (Line4d line : moment) {
+                    gl.glBegin(GL2.GL_LINES);
+                    setColor(gl, eventColor[i])
+                    setVertex3d(gl, line.a);
+                    setVertex3d(gl, line.b);
+                    gl.glEnd();
+                }
+            }
+        }
+
+        if (drawTriangles) {
+            List<Triangle4d> triangles = block.getEventTriangles()
+            for (int i = 0; i < triangles.size(); i++) {
+                Point4d[] pts = triangles[i].p
+                for (int j = 0; j < pts.length; j++) {
+                    gl.glBegin(GL2.GL_LINES)
+                    setColor(gl, blockLines)
+                    setVertex3d(gl, pts[j]);
+                    def k = j + 1
+                    if (k == pts.length) k=0
+                    setVertex3d(gl, pts[k])
+                    gl.glEnd()
+                }
+            }
+        }
 
         // Print waiting events lines
         List<Line4d>[] waitingEvents = block.getWaitingEvents(currentTime)
@@ -113,6 +185,14 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
 
     def printDetails() {
         println "block = $block"
+    }
+
+    def toggleDrawTriangles() {
+        drawTriangles = !drawTriangles
+    }
+
+    def toggleDrawMoments() {
+        drawMoments = !drawMoments
     }
 }
 
