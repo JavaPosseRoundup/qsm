@@ -17,6 +17,8 @@ import org.freddy33.math.dbl.Line4d
 import org.freddy33.qsm.flat_disk_surface.calc.BlockType
 import org.freddy33.qsm.flat_disk_surface.calc.GlobalParams
 
+import static java.lang.Math.sqrt
+
 /**
  * Created with IntelliJ IDEA.
  * User: freds
@@ -54,6 +56,12 @@ class EventBlockFlatTest extends Specification {
         pts[1].equals(new Point4d(0d, 0d, one, (double)CREATION_TIME))
         pts[2].equals(new Point4d(0d, oneSin60, -oneCos60, (double)CREATION_TIME))
         pts[3].equals(new Point4d(0d, -oneSin60, -oneCos60, (double)CREATION_TIME))
+        MathUtilsDbl.eq(new Vector3d(pts[0], pts[1]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[0], pts[2]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[0], pts[3]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[1], pts[2]).d(), one * Math.sqrt(3))
+        MathUtilsDbl.eq(new Vector3d(pts[1], pts[3]).d(), one * Math.sqrt(3))
+        MathUtilsDbl.eq(new Vector3d(pts[2], pts[3]).d(), one * Math.sqrt(3))
     }
 
     private boolean verifyByWaitingTime(EventBlockFlat photon, BigInteger waitingTime) {
@@ -106,6 +114,16 @@ class EventBlockFlatTest extends Specification {
         pts[1].equals(new Point4d(oneHalf * MathUtilsDbl.sin45, -oneCos60, 0d, (double)CREATION_TIME))
         pts[2].equals(new Point4d(-oneHalf * MathUtilsDbl.sin45, 0d, oneCos60, (double)CREATION_TIME))
         pts[3].equals(new Point4d(-oneHalf * MathUtilsDbl.sin45, 0d, -oneCos60, (double)CREATION_TIME))
+        MathUtilsDbl.eq(new Vector3d(pts[0], pts[1]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[0], pts[2]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[0], pts[3]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[1], pts[2]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[1], pts[3]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[2], pts[3]).d(), one)
+        MathUtilsDbl.eq(new Vector3d(pts[0], new Point4d(0d,0d,0d,0d)).d(), one*sqrt(3d/8d))
+        MathUtilsDbl.eq(new Vector3d(pts[1], new Point4d(0d,0d,0d,0d)).d(), one*sqrt(3d/8d))
+        MathUtilsDbl.eq(new Vector3d(pts[2], new Point4d(0d,0d,0d,0d)).d(), one*sqrt(3d/8d))
+        MathUtilsDbl.eq(new Vector3d(pts[3], new Point4d(0d,0d,0d,0d)).d(), one*sqrt(3d/8d))
         BigInteger oneTime = CREATION_TIME + 1G
         List<Line4d>[] wPts1 = electron.getWaitingEvents(oneTime)
         wPts1.length == 4

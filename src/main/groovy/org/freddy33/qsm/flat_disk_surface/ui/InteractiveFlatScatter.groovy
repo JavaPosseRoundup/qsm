@@ -62,7 +62,7 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
     public InteractiveFlatScatter(EventBlockFlat block) {
         this.block = block
         setWidth(3f)
-        float maxDist = (float) TrigoInt.ONE * 2f
+        float maxDist = (float) TrigoInt.ONE * 1.3f
         bbox.add(maxDist, maxDist, maxDist)
         bbox.add(-maxDist, -maxDist, -maxDist)
     }
