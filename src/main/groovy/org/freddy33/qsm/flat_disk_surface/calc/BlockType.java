@@ -1,7 +1,7 @@
 package org.freddy33.qsm.flat_disk_surface.calc;
 
+import org.freddy33.math.bigInt.EventColor;
 import org.freddy33.math.dbl.Point3d;
-import org.freddy33.math.bigInt.EventSign;
 import org.freddy33.math.dbl.MathUtilsDbl;
 
 /**
@@ -14,10 +14,10 @@ public enum BlockType implements EventsBuilder {
         @Override
         public EventFlat[] createEvents(EventBlockFlat from, double size) {
             return new EventFlat[] {
-                    new EventFlat(new Point3d(0d, 0d, 0d), from, EventSign.plus_1),
-                    new EventFlat(new Point3d(0d, size, 0d), from, EventSign.minus_1),
-                    new EventFlat(new Point3d(size * MathUtilsDbl.sin60, -size * MathUtilsDbl.cos60, 0d), from, EventSign.plus_i),
-                    new EventFlat(new Point3d(-size * MathUtilsDbl.sin60, -size * MathUtilsDbl.cos60, 0d), from, EventSign.minus_i)
+                    new EventFlat(new Point3d(0d, 0d, 0d), from, EventColor.plus_1),
+                    new EventFlat(new Point3d(0d, size, 0d), from, EventColor.minus_1),
+                    new EventFlat(new Point3d(size * MathUtilsDbl.sin60, -size * MathUtilsDbl.cos60, 0d), from, EventColor.plus_i),
+                    new EventFlat(new Point3d(-size * MathUtilsDbl.sin60, -size * MathUtilsDbl.cos60, 0d), from, EventColor.minus_i)
             };
         }
     },
@@ -31,10 +31,10 @@ public enum BlockType implements EventsBuilder {
                     new Point3d(0d, -size * MathUtilsDbl.cos60, -size * MathUtilsDbl.sin45 / 2d)
             };
             return new EventFlat[] {
-                    new EventFlat(point3ds[0], point3ds[1], from, EventSign.plus_1),
-                    new EventFlat(point3ds[1], point3ds[2], from, EventSign.minus_1),
-                    new EventFlat(point3ds[2], point3ds[3], from, EventSign.plus_i),
-                    new EventFlat(point3ds[3], point3ds[0], from, EventSign.minus_i)
+                    new EventFlat(point3ds[0], point3ds[1], from, EventColor.plus_1),
+                    new EventFlat(point3ds[1], point3ds[2], from, EventColor.minus_1),
+                    new EventFlat(point3ds[2], point3ds[3], from, EventColor.plus_i),
+                    new EventFlat(point3ds[3], point3ds[0], from, EventColor.minus_i)
             };
         }
     },
@@ -42,10 +42,10 @@ public enum BlockType implements EventsBuilder {
         @Override
         public EventFlat[] createEvents(EventBlockFlat from, double size) {
             return new EventFlat[] {
-                    new EventFlat(new Point3d(0d, size/2d, 0d), from, EventSign.plus_1),
-                    new EventFlat(new Point3d(0d, -size/2d, 0d), from, EventSign.minus_1),
-                    new EventFlat(new Point3d(size * MathUtilsDbl.sin60, 0d, 0d), from, EventSign.plus_i),
-                    new EventFlat(new Point3d(-size * MathUtilsDbl.sin60, 0d, 0d), from, EventSign.minus_i)
+                    new EventFlat(new Point3d(0d, size/2d, 0d), from, EventColor.plus_1),
+                    new EventFlat(new Point3d(0d, -size/2d, 0d), from, EventColor.minus_1),
+                    new EventFlat(new Point3d(size * MathUtilsDbl.sin60, 0d, 0d), from, EventColor.plus_i),
+                    new EventFlat(new Point3d(-size * MathUtilsDbl.sin60, 0d, 0d), from, EventColor.minus_i)
             };
         }
     }

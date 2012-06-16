@@ -9,16 +9,16 @@ package org.freddy33.math.bigInt
  */
 
 class Calculator {
-    public static final double sqrt3 = Math.sqrt(3)
-    public static final double sqrt24 = Math.sqrt(24)
-    public static final double sqrt8third = Math.sqrt(8 / 3)
-    public static final double sqrt6over1PlusSqrt8 = Math.sqrt(6) / (1+Math.sqrt(8))
+    public static final double sqrt3 = Math.sqrt(3d)
+    public static final double sqrt24 = Math.sqrt(24d)
+    public static final double sqrt8third = Math.sqrt(8d / 3d)
+    public static final double sqrt6over1PlusSqrt8 = Math.sqrt(6d) / (1d+Math.sqrt(8d))
 
     static int calcAPrimeCircle(int a) {
         def r=(double)a/sqrt3
         def c=(double)a/sqrt24
         def tp=Math.ceil(r)
-        def b=Math.sqrt(tp*tp-(a*a/3))
+        def b=Math.sqrt(tp*tp-(a*a/3d))
         def Rp=b+c
         def ap=Rp*sqrt8third
         def floorAp = Math.floor(ap)
@@ -29,18 +29,21 @@ class Calculator {
         return 0
     }
 
-    static int calcAPrimeK1(int a) {
-        def c=(double)a/sqrt24
-        def tp=Math.ceil(sqrt6over1PlusSqrt8*a)
-        def b=Math.sqrt(tp*tp-(a*a/3))
-        def Rp=b+c
-        def ap=Rp*sqrt8third
-        def floorAp = Math.floor(ap)
-        if ((ap-floorAp)/floorAp < 1e-10) {
-            println "$a,$c,$tp,$b,$Rp,$ap,$floorAp"
-            return (int) floorAp
+    static BigInteger calcAPrimeK1(BigInteger a) {
+        BigInteger tp=(BigInteger)Math.ceil(sqrt6over1PlusSqrt8*a.toDouble())
+        BigInteger inSqrt = 8G*(3G*tp*tp - a*a)
+        // Needs to check pure square
+        BigInteger sq=(BigInteger)Math.sqrt(inSqrt.toDouble())
+        if (sq*sq == inSqrt) {
+            // Check sq+a dividable by 3
+            if ((sq+a) % 3G == 0) {
+                def c=((double)a)/sqrt24
+                def ap = (sq+a)/3G
+                println "$a,$c,$tp,$sq,$ap"
+                return a
+            }
         }
-        return 0
+        return 0G
     }
 
     static def showKCircle() {
@@ -61,10 +64,35 @@ class Calculator {
     }
 
     static def showK1() {
-        int max=1200000
+        def max=100000000G
         println "Finding int of a' for k=1 giving integer a'"
-        for (int a=1;a<max;a++) {
+        for (BigInteger a=1G;a<max;a++) {
             calcAPrimeK1(a)
+        }
+    }
+
+    static def showColors() {
+        // Create all combination of 4 colors
+        def cVals = EventColor.values()
+        List<EventColor[]> blocks = []
+        (0..3).each { one ->
+            (0..3).each { two ->
+                (0..3).each { three ->
+                    (0..3).each { four ->
+                        def newBlock = [cVals[one], cVals[two], cVals[three], cVals[four]]
+                        if (!blocks.any { EventColor.sameBlock(it,newBlock)}) blocks << newBlock
+                    }
+                }
+            }
+        }
+        List<EventColorBlockCycle> cycles = []
+        blocks.each {
+            def c = new EventColorBlockCycle(it)
+            if (!cycles.contains(c)) cycles << c
+        }
+
+        cycles.eachWithIndex { c, i ->
+            println "${i+1}$c"
         }
     }
 
@@ -84,14 +112,14 @@ class Calculator {
         blocks.eachWithIndex { b, i ->
             println "$i"
             println " ,${b.join(",")},${EventCharge.totalValue(b)}"
-            EventCharge[] nb = EventCharge.next(b)
+            EventCharge[] nb = EventCharge.nextBlock(b)
             println " ,${nb.join(",")},${EventCharge.totalValue(nb)}"
-            nb = EventCharge.next(nb)
+            nb = EventCharge.nextBlock(nb)
             println " ,${nb.join(",")},${EventCharge.totalValue(nb)}"
-            nb = EventCharge.next(nb)
+            nb = EventCharge.nextBlock(nb)
             println " ,${nb.join(",")},${EventCharge.totalValue(nb)}"
         }
     }
 }
 
-Calculator.showCharges()
+Calculator.showColors()

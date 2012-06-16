@@ -5,13 +5,14 @@ import org.freddy33.math.dbl.Point2d
 
 import org.freddy33.math.dbl.Line2d
 import org.freddy33.math.dbl.Line4d
-import org.freddy33.math.bigInt.EventSign
+
 import org.freddy33.math.dbl.Point3d
 import org.freddy33.math.dbl.EulerAngles3d
 import org.freddy33.math.dbl.SphericalUnitVector2d
 import org.freddy33.math.dbl.Vector3d
 import org.freddy33.math.bigInt.TrigoInt
 import org.freddy33.math.dbl.TrigoDbl
+import org.freddy33.math.bigInt.EventColor
 
 /**
  * User: freds
@@ -22,14 +23,14 @@ import org.freddy33.math.dbl.TrigoDbl
 class EventFlat {
     final EventBlockFlat belongsTo
     final Point3d point
-    final EventSign sign
+    final EventColor sign
     final EulerAngles3d plane
     final SphericalUnitVector2d moment
 
     /**
      * Constructor for pyramid like event blocks where internal euler plane is changed for each points
      */
-    EventFlat(Point3d point, Point3d anotherPoint, EventBlockFlat belongs, EventSign sign) {
+    EventFlat(Point3d point, Point3d anotherPoint, EventBlockFlat belongs, EventColor sign) {
         this.belongsTo = belongs
         this.sign = sign
         this.point = point
@@ -42,7 +43,7 @@ class EventFlat {
     /**
      * Constructor
      */
-    EventFlat(Point3d point, EventBlockFlat belongs, EventSign sign) {
+    EventFlat(Point3d point, EventBlockFlat belongs, EventColor sign) {
         this.belongsTo = belongs
         this.sign = sign
         this.plane = null
