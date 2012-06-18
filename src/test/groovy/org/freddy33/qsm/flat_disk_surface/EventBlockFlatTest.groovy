@@ -1,7 +1,7 @@
 package org.freddy33.qsm.flat_disk_surface
 
 import spock.lang.Specification
-import org.freddy33.qsm.flat_disk_surface.calc.EventBlockFlat
+
 import org.freddy33.math.dbl.Point3d
 import org.freddy33.math.dbl.SphericalUnitVector2d
 import org.freddy33.math.dbl.Vector3d
@@ -18,6 +18,7 @@ import org.freddy33.qsm.flat_disk_surface.calc.BlockType
 import org.freddy33.qsm.flat_disk_surface.calc.GlobalParams
 
 import static java.lang.Math.sqrt
+import org.freddy33.qsm.flat_disk_surface.calc.EventBlockDouble
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +37,7 @@ class EventBlockFlatTest extends Specification {
     public static final double oneSin60 = (double) SIZE * ONE * MathUtilsDbl.sin60
 
     def "simple flat photon"() {
-        def photon = EventBlockFlat.createPhoton(
+        def photon = EventBlockDouble.createPhoton(
                 new Point3d(0d,0d,0d),
                 CREATION_TIME,
                 new SphericalUnitVector2d(new Vector3d(1d,0d,0d)),
@@ -48,9 +49,9 @@ class EventBlockFlatTest extends Specification {
         photon.events.length == 4
         photon.triangles.length == 4
         photon.type == BlockType.FlatStar
-        MathUtilsDbl.eq(photon.singlePlane.phi, PI/2d)
-        MathUtilsDbl.eq(photon.singlePlane.teta, PI/2d)
-        MathUtilsDbl.eq(photon.singlePlane.psi, 0d)
+        MathUtilsDbl.eq(photon.blockPlane.phi, PI/2d)
+        MathUtilsDbl.eq(photon.blockPlane.teta, PI/2d)
+        MathUtilsDbl.eq(photon.blockPlane.psi, 0d)
         List<Point4d> pts = photon.getEventPoints()
         pts[0].equals(new Point4d(0d, 0d, 0d, (double)CREATION_TIME))
         pts[1].equals(new Point4d(0d, 0d, one, (double)CREATION_TIME))
@@ -64,12 +65,12 @@ class EventBlockFlatTest extends Specification {
         MathUtilsDbl.eq(new Vector3d(pts[2], pts[3]).d(), one * Math.sqrt(3))
     }
 
-    private boolean verifyByWaitingTime(EventBlockFlat photon, BigInteger waitingTime) {
+    private boolean verifyByWaitingTime(EventBlockDouble photon, BigInteger waitingTime) {
         BigInteger newTime = CREATION_TIME + waitingTime
         List<Line4d>[] wes = photon.getWaitingEvents(newTime)
         wes.length == 4
         wes.every { it.size() == 4 }
-        double nz = GlobalParams.K * waitingTime
+        double nz = GlobalParams.K_BOSON * waitingTime
         double wt = (double)waitingTime
         double nt = (double)newTime
 
@@ -95,7 +96,7 @@ class EventBlockFlatTest extends Specification {
     }
 
     def "simple flat electron"() {
-        def electron = EventBlockFlat.createElectron(
+        def electron = EventBlockDouble.createElectron(
                 new Point3d(0d,0d,0d),
                 CREATION_TIME,
                 new SphericalUnitVector2d(new Vector3d(1d,0d,0d)),
@@ -106,9 +107,9 @@ class EventBlockFlatTest extends Specification {
         expect:
         electron.events.length == 4
         electron.triangles.length == 4
-        MathUtilsDbl.eq(electron.singlePlane.phi, PI/2d)
-        MathUtilsDbl.eq(electron.singlePlane.teta, PI/2d)
-        MathUtilsDbl.eq(electron.singlePlane.psi, 0d)
+        MathUtilsDbl.eq(electron.blockPlane.phi, PI/2d)
+        MathUtilsDbl.eq(electron.blockPlane.teta, PI/2d)
+        MathUtilsDbl.eq(electron.blockPlane.psi, 0d)
         List<Point4d> pts = electron.getEventPoints()
         pts[0].equals(new Point4d(oneHalf * MathUtilsDbl.sin45, oneCos60, 0d, (double)CREATION_TIME))
         pts[1].equals(new Point4d(oneHalf * MathUtilsDbl.sin45, -oneCos60, 0d, (double)CREATION_TIME))

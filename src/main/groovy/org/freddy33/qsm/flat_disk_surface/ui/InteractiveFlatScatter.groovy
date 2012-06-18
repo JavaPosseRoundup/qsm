@@ -10,7 +10,6 @@ import javax.media.opengl.GL2
 import javax.media.opengl.glu.GLU
 import org.jzy3d.plot3d.rendering.view.Camera
 
-import org.freddy33.qsm.flat_disk_surface.calc.EventBlockFlat
 import org.freddy33.math.dbl.Point4d
 import org.freddy33.math.dbl.Point3d
 import org.freddy33.math.dbl.SphericalUnitVector2d
@@ -18,8 +17,9 @@ import org.freddy33.math.dbl.Vector3d
 
 import org.freddy33.math.dbl.Line4d
 import org.freddy33.math.bigInt.TrigoInt
-import org.freddy33.math.dbl.Triangle3d
+
 import org.freddy33.math.dbl.Triangle4d
+import org.freddy33.qsm.flat_disk_surface.calc.EventBlockDouble
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +29,7 @@ import org.freddy33.math.dbl.Triangle4d
  * To change this template use File | Settings | File Templates.
  */
 class InteractiveFlatScatter extends Scatter implements ISingleColorable {
-    final EventBlockFlat block
+    final EventBlockDouble block
     BigInteger timeIncrement = 1G
     BigInteger currentTime = 0G
     boolean drawMoments = false
@@ -40,7 +40,7 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
     Color[] eventColor = [ Color.RED, Color.BLUE, Color.GREEN, Color.CYAN ];
 
     static InteractiveFlatScatter createWithPhoton() {
-        new InteractiveFlatScatter(EventBlockFlat.createPhoton(
+        new InteractiveFlatScatter(EventBlockDouble.createPhoton(
                 new Point3d(0d,0d,0d),
                 0G,
                 new SphericalUnitVector2d(new Vector3d(1d,0d,0d)),
@@ -50,7 +50,7 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
     }
 
     static InteractiveFlatScatter createWithElectron() {
-        new InteractiveFlatScatter(EventBlockFlat.createElectron(
+        new InteractiveFlatScatter(EventBlockDouble.createElectron(
                 new Point3d(0d,0d,0d),
                 0G,
                 new SphericalUnitVector2d(new Vector3d(1d,0d,0d)),
@@ -59,7 +59,7 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
         ))
     }
 
-    public InteractiveFlatScatter(EventBlockFlat block) {
+    public InteractiveFlatScatter(EventBlockDouble block) {
         this.block = block
         setWidth(3f)
         float maxDist = (float) TrigoInt.ONE * 1.3f

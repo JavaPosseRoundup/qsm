@@ -21,7 +21,7 @@ import org.freddy33.math.bigInt.EventColor
  * To change this template use File | Settings | File Templates.
  */
 class EventFlat {
-    final EventBlockFlat belongsTo
+    final EventBlockDouble belongsTo
     final Point3d point
     final EventColor sign
     final EulerAngles3d plane
@@ -30,7 +30,7 @@ class EventFlat {
     /**
      * Constructor for pyramid like event blocks where internal euler plane is changed for each points
      */
-    EventFlat(Point3d point, Point3d anotherPoint, EventBlockFlat belongs, EventColor sign) {
+    EventFlat(Point3d point, Point3d anotherPoint, EventBlockDouble belongs, EventColor sign) {
         this.belongsTo = belongs
         this.sign = sign
         this.point = point
@@ -43,7 +43,7 @@ class EventFlat {
     /**
      * Constructor
      */
-    EventFlat(Point3d point, EventBlockFlat belongs, EventColor sign) {
+    EventFlat(Point3d point, EventBlockDouble belongs, EventColor sign) {
         this.belongsTo = belongs
         this.sign = sign
         this.plane = null
@@ -108,16 +108,16 @@ class EventFlat {
 
     Point4d transformToGlobalCoord(Point2d p, double wt) {
         if (this.plane == null) {
-            return belongsTo.origin + belongsTo.singlePlane.traInv * new Point4d(
+            return belongsTo.origin + belongsTo.blockPlane.traInv * new Point4d(
                     point.x + p.x,
                     point.y + p.y,
-                    point.z + wt * GlobalParams.K,
+                    point.z + wt * GlobalParams.K_BOSON,
                     wt)
         } else {
             Point4d localPoint = new Point4d( point.x, point.y, point.z, 0d ) + (
-                plane.traInv * new Point4d( p.x, p.y, wt * GlobalParams.K, wt)
+                plane.traInv * new Point4d( p.x, p.y, wt * GlobalParams.K_FERMION, wt)
             )
-            return belongsTo.origin + belongsTo.singlePlane.traInv * localPoint
+            return belongsTo.origin + belongsTo.blockPlane.traInv * localPoint
         }
     }
 
