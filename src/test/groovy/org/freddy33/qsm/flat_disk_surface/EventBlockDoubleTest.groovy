@@ -27,7 +27,7 @@ import org.freddy33.qsm.flat_disk_surface.calc.EventBlockDouble
  * Time: 8:46 AM
  * To change this template use File | Settings | File Templates.
  */
-class EventBlockFlatTest extends Specification {
+class EventBlockDoubleTest extends Specification {
 
     public static final BigInteger SIZE = 10G
     public static final BigInteger CREATION_TIME = 7G

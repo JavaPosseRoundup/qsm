@@ -6,5 +6,5 @@ package org.freddy33.qsm.flat_disk_surface.calc;
  * Time: 11:12 PM
  */
 interface EventsBuilder {
-    public EventFlat[] createEvents(EventBlockDouble from, double size);
+    public EventFlat[] createEvents(EventBlockOrigin from, double size);
 }

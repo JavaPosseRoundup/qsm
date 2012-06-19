@@ -21,7 +21,7 @@ import org.freddy33.math.bigInt.EventColor
  * To change this template use File | Settings | File Templates.
  */
 class EventFlat {
-    final EventBlockDouble belongsTo
+    final EventBlockOrigin origin
     final Point3d point
     final EventColor sign
     final EulerAngles3d plane
@@ -30,8 +30,8 @@ class EventFlat {
     /**
      * Constructor for pyramid like event blocks where internal euler plane is changed for each points
      */
-    EventFlat(Point3d point, Point3d anotherPoint, EventBlockDouble belongs, EventColor sign) {
-        this.belongsTo = belongs
+    EventFlat(Point3d point, Point3d anotherPoint, EventBlockOrigin blockOrigin, EventColor sign) {
+        this.origin = blockOrigin
         this.sign = sign
         this.point = point
 
@@ -43,8 +43,8 @@ class EventFlat {
     /**
      * Constructor
      */
-    EventFlat(Point3d point, EventBlockDouble belongs, EventColor sign) {
-        this.belongsTo = belongs
+    EventFlat(Point3d point, EventBlockOrigin blockOrigin, EventColor sign) {
+        this.origin = blockOrigin
         this.sign = sign
         this.plane = null
         this.point = point
@@ -95,7 +95,7 @@ class EventFlat {
 
     List<Line4d> getAllWaitingEvents(BigInteger currentTime) {
         List<Line4d> result = []
-        BigInteger waitingTime = currentTime - belongsTo.createdTime
+        BigInteger waitingTime = currentTime - origin.createdTime
         final double wt = (double)waitingTime
         List<Line2d> waitingEvents = calcWaitingEvent(waitingTime)
         waitingEvents.each { we ->
@@ -108,7 +108,7 @@ class EventFlat {
 
     Point4d transformToGlobalCoord(Point2d p, double wt) {
         if (this.plane == null) {
-            return belongsTo.origin + belongsTo.blockPlane.traInv * new Point4d(
+            return origin.origin + origin.blockPlane.traInv * new Point4d(
                     point.x + p.x,
                     point.y + p.y,
                     point.z + wt * GlobalParams.K_BOSON,
@@ -117,7 +117,7 @@ class EventFlat {
             Point4d localPoint = new Point4d( point.x, point.y, point.z, 0d ) + (
                 plane.traInv * new Point4d( p.x, p.y, wt * GlobalParams.K_FERMION, wt)
             )
-            return belongsTo.origin + belongsTo.blockPlane.traInv * localPoint
+            return origin.origin + origin.blockPlane.traInv * localPoint
         }
     }
 

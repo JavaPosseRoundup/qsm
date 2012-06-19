@@ -12,7 +12,7 @@ import org.freddy33.math.dbl.MathUtilsDbl;
 public enum BlockType implements EventsBuilder {
     FlatStar {
         @Override
-        public EventFlat[] createEvents(EventBlockDouble from, double size) {
+        public EventFlat[] createEvents(EventBlockOrigin from, double size) {
             return new EventFlat[] {
                     new EventFlat(new Point3d(0d, 0d, 0d), from, EventColor.plus_1),
                     new EventFlat(new Point3d(0d, size, 0d), from, EventColor.minus_1),
@@ -23,7 +23,7 @@ public enum BlockType implements EventsBuilder {
     },
     Pyramid {
         @Override
-        public EventFlat[] createEvents(EventBlockDouble from, double size) {
+        public EventFlat[] createEvents(EventBlockOrigin from, double size) {
             Point3d[] point3ds = new Point3d[] {
                     new Point3d(size * MathUtilsDbl.cos60, 0d, size * MathUtilsDbl.sin45 / 2d),
                     new Point3d(-size * MathUtilsDbl.cos60, 0d, size * MathUtilsDbl.sin45 / 2d),
@@ -40,7 +40,7 @@ public enum BlockType implements EventsBuilder {
     },
     FlatDiamond {
         @Override
-        public EventFlat[] createEvents(EventBlockDouble from, double size) {
+        public EventFlat[] createEvents(EventBlockOrigin from, double size) {
             return new EventFlat[] {
                     new EventFlat(new Point3d(0d, size/2d, 0d), from, EventColor.plus_1),
                     new EventFlat(new Point3d(0d, -size/2d, 0d), from, EventColor.minus_1),

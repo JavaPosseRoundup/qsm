@@ -62,6 +62,12 @@ class InteractiveFlatSpaceFrame {
                     case 'k':
                         scatter.toggleDrawMoments()
                         break;
+                    case 'n':
+                        scatter.toggleDrawNextEvents()
+                        break;
+                    case 'w':
+                        scatter.toggleDrawWaitingEvents()
+                        break;
                     case 'p':
                         scatter.printDetails()
                         break;

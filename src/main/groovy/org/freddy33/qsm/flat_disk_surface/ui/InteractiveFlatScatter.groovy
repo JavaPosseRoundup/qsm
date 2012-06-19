@@ -32,8 +32,10 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
     final EventBlockDouble block
     BigInteger timeIncrement = 1G
     BigInteger currentTime = 0G
+    boolean drawWaitingEvents = true
     boolean drawMoments = false
     boolean drawTriangles = true
+    boolean drawNextEvents = false
     boolean drawActivatingLines = true
     Color blockLines = Color.BLACK;
     Color activating = Color.MAGENTA;
@@ -161,16 +163,38 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
             }
         }
 
-        // Print waiting events lines
-        List<Line4d>[] waitingEvents = block.getWaitingEvents(currentTime)
-        for (int i = 0; i < waitingEvents.length; i++) {
-            List<Line4d> waitingLines = waitingEvents[i];
-            for (Line4d line : waitingLines) {
-                gl.glBegin(GL2.GL_LINES);
+        if (drawWaitingEvents) {
+            List<Line4d>[] waitingEvents = block.getWaitingEvents(currentTime)
+            for (int i = 0; i < waitingEvents.length; i++) {
+                List<Line4d> waitingLines = waitingEvents[i];
+                for (Line4d line : waitingLines) {
+                    gl.glBegin(GL2.GL_LINES);
+                    setColor(gl, eventColor[i])
+                    setVertex3d(gl, line.a);
+                    setVertex3d(gl, line.b);
+                    gl.glEnd();
+                }
+            }
+        }
+
+        if (drawNextEvents) {
+            def nextPoints = block.getNextEventPoints()
+            gl.glBegin(GL2.GL_POINTS);
+            for (int i = 0; i < nextPoints.size(); i++) {
                 setColor(gl, eventColor[i])
-                setVertex3d(gl, line.a);
-                setVertex3d(gl, line.b);
-                gl.glEnd();
+                setVertex3d(gl, nextPoints[i])
+            }
+            gl.glEnd();
+            if (drawTriangles) {
+                for (int i = 0; i < nextPoints.size()-1; i++) {
+                    for (int j = 1; j < nextPoints.size(); j++) {
+                        gl.glBegin(GL2.GL_LINES)
+                        setColor(gl, blockLines)
+                        setVertex3d(gl, nextPoints[i])
+                        setVertex3d(gl, nextPoints[j])
+                        gl.glEnd()
+                    }
+                }
             }
         }
     }
@@ -187,12 +211,20 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
         println "block = $block"
     }
 
+    def toggleDrawWaitingEvents() {
+        drawWaitingEvents = !drawWaitingEvents
+    }
+
     def toggleDrawTriangles() {
         drawTriangles = !drawTriangles
     }
 
     def toggleDrawMoments() {
         drawMoments = !drawMoments
+    }
+
+    def toggleDrawNextEvents() {
+        drawNextEvents = !drawNextEvents
     }
 }
 
