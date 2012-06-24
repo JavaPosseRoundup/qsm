@@ -25,13 +25,17 @@ class MathUtilsDbl {
     public static final double EPSILON = 1e-6d
 
     static boolean eq(double a, double b) {
+        return eq(a,b,EPSILON)
+    }
+
+    static boolean eq(double a, double b, double precision) {
         if (b == a) return true
         if (b == 0d) {
-            Math.abs(a) < EPSILON
+            Math.abs(a) < precision
         } else if (a == 0d) {
-            Math.abs(b) < EPSILON
+            Math.abs(b) < precision
         } else {
-            Math.abs(1.0d - (a / b)) < EPSILON
+            Math.abs(1.0d - (a / b)) < precision
         }
     }
 

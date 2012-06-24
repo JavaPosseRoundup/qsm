@@ -131,6 +131,18 @@ public class EventBlockDouble {
         res
     }
 
+    def displayForElastic() {
+        List<Double> dist = [
+                new Vector3d(events[0].point, events[1].point).d(),
+                new Vector3d(events[0].point, events[2].point).d(),
+                new Vector3d(events[0].point, events[3].point).d(),
+                new Vector3d(events[1].point, events[2].point).d(),
+                new Vector3d(events[1].point, events[3].point).d(),
+                new Vector3d(events[2].point, events[3].point).d()
+        ]
+        println "$s,${dist.join(",")}"
+    }
+
     EventBlockDouble elasticConstraint(EventBlockDouble original) {
         Vector3d[] vects = [
                 new Vector3d(events[0].point, events[1].point),
@@ -163,7 +175,7 @@ public class EventBlockDouble {
                 }
             }
         } else {
-            return this
+            return null
         }
 
         Point3d[] pts = events.collect { it.point }
