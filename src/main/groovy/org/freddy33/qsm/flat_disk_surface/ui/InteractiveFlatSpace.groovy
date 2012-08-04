@@ -90,8 +90,8 @@ class InteractiveFlatSpaceFrame {
     }
 
     def InteractiveFlatScatter createScatter() {
-//        scatter = InteractiveFlatScatter.createWithPhoton()
-        scatter = InteractiveFlatScatter.createWithElectron()
+        scatter = InteractiveFlatScatter.createWithPhoton()
+//        scatter = InteractiveFlatScatter.createWithElectron()
         scatter
     }
 }

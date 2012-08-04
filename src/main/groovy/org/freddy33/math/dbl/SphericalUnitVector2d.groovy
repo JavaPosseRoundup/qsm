@@ -6,7 +6,7 @@ import org.freddy33.math.bigInt.Vector3i
 import static java.lang.Math.PI
 
 public class SphericalUnitVector2d {
-    final double teta /* [0, pi] */, phi /* [-pi, pi] */
+    final double teta /* [0, pi] */, phi /* ]-pi, pi] */
 
     /**
      * Create a normalized spherical vector for teta phi

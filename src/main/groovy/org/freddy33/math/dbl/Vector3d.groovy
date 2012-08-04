@@ -89,4 +89,8 @@ class Vector3d {
     String toString() {
         "v($x, $y, $z)"
     }
+
+    boolean isNormalized() {
+        MathUtilsDbl.eq(magSquared(), 1d)
+    }
 }

@@ -1,7 +1,5 @@
 package org.freddy33.math.dbl
 
-import static java.lang.Math.cos
-import static java.lang.Math.sin
 import static java.lang.Math.PI
 
 /**
@@ -46,13 +44,6 @@ class EulerAngles3d {
 
     public static Matrix3d getTramsformMatrix(double teta, double psi, double phi) {
         Matrix3d.rotZ(psi) * Matrix3d.rotX(teta) * Matrix3d.rotZ(phi)
-/*
-                new Matrix3d(
-                cos(teta) * cos(psi), -cos(phi) * sin(psi) + sin(phi) * sin(teta) * cos(psi), sin(phi) * sin(psi) + cos(phi) * sin(teta) * cos(psi),
-                cos(teta) * sin(psi), cos(phi) * cos(psi) + sin(phi) * sin(teta) * sin(psi), -sin(phi) * cos(psi) + cos(phi) * sin(teta) * sin(psi),
-                -sin(teta), sin(phi) * cos(teta), cos(phi) * cos(teta)
-        )
-*/
     }
 
     private validate() {
