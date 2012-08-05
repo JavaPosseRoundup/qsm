@@ -4,6 +4,9 @@ import org.freddy33.math.dbl.MathUtilsDbl
 import org.freddy33.math.dbl.Point4d
 import org.freddy33.math.dbl.Quaternion
 import org.freddy33.math.dbl.Vector3d
+import org.freddy33.math.dbl.Line4d
+import org.freddy33.math.dbl.Point3d
+import org.freddy33.math.dbl.SphericalUnitVector2d
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +29,7 @@ class PropagatingEvent {
         this.moment = moment
         this.psi = psi
         this.z = moment.cross(psi)
-        if (!z.isNormalized() || MathUtilsDbl.eq(moment.dot(psi), 0d)) {
+        if (!z.isNormalized() || !MathUtilsDbl.eq(moment.dot(psi), 0d)) {
             throw new IllegalArgumentException("moment=$moment or psi=$psi are not orthogonal!")
         }
     }
@@ -54,12 +57,12 @@ class PropagatingEvent {
 
 }
 
-class PropagatingEvents {
+class PropagatingEvents implements Transformer3dto4d {
     final PropagatingEvent first
     List<PropagatingEvent> events
 
     PropagatingEvents(PropagatingEvent first) {
-        events = [ first ]
+        this.events = [ first ]
         this.first = first
     }
 
@@ -69,5 +72,27 @@ class PropagatingEvents {
             nextEvents.addAll(it.nextEvents())
         }
         events = nextEvents
+    }
+
+    @Override
+    Point4d transformToGlobalCoordinates(Point3d p) {
+        return new Point4d(p.x, p.y, p.z, 0d)
+    }
+
+    List<Line4d> getOriginalMoment(double size) {
+        TransformerUtils.getLinesForMoment(
+                new Point3d(first.origin.x, first.origin.y, first.origin.z),
+                first.moment, size, this)
+    }
+
+    List<Line4d> getCurrentMoments(double size) {
+        List<Line4d> res = []
+        Transformer3dto4d transformer = this
+        events.each { PropagatingEvent pe ->
+            res.addAll(TransformerUtils.getLinesForMoment(
+                    new Point3d(pe.origin.x, pe.origin.y, pe.origin.z),
+                    pe.moment, size, transformer))
+        }
+        res
     }
 }

@@ -30,7 +30,7 @@ public class EventBlockOrigin {
     }
 }
 
-public class EventBlockDouble {
+public class EventBlockDouble implements Transformer3dto4d {
     final EventBlockOrigin o
     final BlockType type
     final EventFlat[] events = new EventFlat[4]
@@ -90,15 +90,8 @@ public class EventBlockDouble {
     List<Line4d>[] getEventMoments(double mult) {
         List<Line4d>[] result = new List<Line4d>[4]
         for (int i = 0; i < events.length; i++) {
-            EventFlat evt = events[i];
-            Vector3d m = evt.moment.toCartesian() * mult
-            Point3d localEndPoint = evt.point + m
-            Point4d endPoint = transformToGlobalCoordinates(localEndPoint)
-            result[i] = [
-                    new Line4d(transformToGlobalCoordinates(evt.point), endPoint),
-                    new Line4d(endPoint, transformToGlobalCoordinates(localEndPoint + (m * -0.2d) + (evt.moment.plusPiOver2().toCartesian() * (mult * 0.2d)))),
-                    new Line4d(endPoint, transformToGlobalCoordinates(localEndPoint + (m * -0.2d) + (evt.moment.plusPiOver2().toCartesian() * (mult * -0.2d))))
-            ]
+            EventFlat evt = events[i]
+            result[i] = TransformerUtils.getLinesForMoment(evt.point, evt.moment, mult, this)
         }
         result
     }
