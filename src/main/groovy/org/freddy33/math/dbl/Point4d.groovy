@@ -34,6 +34,10 @@ class Point4d {
         new Point4d(x * m, y * m, z * m, t)
     }
 
+    public Point4d div(double m) {
+        new Point4d(x / m, y / m, z / m, t / m)
+    }
+
     public double magSquared(Point4d c) {
         Math.pow(x - c.x, 2d) * Math.pow(y - c.y, 2d) * Math.pow(z - c.z, 2d) * Math.pow(t - c.t, 2d)
     }

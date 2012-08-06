@@ -1,12 +1,6 @@
 package org.freddy33.qsm.flat_disk_surface.calc
 
-import org.freddy33.math.dbl.MathUtilsDbl
-import org.freddy33.math.dbl.Point4d
-import org.freddy33.math.dbl.Quaternion
-import org.freddy33.math.dbl.Vector3d
-import org.freddy33.math.dbl.Line4d
-import org.freddy33.math.dbl.Point3d
-import org.freddy33.math.dbl.SphericalUnitVector2d
+import org.freddy33.math.dbl.*
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,6 +10,9 @@ import org.freddy33.math.dbl.SphericalUnitVector2d
  * To change this template use File | Settings | File Templates.
  */
 class PropagatingEvent {
+    // TODO: Change sign depending on origin color/sign
+    public static final double TETA_ROT = Math.PI / 2
+
     final Point4d origin
     final Vector3d moment
     final Vector3d psi
@@ -42,11 +39,10 @@ class PropagatingEvent {
                 moment * de - psi * (dd / 2d) + z * 0.5d,
                 moment * de - psi * (dd / 2d) - z * 0.5d
         ]
-        def teta = Math.PI / 2
         Vector3d[] ds = [
-                new Quaternion(f[0], teta).getRotMatrix() * f[0].cross(moment).normalized(),
-                new Quaternion(f[1], teta).getRotMatrix() * f[1].cross(moment).normalized(),
-                new Quaternion(f[2], teta).getRotMatrix() * f[2].cross(moment).normalized()
+                new Quaternion(f[0], TETA_ROT).getRotMatrix() * f[0].cross(moment).normalized(),
+                new Quaternion(f[1], TETA_ROT).getRotMatrix() * f[1].cross(moment).normalized(),
+                new Quaternion(f[2], TETA_ROT).getRotMatrix() * f[2].cross(moment).normalized()
         ]
         [
                 new PropagatingEvent(origin + f[0], f[0], ds[0]),
@@ -55,6 +51,10 @@ class PropagatingEvent {
         ]
     }
 
+    @Override
+    String toString() {
+        return "pe($origin, $moment, $psi)"
+    }
 }
 
 class PropagatingEvents implements Transformer3dto4d {
@@ -62,7 +62,7 @@ class PropagatingEvents implements Transformer3dto4d {
     List<PropagatingEvent> events
 
     PropagatingEvents(PropagatingEvent first) {
-        this.events = [ first ]
+        this.events = [first]
         this.first = first
     }
 
@@ -70,6 +70,42 @@ class PropagatingEvents implements Transformer3dto4d {
         List<PropagatingEvent> nextEvents = []
         events.each {
             nextEvents.addAll(it.nextEvents())
+        }
+        // Check mergeable set (if |ab| < 1 and |ac| < 1 => |bc| < 1)
+        Map<PropagatingEvent, List<PropagatingEvent>> closeEvents = [:]
+        nextEvents.each { PropagatingEvent a ->
+            List<PropagatingEvent> closeToMe = nextEvents.findAll { it.origin.magSquared(a.origin) < (0.9d-MathUtilsDbl.EPSILON) }
+            if (closeToMe.size() > 1) closeEvents.put(a, closeToMe)
+        }
+        println "Found close events $closeEvents"
+        Set<PropagatingEvent> done = new HashSet<PropagatingEvent>()
+        List<List<PropagatingEvent>> toMerge = new ArrayList<List<PropagatingEvent>>()
+        closeEvents.keySet().each { PropagatingEvent a ->
+            if (!done.contains(a)) {
+                // All close events, should have the same list
+                def closeToAEvents = closeEvents[a]
+                closeToAEvents.each { PropagatingEvent b ->
+                    def closeToBEvents = closeEvents[b]
+                    if (closeToAEvents.size() != closeToBEvents.size() || !closeToAEvents.containsAll(closeToBEvents)) {
+                        println "ERROR: Oups needs to thing since ${closeToAEvents} != ${closeToBEvents}"
+                    } else {
+                        done.addAll(closeToAEvents)
+                        toMerge.add(closeToAEvents)
+                    }
+                }
+            }
+        }
+        nextEvents.removeAll(done)
+        toMerge.each { List<PropagatingEvent> merge ->
+            Point4d barycenter = (merge.sum(new Point4d(0d,0d,0d,0d)) { it.origin }).div((double)merge.size())
+            Vector3d momentAvg = (merge.sum(new Vector3d(0d,0d,0d)) { it.moment }).normalized()
+            List<SphericalUnitVector2d> psis = merge.collect() { new SphericalUnitVector2d(it.psi) }
+            Vector3d psiCrossAvg = SphericalUnitVector2d.middleMan(psis).toCartesian().cross(momentAvg)
+            if (psiCrossAvg.magSquared() < MathUtilsDbl.EPSILON) {
+                println "ERROR: What can I do?"
+            } else {
+                nextEvents << new PropagatingEvent(barycenter, momentAvg, new Quaternion(momentAvg, PropagatingEvent.TETA_ROT).getRotMatrix() * psiCrossAvg.normalized())
+            }
         }
         events = nextEvents
     }

@@ -61,9 +61,12 @@ class Vector3d {
         new Vector3d(x * d, y * d, z * d)
     }
 
-    Vector3d normalized() {
-        double d = d()
+    Vector3d div(double d) {
         new Vector3d(x / d, y / d, z / d)
+    }
+
+    Vector3d normalized() {
+        div(d())
     }
 
     Vector3d plus(Vector3d v) {

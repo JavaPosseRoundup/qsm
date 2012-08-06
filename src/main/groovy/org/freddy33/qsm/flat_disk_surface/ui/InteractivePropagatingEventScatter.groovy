@@ -41,7 +41,7 @@ class InteractivePropagatingEventScatter extends Scatter implements ISingleColor
     public InteractivePropagatingEventScatter(PropagatingEvents ps) {
         this.propagatingEvents = ps
         setWidth(eventSize)
-        float maxDist = (float) TrigoInt.ONE * 1.3f
+        float maxDist = (float) TrigoInt.ONE * 0.5f
         bbox.add(maxDist, maxDist, maxDist)
         bbox.add(-maxDist, -maxDist, -maxDist)
     }
