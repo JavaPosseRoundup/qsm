@@ -95,7 +95,7 @@ class InteractivePropagatingEventSpaceFrame {
 
     def InteractivePropagatingEventScatter createScatter() {
         scatter = new InteractivePropagatingEventScatter(new PropagatingEvents(
-                new PropagatingEvent(new Point4d(0d,0d,0d,0d), new Vector3d(1d,0d,0d), new Vector3d(0d,0d,1d))
+                new PropagatingEvent(Point4d.origin(), Vector3d.X(), Vector3d.Z())
         ))
         scatter
     }

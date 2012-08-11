@@ -1,6 +1,11 @@
 package org.freddy33.math.dbl
 
 class Vector3d {
+    public static Vector3d origin() { new Vector3d(0d,0d,0d) }
+    public static Vector3d X() { new Vector3d(1d,0d,0d) }
+    public static Vector3d Y() { new Vector3d(0d,1d,0d) }
+    public static Vector3d Z() { new Vector3d(0d,0d,1d) }
+
     double x, y, z
 
     public Vector3d(double px, py, pz) {

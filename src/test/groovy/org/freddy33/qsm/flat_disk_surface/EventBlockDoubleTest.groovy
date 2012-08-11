@@ -121,10 +121,10 @@ class EventBlockDoubleTest extends Specification {
         MathUtilsDbl.eq(new Vector3d(pts[1], pts[2]).d(), one)
         MathUtilsDbl.eq(new Vector3d(pts[1], pts[3]).d(), one)
         MathUtilsDbl.eq(new Vector3d(pts[2], pts[3]).d(), one)
-        MathUtilsDbl.eq(new Vector3d(pts[0], new Point4d(0d,0d,0d,0d)).d(), one*sqrt(3d/8d))
-        MathUtilsDbl.eq(new Vector3d(pts[1], new Point4d(0d,0d,0d,0d)).d(), one*sqrt(3d/8d))
-        MathUtilsDbl.eq(new Vector3d(pts[2], new Point4d(0d,0d,0d,0d)).d(), one*sqrt(3d/8d))
-        MathUtilsDbl.eq(new Vector3d(pts[3], new Point4d(0d,0d,0d,0d)).d(), one*sqrt(3d/8d))
+        MathUtilsDbl.eq(new Vector3d(pts[0], Point4d.origin()).d(), one*sqrt(3d/8d))
+        MathUtilsDbl.eq(new Vector3d(pts[1], Point4d.origin()).d(), one*sqrt(3d/8d))
+        MathUtilsDbl.eq(new Vector3d(pts[2], Point4d.origin()).d(), one*sqrt(3d/8d))
+        MathUtilsDbl.eq(new Vector3d(pts[3], Point4d.origin()).d(), one*sqrt(3d/8d))
         BigInteger oneTime = CREATION_TIME + 1G
         List<Line4d>[] wPts1 = electron.getWaitingEvents(oneTime)
         wPts1.length == 4

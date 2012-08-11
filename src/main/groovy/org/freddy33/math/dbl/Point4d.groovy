@@ -1,6 +1,9 @@
 package org.freddy33.math.dbl
 
 class Point4d {
+
+    public static Point4d origin() { new Point4d(0d,0d,0d,0d) }
+
     double x, y, z, t;
 
     public Point4d(double xi, double yi, double zi) {
@@ -39,7 +42,7 @@ class Point4d {
     }
 
     public double magSquared(Point4d c) {
-        Math.pow(x - c.x, 2d) * Math.pow(y - c.y, 2d) * Math.pow(z - c.z, 2d) * Math.pow(t - c.t, 2d)
+        (x - c.x)*(x - c.x) + (y - c.y)*(y - c.y) + (z - c.z)*(z - c.z) + (t - c.t)*(t - c.t)
     }
 
     String toString() {

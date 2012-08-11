@@ -11,7 +11,7 @@ import org.freddy33.math.dbl.*
  */
 class PropagatingEvent {
     // TODO: Change sign depending on origin color/sign
-    public static final double TETA_ROT = Math.PI / 2
+    public static final double TETA_ROT = - Math.PI / 2d
 
     final Point4d origin
     final Vector3d moment
@@ -51,6 +51,20 @@ class PropagatingEvent {
         ]
     }
 
+    int hashCode() {
+        int result
+        result = origin.hashCode()
+        result = 31 * result + moment.hashCode()
+        result = 31 * result + psi.hashCode()
+        return result
+    }
+
+    @Override
+    boolean equals(Object obj) {
+        def pe = (PropagatingEvent) obj
+        return MathUtilsDbl.eq(origin, pe.origin) && MathUtilsDbl.eq(moment, pe.moment) && MathUtilsDbl.eq(psi, pe.psi)
+    }
+
     @Override
     String toString() {
         return "pe($origin, $moment, $psi)"
@@ -59,27 +73,28 @@ class PropagatingEvent {
 
 class PropagatingEvents implements Transformer3dto4d {
     final PropagatingEvent first
-    List<PropagatingEvent> events
+    Set<PropagatingEvent> events
 
     PropagatingEvents(PropagatingEvent first) {
-        this.events = [first]
+        this.events = new HashSet<PropagatingEvent>()
+        this.events << first
         this.first = first
     }
 
     void increment() {
-        List<PropagatingEvent> nextEvents = []
+        Set<PropagatingEvent> nextEvents = new HashSet<PropagatingEvent>()
         events.each {
             nextEvents.addAll(it.nextEvents())
         }
         // Check mergeable set (if |ab| < 1 and |ac| < 1 => |bc| < 1)
-        Map<PropagatingEvent, List<PropagatingEvent>> closeEvents = [:]
+        Map<PropagatingEvent, Set<PropagatingEvent>> closeEvents = [:]
         nextEvents.each { PropagatingEvent a ->
-            List<PropagatingEvent> closeToMe = nextEvents.findAll { it.origin.magSquared(a.origin) < (0.9d-MathUtilsDbl.EPSILON) }
+            Set<PropagatingEvent> closeToMe = nextEvents.findAll { it.origin.magSquared(a.origin) < (0.9d-MathUtilsDbl.EPSILON) }
             if (closeToMe.size() > 1) closeEvents.put(a, closeToMe)
         }
-        println "Found close events $closeEvents"
+        println "Found ${closeEvents.size()} close events"
         Set<PropagatingEvent> done = new HashSet<PropagatingEvent>()
-        List<List<PropagatingEvent>> toMerge = new ArrayList<List<PropagatingEvent>>()
+        List<Set<PropagatingEvent>> toMerge = new ArrayList<Set<PropagatingEvent>>()
         closeEvents.keySet().each { PropagatingEvent a ->
             if (!done.contains(a)) {
                 // All close events, should have the same list
@@ -88,23 +103,27 @@ class PropagatingEvents implements Transformer3dto4d {
                     def closeToBEvents = closeEvents[b]
                     if (closeToAEvents.size() != closeToBEvents.size() || !closeToAEvents.containsAll(closeToBEvents)) {
                         println "ERROR: Oups needs to thing since ${closeToAEvents} != ${closeToBEvents}"
-                    } else {
-                        done.addAll(closeToAEvents)
-                        toMerge.add(closeToAEvents)
                     }
                 }
+                println "Ready to merge $closeToAEvents"
+                done.addAll(closeToAEvents)
+                toMerge.add(closeToAEvents)
+            } else {
+                println "Already done $a"
             }
         }
         nextEvents.removeAll(done)
-        toMerge.each { List<PropagatingEvent> merge ->
-            Point4d barycenter = (merge.sum(new Point4d(0d,0d,0d,0d)) { it.origin }).div((double)merge.size())
-            Vector3d momentAvg = (merge.sum(new Vector3d(0d,0d,0d)) { it.moment }).normalized()
+        toMerge.each { Set<PropagatingEvent> merge ->
+            Point4d barycenter = (merge.sum(Point4d.origin()) { it.origin }).div((double)merge.size())
+            Vector3d momentAvg = (merge.sum(Vector3d.origin()) { it.moment }).normalized()
             List<SphericalUnitVector2d> psis = merge.collect() { new SphericalUnitVector2d(it.psi) }
             Vector3d psiCrossAvg = SphericalUnitVector2d.middleMan(psis).toCartesian().cross(momentAvg)
             if (psiCrossAvg.magSquared() < MathUtilsDbl.EPSILON) {
                 println "ERROR: What can I do?"
             } else {
-                nextEvents << new PropagatingEvent(barycenter, momentAvg, new Quaternion(momentAvg, PropagatingEvent.TETA_ROT).getRotMatrix() * psiCrossAvg.normalized())
+                def newNextEvent = new PropagatingEvent(barycenter, momentAvg, new Quaternion(momentAvg, PropagatingEvent.TETA_ROT).getRotMatrix() * psiCrossAvg.normalized())
+                println "Found barycenter $newNextEvent"
+                nextEvents << newNextEvent
             }
         }
         events = nextEvents
