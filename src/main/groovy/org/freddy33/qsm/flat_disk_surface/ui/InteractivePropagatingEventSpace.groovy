@@ -14,6 +14,7 @@ import org.freddy33.qsm.flat_disk_surface.calc.PropagatingEvents
 import org.freddy33.qsm.flat_disk_surface.calc.PropagatingEvent
 import org.freddy33.math.dbl.Point4d
 import org.freddy33.math.dbl.Vector3d
+import org.freddy33.math.bigInt.EventColor
 
 def frame = new InteractivePropagatingEventSpaceFrame()
 Plugs.frame(frame.createChart(), new Rectangle(0, 200, 400, 400), "Space Playground")
@@ -95,7 +96,7 @@ class InteractivePropagatingEventSpaceFrame {
 
     def InteractivePropagatingEventScatter createScatter() {
         scatter = new InteractivePropagatingEventScatter(new PropagatingEvents(
-                new PropagatingEvent(Point4d.origin(), Vector3d.X(), Vector3d.Z())
+                new PropagatingEvent(Point4d.origin(), Vector3d.X(), Vector3d.Z(), EventColor.plus_i)
         ))
         scatter
     }

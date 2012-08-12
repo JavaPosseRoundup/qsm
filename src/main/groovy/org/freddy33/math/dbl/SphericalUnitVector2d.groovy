@@ -13,15 +13,31 @@ public class SphericalUnitVector2d {
      * @param pteta
      * @param pphi
      */
-    public SphericalUnitVector2d(double pteta, pphi) {
-        teta = pteta
-        if (pteta == 0d || pteta == PI) {
+    public SphericalUnitVector2d(double pteta, double pphi) {
+        teta = closeTo(pteta)
+        if (teta == 0d || teta == PI) {
             // Force phi zero on z axis
-            phi = 0G
+            phi = 0d
         } else {
-            phi = pphi
+            phi = closeTo(pphi)
         }
         validate()
+    }
+
+    static double closeTo(double a) {
+        if (MathUtilsDbl.eq(a,0d)) {
+            0d
+        } else if (MathUtilsDbl.eq(a,PI)) {
+            PI
+        } else if (MathUtilsDbl.eq(a,PI/2d)) {
+            PI/2d
+        } else if (MathUtilsDbl.eq(a,-PI)) {
+            -PI
+        } else if (MathUtilsDbl.eq(a,-PI/2d)) {
+            -PI/2d
+        } else {
+            a
+        }
     }
 
     static SphericalUnitVector2d middleMan(List<SphericalUnitVector2d> pv) {
@@ -40,8 +56,8 @@ public class SphericalUnitVector2d {
     }
 
     private validate() {
-        if (teta < 0G || teta > PI) throw new IllegalArgumentException("Spherical coord teta between 0 and PI! For $this")
-        if ((teta == 0G || teta == PI) && phi != 0G) throw new IllegalArgumentException("Phi should be zero for teta 0 or PI! For $this")
+        if (teta < 0d || teta > PI) throw new IllegalArgumentException("Spherical coord teta between 0 and PI! For $this")
+        if ((teta == 0d || teta == PI) && phi != 0d) throw new IllegalArgumentException("Phi should be zero for teta 0 or PI! For $this")
         if (phi <= -PI || phi > PI) throw new IllegalArgumentException("Spherical coord phi between -PI and PI! For $this")
     }
 
@@ -60,13 +76,18 @@ public class SphericalUnitVector2d {
     public SphericalUnitVector2d(Vector3d v) {
         double d2 = v.magSquared()
         if (MathUtilsDbl.eq(d2, 0d)) {
-            phi = teta = 0G
+            phi = teta = 0d
         } else {
             def rd = Math.sqrt(d2)
-            phi = Math.atan2(v.y, v.x)
-            teta = Math.acos(v.z / rd)
+            phi = closeTo(Math.atan2(closeTo(v.y), closeTo(v.x)))
+            teta = closeTo(Math.acos(closeTo(v.z) / rd))
         }
-        validate()
+        try {
+            validate()
+        } catch (IllegalArgumentException e) {
+            println "Could not transform $v"
+            throw e
+        }
     }
 
     public Vector3d toCartesian() {
@@ -90,7 +111,7 @@ public class SphericalUnitVector2d {
             // Just reverse phi is zero anyway
             return new SphericalUnitVector2d(PI - teta, 0d);
         }
-        def nphi = PI + phi
+        double nphi = PI + phi
         if (nphi > PI) nphi -= 2d * PI
         return new SphericalUnitVector2d(PI - teta, nphi)
     }

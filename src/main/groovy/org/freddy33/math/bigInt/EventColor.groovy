@@ -44,6 +44,16 @@ public enum EventColor {
         r
     }
 
+    double teta() {
+        switch (this) {
+            case plus_1: return 0d
+            case minus_1: return Math.PI
+            case plus_i: return Math.PI/2d
+            case minus_i: return -Math.PI/2d
+        }
+        throw new IllegalStateException("Oups I don't know to count until 4!")
+    }
+
     int[] value() {
         switch (this) {
             case plus_1: return [1,0]
@@ -62,7 +72,7 @@ public enum EventColor {
 
         // Now this and s are either +i or -i
         if (this == s) return minus_1
-        if (this != s) return plus_1
+        else return plus_1
     }
 
     EventColor negative() {

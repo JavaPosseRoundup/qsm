@@ -1,28 +1,26 @@
 package org.freddy33.qsm.flat_disk_surface.calc
 
 import org.freddy33.math.dbl.*
+import org.freddy33.math.bigInt.EventColor
 
 /**
- * Created with IntelliJ IDEA.
  * User: freds
  * Date: 8/4/12
  * Time: 1:34 PM
- * To change this template use File | Settings | File Templates.
  */
 class PropagatingEvent {
-    // TODO: Change sign depending on origin color/sign
-    public static final double TETA_ROT = - Math.PI / 2d
-
+    final EventColor color
     final Point4d origin
     final Vector3d moment
     final Vector3d psi
     final Vector3d z
 
-    PropagatingEvent(Point4d origin, Vector3d moment, Vector3d psi) {
+    PropagatingEvent(Point4d origin, Vector3d moment, Vector3d psi, EventColor color) {
         if (!moment.isNormalized() || !psi.isNormalized()) {
             throw new IllegalArgumentException("moment=$moment or psi=$psi are not normalized!")
         }
         this.origin = origin
+        this.color = color
         this.moment = moment
         this.psi = psi
         this.z = moment.cross(psi)
@@ -40,20 +38,21 @@ class PropagatingEvent {
                 moment * de - psi * (dd / 2d) - z * 0.5d
         ]
         Vector3d[] ds = [
-                new Quaternion(f[0], TETA_ROT).getRotMatrix() * f[0].cross(moment).normalized(),
-                new Quaternion(f[1], TETA_ROT).getRotMatrix() * f[1].cross(moment).normalized(),
-                new Quaternion(f[2], TETA_ROT).getRotMatrix() * f[2].cross(moment).normalized()
+                new Quaternion(f[0], color.teta()).getRotMatrix() * f[0].cross(moment).normalized(),
+                new Quaternion(f[1], color.teta()).getRotMatrix() * f[1].cross(moment).normalized(),
+                new Quaternion(f[2], color.teta()).getRotMatrix() * f[2].cross(moment).normalized()
         ]
         [
-                new PropagatingEvent(origin + f[0], f[0], ds[0]),
-                new PropagatingEvent(origin + f[1], f[1], ds[1]),
-                new PropagatingEvent(origin + f[2], f[2], ds[2])
+                new PropagatingEvent(origin + f[0], f[0], ds[0], color),
+                new PropagatingEvent(origin + f[1], f[1], ds[1], color),
+                new PropagatingEvent(origin + f[2], f[2], ds[2], color)
         ]
     }
 
     int hashCode() {
         int result
         result = origin.hashCode()
+        result = 31 * result + color.hashCode()
         result = 31 * result + moment.hashCode()
         result = 31 * result + psi.hashCode()
         return result
@@ -62,12 +61,15 @@ class PropagatingEvent {
     @Override
     boolean equals(Object obj) {
         def pe = (PropagatingEvent) obj
-        return MathUtilsDbl.eq(origin, pe.origin) && MathUtilsDbl.eq(moment, pe.moment) && MathUtilsDbl.eq(psi, pe.psi)
+        return this.color == pe.color &&
+                MathUtilsDbl.eq(origin, pe.origin) &&
+                MathUtilsDbl.eq(moment, pe.moment) &&
+                MathUtilsDbl.eq(psi, pe.psi)
     }
 
     @Override
     String toString() {
-        return "pe($origin, $moment, $psi)"
+        return "pe($origin, $color, $moment, $psi)"
     }
 }
 
@@ -121,7 +123,11 @@ class PropagatingEvents implements Transformer3dto4d {
             if (psiCrossAvg.magSquared() < MathUtilsDbl.EPSILON) {
                 println "ERROR: What can I do?"
             } else {
-                def newNextEvent = new PropagatingEvent(barycenter, momentAvg, new Quaternion(momentAvg, PropagatingEvent.TETA_ROT).getRotMatrix() * psiCrossAvg.normalized())
+                def newNextEvent = new PropagatingEvent(
+                        barycenter,
+                        momentAvg,
+                        new Quaternion(momentAvg, first.color.teta()).getRotMatrix() * psiCrossAvg.normalized(),
+                        first.color)
                 println "Found barycenter $newNextEvent"
                 nextEvents << newNextEvent
             }
