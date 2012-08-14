@@ -94,24 +94,32 @@ class PropagatingEvents implements Transformer3dto4d {
             Set<PropagatingEvent> closeToMe = nextEvents.findAll { it.origin.magSquared(a.origin) < (0.9d-MathUtilsDbl.EPSILON) }
             if (closeToMe.size() > 1) closeEvents.put(a, closeToMe)
         }
-        println "Found ${closeEvents.size()} close events"
+        println "Found ${closeEvents.size()} close events out of ${nextEvents.size()}"
         Set<PropagatingEvent> done = new HashSet<PropagatingEvent>()
         List<Set<PropagatingEvent>> toMerge = new ArrayList<Set<PropagatingEvent>>()
         closeEvents.keySet().each { PropagatingEvent a ->
             if (!done.contains(a)) {
                 // All close events, should have the same list
-                def closeToAEvents = closeEvents[a]
-                closeToAEvents.each { PropagatingEvent b ->
-                    def closeToBEvents = closeEvents[b]
-                    if (closeToAEvents.size() != closeToBEvents.size() || !closeToAEvents.containsAll(closeToBEvents)) {
-                        println "ERROR: Oups needs to thing since ${closeToAEvents} != ${closeToBEvents}"
+                Set<PropagatingEvent> closeToAEvents = closeEvents[a].clone()
+                // Remove all already done
+                closeToAEvents.removeAll(done)
+                if (closeToAEvents.size() > 1) {
+                    //Set<PropagatingEvent> inError = new HashSet<PropagatingEvent>()
+                    closeToAEvents.each { PropagatingEvent b ->
+                        Set<PropagatingEvent> closeToBEvents = closeEvents[b].clone()
+                        closeToBEvents.removeAll(done)
+                        if (closeToAEvents.size() != closeToBEvents.size() || !closeToAEvents.containsAll(closeToBEvents)) {
+                            println "ERROR: not coherent ${a.origin.magSquared(b.origin)} ${a.origin},${closeToAEvents.size()} ${b.origin},${closeToBEvents.size()}"
+                            println "ERROR: All dist from A and B of closeToB not in closeToA:"
+//                            Set<PropagatingEvent> closeToBEvents.clone()
+                        }
                     }
+                    println "Ready to merge ${closeToAEvents.size()} events around ${a.origin}"
+                    toMerge.add(closeToAEvents)
+                    done.addAll(closeToAEvents)
                 }
-                println "Ready to merge $closeToAEvents"
-                done.addAll(closeToAEvents)
-                toMerge.add(closeToAEvents)
             } else {
-                println "Already done $a"
+                println "Already done ${a.origin}"
             }
         }
         nextEvents.removeAll(done)
