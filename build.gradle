@@ -38,8 +38,8 @@ apply plugin: 'groovy'
 
 idea {
     project {
-        jdkName = '1.6'
-        languageLevel = '1.6'
+        jdkName = '1.8'
+        languageLevel = '1.8'
         wildcards += '?*.gradle'
         ipr {
             withXml { provider ->
@@ -95,15 +95,14 @@ uploadArchives {
 }
 
 dependencies {
-	compile group: 'org.jzy3d', name: 'jzy3d-bridge', version: '0.9-SNAPSHOT'
+    compile group: 'org.jzy3d', name: 'jzy3d-api', version: '0.9.2-SNAPSHOT'
+    runtime group: 'com.miglayout', name: 'miglayout', version: '3.7.4'
 	compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
 	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
 	compile group: 'javax.annotation', name: 'jsr250-api', version: '1.0'
 	groovy 'org.codehaus.groovy:groovy-all:2.0.1@jar'
 	testCompile group: 'junit', name: 'junit', version: '4.9'
 	testCompile group: 'org.spockframework', name: 'spock-core', version: '0.6-groovy-2.0-SNAPSHOT'
-    runtime(group: 'com.jogamp', name: 'jogl-all', version: '2.0', classifier: 'linux64')
-    runtime(group: 'com.jogamp', name: 'gluegen', version: '2.0', classifier: 'rt-linux64')
 }
 
 

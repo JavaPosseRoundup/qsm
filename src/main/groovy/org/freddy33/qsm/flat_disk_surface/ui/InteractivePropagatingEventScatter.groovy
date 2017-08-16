@@ -8,6 +8,7 @@ import org.jzy3d.maths.Coord3d
 import org.jzy3d.plot3d.primitives.Scatter
 import org.jzy3d.plot3d.rendering.view.Camera
 
+import javax.media.opengl.GL
 import javax.media.opengl.GL2
 import javax.media.opengl.glu.GLU
 
@@ -59,7 +60,9 @@ class InteractivePropagatingEventScatter extends Scatter implements ISingleColor
         return new Coord3d(p.getX(), p.getY(), p.getZ());
     }
 
-    public void draw(GL2 gl, GLU glu, Camera cam) {
+    @Override
+    void draw(GL glp, GLU glu, Camera cam) {
+        GL2 gl = (GL2)glp;
         if (transform != null)
             transform.execute(gl);
 
@@ -110,7 +113,7 @@ class InteractivePropagatingEventScatter extends Scatter implements ISingleColor
         gl.glVertex3f((float)point.x, (float)point.y, (float)point.z);
     }
 
-    private static void setColor(final GL2 gl, final Color c) {
+    private static void setColor(final GL gl, final Color c) {
         gl.glColor4f(c.r, c.g, c.b, c.a);
     }
 

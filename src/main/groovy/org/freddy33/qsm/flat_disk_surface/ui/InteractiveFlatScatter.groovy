@@ -6,6 +6,8 @@ import org.jzy3d.colors.ISingleColorable
 import org.jzy3d.colors.Color
 
 import org.jzy3d.maths.Coord3d
+
+import javax.media.opengl.GL
 import javax.media.opengl.GL2
 import javax.media.opengl.glu.GLU
 import org.jzy3d.plot3d.rendering.view.Camera
@@ -116,7 +118,9 @@ class InteractiveFlatScatter extends Scatter implements ISingleColorable {
         return new Coord3d(p.getX(), p.getY(), p.getZ());
     }
 
-    public void draw(GL2 gl, GLU glu, Camera cam) {
+    @Override
+    void draw(GL glp, GLU glu, Camera cam) {
+        GL2 gl = (GL2)glp;
         if (transform != null)
             transform.execute(gl);
 

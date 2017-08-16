@@ -1,10 +1,10 @@
 package org.freddy33.qsm.flat_disk_surface.ui
 
 import org.jzy3d.chart.Chart
-import org.jzy3d.chart.controllers.mouse.ChartMouseController
-import org.jzy3d.chart.controllers.thread.ChartThreadController
+//import org.jzy3d.chart.controllers.mouse.ChartMouseController
+//import org.jzy3d.chart.controllers.thread.ChartThreadController
 import org.jzy3d.plot3d.rendering.view.Renderer2d
-import org.jzy3d.ui.Plugs
+import org.jzy3d.Plugs
 
 import java.awt.Graphics
 import java.awt.Rectangle
@@ -18,8 +18,8 @@ class InteractiveFlatSpaceFrame {
     Chart chart
     InteractiveFlatScatter scatter
     Renderer2d messageRenderer
-    ChartThreadController threadCamera
-    ChartMouseController mouseCamera
+//    ChartThreadController threadCamera
+//    ChartMouseController mouseCamera
     boolean displayMessage = true
     String message
 
@@ -28,12 +28,12 @@ class InteractiveFlatSpaceFrame {
         chart.getScene().add(createScatter())
         chart.getView().setMaximized(true)
 
-        threadCamera = new ChartThreadController(chart)
-        mouseCamera = new ChartMouseController()
-        mouseCamera.addSlaveThreadController(threadCamera)
-        chart.addController(mouseCamera)
+//        threadCamera = new ChartThreadController(chart)
+//        mouseCamera = new ChartMouseController()
+//        mouseCamera.addSlaveThreadController(threadCamera)
+//        chart.addController(mouseCamera)
 
-        chart.getCanvas().addKeyListener(new KeyListener() {
+        chart.getCanvas().addKeyController(new KeyListener() {
             public void keyPressed(KeyEvent e) {}
 
             public void keyReleased(KeyEvent e) {}
@@ -85,7 +85,7 @@ class InteractiveFlatSpaceFrame {
                 }
             }
         }
-        chart.addRenderer(messageRenderer)
+//        chart.addRenderer(messageRenderer)
         chart
     }
 
